@@ -1,0 +1,4 @@
+pattern,why
+^co-authored-by:,Attribution trailer naming a co-author (human or AI)
+^generated (with|by)\b,Marketing/attribution line inserted by a generation tool
+🤖,Robot emoji marker used by AI-generated attribution lines

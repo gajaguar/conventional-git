@@ -1,0 +1,8 @@
+type,when_to_use
+feature,New feature or capability under development
+feat,Short alias for feature
+bugfix,Fix for a non-urgent, already-reported bug
+fix,Short alias for bugfix
+hotfix,Urgent fix applied directly against a release or production branch
+release,Preparation for a release (version bump, changelog, freeze)
+chore,Non-code maintenance (dependency bumps, tooling, docs)
