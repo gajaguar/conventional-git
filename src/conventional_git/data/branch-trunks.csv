@@ -1,0 +1,4 @@
+name,when_to_use
+main,Primary trunk branch
+master,Legacy primary trunk branch
+develop,Integration trunk branch
