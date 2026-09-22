@@ -1,0 +1,17 @@
+{
+  "name": "conventional-kit",
+  "version": "0.1.0",
+  "description": "Conventional Commits and Conventional Branch skills for Claude Code",
+  "author": {
+    "name": "G.A.JAGUAR",
+    "email": "dev@gajaguar.com"
+  },
+  "keywords": [
+    "conventional-commits",
+    "conventional-branch",
+    "commit-message",
+    "branch-name",
+    "git",
+    "skill"
+  ]
+}

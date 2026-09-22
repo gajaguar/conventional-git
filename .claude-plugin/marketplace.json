@@ -1,0 +1,15 @@
+{
+  "name": "conventional-kit-skills",
+  "plugins": [
+    {
+      "name": "conventional-commit",
+      "source": "./skills/conventional-commit",
+      "description": "Generate and create Conventional Commits"
+    },
+    {
+      "name": "conventional-branch",
+      "source": "./skills/conventional-branch",
+      "description": "Generate and create Conventional Branch names"
+    }
+  ]
+}

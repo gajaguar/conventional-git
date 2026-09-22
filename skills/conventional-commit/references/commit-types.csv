@@ -1,0 +1,12 @@
+type,when_to_use
+feat,New feature or capability visible to the user
+fix,Bug fix that corrects incorrect behavior
+docs,Documentation-only changes (README, comments, wikis)
+style,Formatting changes that do not affect meaning (whitespace, semicolons, etc.)
+refactor,Code restructuring that neither fixes a bug nor adds a feature
+perf,Performance improvement without behavior change
+test,Adding or correcting tests
+build,Changes to build system, tooling, or external dependencies (e.g. pyproject.toml, Makefile)
+ci,Changes to CI/CD configuration files and scripts
+chore,Routine maintenance that does not modify src or test files (e.g. bump version, update lockfile)
+revert,Reverts a previous commit

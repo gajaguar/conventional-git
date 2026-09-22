@@ -1,0 +1,18 @@
+- id: conventional-commit-msg
+  name: conventional-kit commit message
+  description: Validate Conventional Commits format on commit messages
+  entry: conventional-kit check commit --file
+  language: system
+  stages: [commit-msg]
+  types: [text]
+  require_serial: false
+  pass_filenames: true
+
+- id: conventional-branch-name
+  name: conventional-kit branch name
+  description: Validate Conventional Branch format on branch names
+  entry: conventional-kit check branch --name
+  language: system
+  stages: [pre-commit, pre-push]
+  always_run: true
+  pass_filenames: false

@@ -1,0 +1,140 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "conventional-kit"
+version = "0.1.0"
+description = "Conventional Commits and Conventional Branch enforcement, validation, and generation"
+requires-python = ">=3.14"
+dependencies = [
+  "commitizen>=4.0",
+  "gitlint>=0.19",
+  "mcp>=1.0,<2.0",
+  "typer>=0.15",
+]
+
+[project.urls]
+Homepage = "https://github.com/gajaguar/conventional-kit"
+Repository = "https://github.com/gajaguar/conventional-kit"
+
+[project.scripts]
+conventional-kit = "conventional_kit.cli.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/conventional_kit"]
+packages-data = {"src/conventional_kit/data" = ["**/*.csv"]}
+
+[tool.hatch.build.targets.wheel.bundle-include]
+"src/conventional_kit/py.typed" = "conventional_kit/py.typed"
+
+[tool.hatch.build.targets.wheel.force-include]
+"skills" = "conventional_kit/_payload/skills"
+".claude-plugin" = "conventional_kit/_payload/claude-plugin"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=conventional_kit --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/conventional_kit"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.:",
+  "raise NotImplementedError",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 119
+lint.select = ["ALL"]
+lint.ignore = [
+  "CPY",
+  "D",
+  "docstring-missing-returns",
+  "implicit-namespace-package",
+  "missing-trailing-comma",
+  "print",
+  "shebang-missing-executable-file",
+  "subprocess-without-shell-equals-true",
+  "suspicious-subprocess-import",
+]
+lint.isort.section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+]
+lint.isort.force-single-line = true
+lint.isort.case-sensitive = true
+lint.per-file-ignores."tests/**/*.py" = [
+  "ANN",
+  "ARG",
+  "assert",
+  "magic-value-comparison",
+  "private-member-access",
+]
+lint.per-file-ignores."src/conventional_kit/cli/*.py" = [
+  "FBT002",
+  "PLR0913",
+  "PLR0917",
+]
+lint.per-file-ignores."src/conventional_kit/adapters/*.py" = [
+  "ANN401",
+  "no-self-use",
+]
+lint.per-file-ignores."src/conventional_kit/generation/*.py" = [
+  "no-self-use",
+]
+
+[tool.mypy]
+strict = true
+exclude = ["tests/"]
+
+[[tool.mypy.overrides]]
+module = ["gitlint.*"]
+ignore_missing_imports = true
+
+[tool.pylint.main]
+load-plugins = ["checkers"]
+
+[tool.pylint."messages control"]
+disable = ["all"]
+# Parity with the rules the in-tree plugin enforced.
+enable = [
+  "app-no-docstrings",
+  "app-no-file-level-disable",
+  "app-no-inline-imports",
+  "app-no-relative-imports",
+  "app-test-aaa-markers",
+  "app-test-no-blank-lines",
+  "app-test-no-extra-comments",
+  "app-unused-arg-use-del",
+  "app-use-contextlib-suppress",
+]
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/.venv", "**/node_modules", "tests"]
+
+[dependency-groups]
+dev = [
+  "mypy>=2.1.0",
+  "pylint-plugin",
+  "pylint>=4.0.5",
+  "pyright>=1.1.409",
+  "pytest>=8.0",
+  "pytest-cov>=6.0",
+  "ruff>=0.15.15",
+]
+
+[tool.uv.sources]
+pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin", tag = "v1.1.1" }
+
+[tool.uv]
+python-preference = "only-system"
+python-downloads = "never"
