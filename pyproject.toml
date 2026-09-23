@@ -28,6 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 gitlint = ["gitlint>=0.19"]
+llm = ["keyring>=25", "typesafe-sdk>=0.7"]
 
 [project.urls]
 Repository = "https://github.com/gajaguar/conventional-git"
@@ -113,14 +114,16 @@ include = ["src"]
 [dependency-groups]
 dev = [
   "gitlint>=0.19",
+  "keyring>=25",
   "mypy>=2.1.0",
-  "pylint-plugin",
+  "pylint-plugin>=1.1.2",
   "pylint>=4.0.5",
   "pyright>=1.1.409",
   "pytest>=8.0",
   "pytest-cov>=6.0",
   "ruff>=0.15.15",
+  "typesafe-sdk>=0.7",
 ]
 
 [tool.uv.sources]
-pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin", tag = "v1.1.1" }
+pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin" }

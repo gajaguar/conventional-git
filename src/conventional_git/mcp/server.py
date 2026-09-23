@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import asdict
+
 from mcp.server.fastmcp import FastMCP
 
+from conventional_git import generation
 from conventional_git.branch import grammar as branch_grammar
 from conventional_git.branch import rules as branch_rules
 from conventional_git.branch import vocabulary as branch_vocab
@@ -38,6 +41,29 @@ def describe_convention() -> dict[str, object]:
             "trunks": sorted(branch_vocab.default_trunks()),
             "description_max_length": branch_grammar.description_max_length(),
         },
+    }
+
+
+@mcp.tool()
+def suggest_commit_message(diff: str, changed_paths: list[str] | None = None) -> dict[str, object]:
+    generation.enable_optional_providers()
+    provider_name = "jev" if "jev" in generation.available_providers() else "heuristic"
+    provider = generation.get_provider(provider_name)
+    if provider is None:
+        return {"provider": None, "suggestion": None, "error": "No suggestion provider is registered."}
+    try:
+        suggestion = provider.suggest(diff, changed_paths=tuple(changed_paths or ()))
+    except generation.MissingCredentialsError as error:
+        heuristic = generation.get_provider("heuristic")
+        suggestion = heuristic.suggest(diff, changed_paths=tuple(changed_paths or ())) if heuristic else None
+        return {
+            "provider": "heuristic",
+            "suggestion": asdict(suggestion) if suggestion else None,
+            "warning": str(error),
+        }
+    return {
+        "provider": provider_name,
+        "suggestion": asdict(suggestion) if suggestion else None,
     }
 
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
+from importlib import import_module
 from typing import Protocol
 
 
@@ -10,6 +12,7 @@ class CommitSuggestion:
     scope: str
     description: str
     confidence: float
+    breaking: bool = False
 
 
 class SuggestionProvider(Protocol):
@@ -21,6 +24,10 @@ class SuggestionProvider(Protocol):
         *,
         changed_paths: tuple[str, ...] = (),
     ) -> CommitSuggestion | None: ...
+
+
+class MissingCredentialsError(RuntimeError):
+    pass
 
 
 _REGISTRY: dict[str, SuggestionProvider] = {}
@@ -38,3 +45,8 @@ def get_provider(name: str | None = None) -> SuggestionProvider | None:
 
 def available_providers() -> tuple[str, ...]:
     return tuple(_REGISTRY.keys())
+
+
+def enable_optional_providers() -> None:
+    with contextlib.suppress(ImportError):
+        import_module("conventional_git.generation.typesafe")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -121,6 +122,9 @@ def _resolve_message(message: str | None, message_file: Path | None) -> str:
 
 
 def _current_branch() -> str:
+    head_ref = os.environ.get("GITHUB_HEAD_REF")
+    if head_ref:
+        return head_ref
     head = Path(".git/HEAD")
     if head.exists():
         ref = head.read_text(encoding="utf-8").strip()

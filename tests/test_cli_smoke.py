@@ -1,12 +1,28 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+_SAMPLE_DIFF = (
+    "diff --git a/src/conventional_git/cli/create.py b/src/conventional_git/cli/create.py\n"
+    "--- a/src/conventional_git/cli/create.py\n"
+    "+++ b/src/conventional_git/cli/create.py\n"
+    "@@ -1 +1,2 @@\n"
+    "+# comment\n"
+)
+
+
+def _env_without_llm_credentials() -> dict[str, str]:
+    env = dict(os.environ)
+    env.pop("TYPESAFE_API_KEY", None)
+    env.pop("OPENROUTER_API_KEY", None)
+    return env
 
 
 def test_app_help_exits_zero() -> None:
@@ -204,6 +220,74 @@ def test_create_branch_outputs_normalized_name() -> None:
     # Assert
     assert completed.returncode == 0
     assert completed.stdout.strip() == "feature/add-oauth-login"
+
+
+def test_create_suggest_falls_back_to_heuristic_without_credentials(tmp_path: Path) -> None:
+    # Arrange
+    diff_file = tmp_path / "sample.diff"
+    diff_file.write_text(_SAMPLE_DIFF, encoding="utf-8")
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "suggest",
+            "--diff-file",
+            str(diff_file),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_llm_credentials(),
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "Falling back to the heuristic provider" in completed.stderr
+    assert "type: chore" in completed.stdout
+
+
+def test_create_suggest_with_explicit_jev_provider_fails_without_credentials(tmp_path: Path) -> None:
+    # Arrange
+    diff_file = tmp_path / "sample.diff"
+    diff_file.write_text(_SAMPLE_DIFF, encoding="utf-8")
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "suggest",
+            "--diff-file",
+            str(diff_file),
+            "--provider",
+            "jev",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_llm_credentials(),
+    )
+    # Assert
+    assert completed.returncode == 1
+    assert "No TypeSafe or OpenRouter API key found" in completed.stderr
+
+
+def test_auth_status_reports_no_credentials_when_unset() -> None:
+    # Arrange
+    # Act
+    completed = subprocess.run(
+        [sys.executable, "-m", "conventional_git.cli.app", "auth", "status"],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_llm_credentials(),
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "No credentials found" in completed.stdout
 
 
 def test_help_payload_is_json_shape() -> None:

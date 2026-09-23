@@ -11,7 +11,7 @@
 - id: conventional-branch-name
   name: conventional-git branch name
   description: Validate Conventional Branch format on branch names
-  entry: conventional-git check branch --name
+  entry: conventional-git check branch
   language: system
   stages: [pre-commit, pre-push]
   always_run: true
