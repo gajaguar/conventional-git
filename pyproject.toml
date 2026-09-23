@@ -22,13 +22,13 @@ keywords = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-  "mcp>=1.0,<2.0",
   "typer>=0.15",
 ]
 
 [project.optional-dependencies]
 gitlint = ["gitlint>=0.19"]
 llm = ["keyring>=25", "typesafe-sdk>=0.7"]
+mcp = ["mcp>=1.0,<2.0"]
 
 [project.urls]
 Repository = "https://github.com/gajaguar/conventional-git"
@@ -36,6 +36,7 @@ Issues = "https://github.com/gajaguar/conventional-git/issues"
 
 [project.scripts]
 conventional-git = "conventional_git.cli.app:main"
+conventional-git-mcp = "conventional_git.mcp.server:run"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/conventional_git"]
@@ -115,6 +116,7 @@ include = ["src"]
 dev = [
   "gitlint>=0.19",
   "keyring>=25",
+  "mcp>=1.0,<2.0",
   "mypy>=2.1.0",
   "pylint-plugin>=1.1.2",
   "pylint>=4.0.5",
