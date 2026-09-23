@@ -61,7 +61,9 @@ conventional-git --help
 ```
 
 Install with the `gitlint` extra (`uv tool install '.[gitlint]'`) to use
-the gitlint adapter (`adapters/gitlint_rules.py`).
+the gitlint adapter (`adapters/gitlint_rules.py`). Install with the `llm`
+extra (`uv tool install '.[llm]'`) to enable the `jev` suggestion provider
+(see [Suggest](#suggest)).
 
 The package is not published on PyPI.
 
@@ -132,8 +134,30 @@ For the pre-commit framework, register the commit-message hook with
       language: system
 ```
 
-The branch hook has an open issue because its pre-commit entry does not pass a
-value to `--name`. See [Open items](#open-items).
+### Suggest
+
+Generate a commit suggestion from a diff. Without the `llm` extra or a
+credential, `create suggest` always falls back to the built-in heuristic
+provider and prints a notice; it never fails the command:
+
+```bash
+git diff --cached | conventional-git create suggest --diff-file -
+conventional-git create suggest --diff-file changes.diff --apply
+```
+
+With the `llm` extra installed and a credential available, `create suggest`
+prefers the `jev` provider (TypeSafe's Jev model, routed through OpenRouter):
+
+```bash
+conventional-git auth login    # prompts for and stores your OpenRouter API key
+conventional-git auth status
+conventional-git create suggest --provider jev
+```
+
+Credentials resolve in this order: `TYPESAFE_API_KEY`, then
+`OPENROUTER_API_KEY`, then the OS keyring entry written by `auth login`. See
+[architecture](docs/architecture.md) for why this is opt-in in both the CLI
+and MCP, not one or the other.
 
 ### Python library
 
@@ -157,8 +181,9 @@ Serve the Model Context Protocol over standard input and output:
 conventional-git mcp serve
 ```
 
-The server exposes `validate_commit_message`, `validate_branch_name`, and
-`describe_convention`. See [MCP documentation](docs/mcp.md).
+The server exposes `validate_commit_message`, `validate_branch_name`,
+`describe_convention`, and `suggest_commit_message`. See
+[MCP documentation](docs/mcp.md).
 
 ## CLI reference
 
@@ -171,8 +196,12 @@ return `1`.
 | check branch   | `-n, --name`; `--types-csv`                                                              | 0 or 1        |
 | create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`; `--dry-run` | 0 or 1        |
 | create branch  | `--type`; `--description`; `--types-csv`; `--dry-run`                                    | 0 or 1        |
+| create suggest | `--diff-file`; `--provider`; `--apply`                                                   | 0 or 1        |
 | hook install   | `--target`; `--force`                                                                    | 0 or 1        |
 | hook uninstall | `--target`                                                                               | 0             |
+| auth login     | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
+| auth status    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
+| auth logout    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
 | mcp serve      | No command-specific options                                                              | Server status |
 
 Use `conventional-git <command> --help` for the full option descriptions.
@@ -220,10 +249,10 @@ See [architecture](docs/architecture.md) and
 │   ├── branch/{grammar,rules,vocabulary}.py
 │   ├── config.py              # .conventional-git.toml loader
 │   ├── helpers.py
-│   ├── generation/{heuristic,protocol}.py
+│   ├── generation/{heuristic,protocol,typesafe,credentials}.py
 │   ├── data/{commit,branch}-types.csv
 │   ├── adapters/{gitlint_rules,commitizen_config}.py
-│   ├── cli/{app,check,create,hook,mcp}.py
+│   ├── cli/{app,auth,check,create,hook,mcp}.py
 │   └── mcp/server.py
 ├── skills/conventional-{commit,branch}/SKILL.md
 └── tests/
@@ -231,11 +260,9 @@ See [architecture](docs/architecture.md) and
 
 ## Open items
 
-- The `conventional-branch-name` hook passes no value to `--name`.
 - `[branch] type_overrides` is ignored.
 - `--dry-run` has no effect beyond printing the generated value.
 - The MCP tools ignore configuration.
-- `generation/` is not wired to the CLI or MCP.
 - The package is not published to PyPI.
 
 ## Contributing

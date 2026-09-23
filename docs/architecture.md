@@ -51,13 +51,36 @@ adapter has no SDK to import.
   places that call `SystemExit`; their job is to map core output to exit
   codes and stderr text.
 - `cli/hook.py` — installs and removes the Git hooks.
+- `cli/auth.py` — stores/reads the OpenRouter credential used by the `jev`
+  suggestion provider (requires the `llm` extra).
 - `mcp/server.py` — FastMCP server exposing `validate_commit_message`,
-  `validate_branch_name`, and `describe_convention`. Returns the same
-  structured `Violation` shape so agents can self-correct.
+  `validate_branch_name`, `describe_convention`, and `suggest_commit_message`.
+  The `validate_*`/`describe_*` tools return the same structured `Violation`
+  shape so agents can self-correct; `suggest_commit_message` returns advice,
+  not a rule, and its output still has to pass `validate_commit_message`.
 
-`generation/` contains generation protocols and heuristics that are not yet
-wired to the CLI or MCP. `helpers.py` contains shared transformations used by
-the front-ends.
+`generation/` holds the `SuggestionProvider` protocol (`protocol.py`), a
+regex-based `HeuristicProvider` (`heuristic.py`) that is always available,
+and an optional `JevProvider` (`typesafe.py`) backed by TypeSafe's Jev model.
+Both `create suggest` (CLI) and `suggest_commit_message` (MCP) call
+`get_provider` the same way, so a suggestion provider is opt-in in **both**
+front-ends, not tied to one of them:
+
+- **Validation stays deterministic everywhere.** `check`, the git hooks, and
+  CI never call an LLM — see `commit/rules.py` and `branch/rules.py`.
+- **Suggestion is opt-in.** `JevProvider` only registers when the `llm` extra
+  (`typesafe-sdk`, `keyring`) is installed, and only answers when a
+  `TYPESAFE_API_KEY` or `OPENROUTER_API_KEY` resolves (see
+  `generation/credentials.py`). Without either, `create suggest` and
+  `suggest_commit_message` fall back to `HeuristicProvider` and print a
+  notice; they never fail the command.
+- This follows validation-vs-generation, not CLI-vs-MCP: MCP sampling (the
+  spec mechanism that would let a server borrow the client's model) was
+  deprecated upstream (SEP-2577, 2026-07-28) and Claude Code, Codex, and
+  Cursor never implemented it, so an MCP tool needs its own API key exactly
+  like the CLI does.
+
+`helpers.py` contains shared transformations used by the front-ends.
 
 ## Vocabulary
 
