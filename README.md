@@ -175,10 +175,18 @@ Each call returns a `Report` containing `Violation` objects.
 
 ### MCP
 
-Serve the Model Context Protocol over standard input and output:
+Requires the `mcp` extra: `pip install 'conventional-git[mcp]'` (or
+`uv pip install 'conventional-git[mcp]'`). Serve the Model Context Protocol
+over standard input and output:
 
 ```bash
 conventional-git mcp serve
+```
+
+Without installing the extra, an editor or agent can still run it on demand:
+
+```bash
+uvx --from 'conventional-git[mcp]' conventional-git-mcp
 ```
 
 The server exposes `validate_commit_message`, `validate_branch_name`,
@@ -202,7 +210,7 @@ return `1`.
 | auth login     | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
 | auth status    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
 | auth logout    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
-| mcp serve      | No command-specific options                                                              | Server status |
+| mcp serve      | No command-specific options (requires the `mcp` extra)                                   | Server status |
 
 Use `conventional-git <command> --help` for the full option descriptions.
 

@@ -202,7 +202,6 @@ name = "conventional-git"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "mcp" },
     { name = "typer" },
 ]
 
@@ -214,11 +213,15 @@ llm = [
     { name = "keyring" },
     { name = "typesafe-sdk" },
 ]
+mcp = [
+    { name = "mcp" },
+]
 
 [package.dev-dependencies]
 dev = [
     { name = "gitlint" },
     { name = "keyring" },
+    { name = "mcp" },
     { name = "mypy" },
     { name = "pylint" },
     { name = "pylint-plugin" },
@@ -233,16 +236,17 @@ dev = [
 requires-dist = [
     { name = "gitlint", marker = "extra == 'gitlint'", specifier = ">=0.19" },
     { name = "keyring", marker = "extra == 'llm'", specifier = ">=25" },
-    { name = "mcp", specifier = ">=1.0,<2.0" },
+    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0,<2.0" },
     { name = "typer", specifier = ">=0.15" },
     { name = "typesafe-sdk", marker = "extra == 'llm'", specifier = ">=0.7" },
 ]
-provides-extras = ["gitlint", "llm"]
+provides-extras = ["gitlint", "llm", "mcp"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "gitlint", specifier = ">=0.19" },
     { name = "keyring", specifier = ">=25" },
+    { name = "mcp", specifier = ">=1.0,<2.0" },
     { name = "mypy", specifier = ">=2.1.0" },
     { name = "pylint", specifier = ">=4.0.5" },
     { name = "pylint-plugin", git = "https://github.com/gajaguar/pylint-plugin" },

@@ -58,6 +58,9 @@ adapter has no SDK to import.
   The `validate_*`/`describe_*` tools return the same structured `Violation`
   shape so agents can self-correct; `suggest_commit_message` returns advice,
   not a rule, and its output still has to pass `validate_commit_message`.
+  Requires the `mcp` extra; `cli/app.py` only registers the `mcp` subcommand
+  when it's importable, so a plain install doesn't pull in the MCP SDK's
+  dependency tree.
 
 `generation/` holds the `SuggestionProvider` protocol (`protocol.py`), a
 regex-based `HeuristicProvider` (`heuristic.py`) that is always available,
