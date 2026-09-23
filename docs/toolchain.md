@@ -7,19 +7,27 @@
 
 A tool declared in two layers can drift between them — `make check` and
 the pre-commit hook can then reach different verdicts on the same file,
-the exact class of drift this rule exists to prevent. `[tool.uv]`
-`python-preference = "only-system"` + `python-downloads = "never"` in
-`pyproject.toml` forces uv to use the mise-provided interpreter instead
-of shadowing it with its own.
+the exact class of drift this rule exists to prevent. `mise.toml`'s
+`[env]` sets `UV_PYTHON_PREFERENCE = "only-system"` and
+`UV_PYTHON_DOWNLOADS = "never"`, which forces uv to use the mise-provided
+interpreter instead of shadowing it with its own; `jdx/mise-action`
+exports this env in CI, and it also applies for an end user with mise
+active who runs `uv tool install .`.
 
-| Tool                                | Where                                      | Why                                      |
-| :---------------------------------- | :----------------------------------------- | :--------------------------------------- |
-| node, pnpm, python, uv              | `mise.toml`                                | bootstrap: nothing else can install them |
-| checkmake                           | `mise.toml`                                | Go binary, no ecosystem in this repo     |
-| pre-commit                          | `mise.toml`                                | meta-tool that runs everything else      |
-| cspell, markdownlint-cli2           | `package.json`                             | Node dev deps, lockfile-managed          |
-| ruff, mypy, pyright, pytest, pylint | `pyproject.toml` `[dependency-groups].dev` | Python dev deps, `uv.lock`-managed       |
-| gitlint, commitizen, typer, mcp     | `pyproject.toml` `[project.dependencies]`  | Python runtime deps, `uv.lock`-managed   |
+| Tool                                         | Where                                      | Why                                      |
+| :------------------------------------------- | :----------------------------------------- | :--------------------------------------- |
+| node, pnpm, python, uv                       | `mise.toml`                                | bootstrap: nothing else can install them |
+| checkmake                                    | `mise.toml`                                | Go binary, no ecosystem in this repo     |
+| pre-commit                                   | `mise.toml`                                | meta-tool that runs everything else      |
+| cspell, markdownlint-cli2                    | `package.json`                             | Node dev deps, lockfile-managed          |
+| ruff, mypy, pyright, pytest, pylint, gitlint | `pyproject.toml` `[dependency-groups].dev` | Python dev deps, `uv.lock`-managed       |
+| typer, mcp                                   | `pyproject.toml` `[project.dependencies]`  | Python runtime deps, `uv.lock`-managed   |
+
+`gitlint` is also declared under `[project.optional-dependencies]` as the
+`gitlint` extra, since only `adapters/gitlint_rules.py` needs it at
+runtime, for consumers who register the gitlint adapter. It stays in the
+dev group too so mypy, pyright, and pylint can resolve it during `make
+check`.
 
 ### Rejected alternatives
 

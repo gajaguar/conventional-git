@@ -8,3 +8,7 @@ uv = "0.12"
 
 [settings.npm]
 package_manager = "pnpm"
+
+[env]
+UV_PYTHON_PREFERENCE = "only-system"
+UV_PYTHON_DOWNLOADS = "never"

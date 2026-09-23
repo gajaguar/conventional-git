@@ -1,5 +1,5 @@
 {
-	"name": "app-template-node-tools",
+	"name": "conventional-kit",
 	"private": true,
 	"devDependencies": {
 		"cspell": "^10.3.3",

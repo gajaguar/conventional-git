@@ -60,6 +60,9 @@ uv tool install .
 conventional-kit --help
 ```
 
+Install with the `gitlint` extra (`uv tool install '.[gitlint]'`) to use
+the gitlint adapter (`adapters/gitlint_rules.py`).
+
 The package is not published on PyPI.
 
 ## Usage

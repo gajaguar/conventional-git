@@ -22,7 +22,7 @@ mypy: ## Type-check with mypy — accepts FILES="..." to limit scope
 	$(UV) run mypy $(or $(FILES),.)
 
 pyright: ## Type-check with Pyright — accepts FILES="..." to limit scope
-	$(UV) run pyright $(or $(FILES),.)
+	$(UV) run pyright $(FILES)
 
 typecheck: mypy pyright ## Run both type checkers
 
