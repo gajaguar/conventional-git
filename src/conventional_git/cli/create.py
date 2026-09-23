@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import shutil
+import subprocess  # noqa: S404 — fixed argv, no shell, no user-controlled input
 from pathlib import Path  # noqa: TC003 — Typer resolves at runtime
 from typing import Annotated
 
 import typer
 
+from conventional_git import generation
 from conventional_git.branch import rules as branch_rules
 from conventional_git.branch import vocabulary as branch_vocab
 from conventional_git.commit import grammar as commit_grammar
@@ -140,3 +143,76 @@ def create_branch(
     typer.echo(name)
     if dry_run:
         raise typer.Exit(0)
+
+
+@app.command("suggest")
+def suggest_commit(
+    diff_file: Annotated[
+        Path | None,
+        typer.Option("--diff-file", help="Read the diff from this file instead of 'git diff --cached'"),
+    ] = None,
+    provider_name: Annotated[
+        str | None,
+        typer.Option("--provider", help="Force a specific suggestion provider (e.g. heuristic, jev)"),
+    ] = None,
+    apply_suggestion: Annotated[
+        bool,
+        typer.Option("--apply/--no-apply", help="Render and validate the suggested commit instead of printing it"),
+    ] = False,
+) -> None:
+    diff = diff_file.read_text(encoding="utf-8") if diff_file is not None else _staged_diff()
+    suggestion = _suggest(diff, provider_name)
+    if suggestion is None:
+        typer.echo("No staged changes to suggest a commit for.", err=True)
+        raise typer.Exit(1)
+    if apply_suggestion:
+        config = Config.load()
+        types = commit_vocab.merge_vocabularies(config.commit_type_overrides)
+        _render_commit(
+            suggestion.type,
+            suggestion.scope or None,
+            suggestion.description,
+            None,
+            breaking=suggestion.breaking,
+            types=types,
+        )
+        return
+    typer.echo(f"type: {suggestion.type}")
+    typer.echo(f"scope: {suggestion.scope or '(none)'}")
+    typer.echo(f"description: {suggestion.description}")
+    typer.echo(f"breaking: {suggestion.breaking}")
+    typer.echo(f"confidence: {suggestion.confidence:.2f}")
+
+
+def _staged_diff() -> str:
+    git = shutil.which("git") or "git"
+    result = subprocess.run(  # noqa: S603 — fixed argv, no shell, no user-controlled input
+        [git, "diff", "--cached"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout
+
+
+def _suggest(diff: str, provider_name: str | None) -> generation.CommitSuggestion | None:
+    generation.enable_optional_providers()
+    name = provider_name or ("jev" if "jev" in generation.available_providers() else "heuristic")
+    provider = generation.get_provider(name)
+    if provider is None:
+        typer.echo(
+            f"Unknown provider {name!r}. Available: {', '.join(generation.available_providers())}",
+            err=True,
+        )
+        raise typer.Exit(1)
+    try:
+        return provider.suggest(diff)
+    except generation.MissingCredentialsError as error:
+        if provider_name is not None:
+            typer.echo(str(error), err=True)
+            raise typer.Exit(1) from error
+        typer.echo(f"{error} Falling back to the heuristic provider.", err=True)
+        heuristic = generation.get_provider("heuristic")
+        if heuristic is None:
+            raise typer.Exit(1) from error
+        return heuristic.suggest(diff)

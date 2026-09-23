@@ -50,6 +50,31 @@ ruleset instead of relying on stale prompt text:
 }
 ```
 
+### `suggest_commit_message(diff, changed_paths=[])`
+
+Returns a suggested `type`/`scope`/`description`/`breaking` for a diff, plus
+which provider answered:
+
+```json
+{
+  "provider": "jev",
+  "suggestion": {
+    "type": "fix",
+    "scope": "cli",
+    "description": "fix the login flow",
+    "confidence": 0.87,
+    "breaking": false
+  }
+}
+```
+
+This is **advice**, not a rule: `provider` is `"heuristic"` whenever the `llm`
+extra isn't installed or no `TYPESAFE_API_KEY`/`OPENROUTER_API_KEY` resolves
+(the call still returns a suggestion — see
+[`docs/architecture.md`](architecture.md)). An agent should still call
+`validate_commit_message` on the message it actually writes; a suggestion
+passing this tool is not itself a validation result.
+
 ## Why this is the highest-value tool
 
 Drafting a Conventional Commit from a diff is the agent's most common
