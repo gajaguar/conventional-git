@@ -8,7 +8,7 @@ LANG_TEST_TARGETS       += conventional-git-test hooks-selftest
 
 conventional-git-check: ## Validate this repo's own commit history and branch name against its rules
 	@git log --format='%B%x00' $(BASE)..HEAD | while IFS= read -r -d '' message; do \
-		[ -z "$$message" ] && continue; \
+		message="$${message#$$'\n'}"; [ -z "$$message" ] && continue; \
 		echo "$$message" | $(UV) run conventional-git check commit || exit 1; \
 	done
 	$(UV) run conventional-git check branch --name "$${GITHUB_HEAD_REF:-$$(git branch --show-current)}"
