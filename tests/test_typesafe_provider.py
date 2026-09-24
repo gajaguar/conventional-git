@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Self
 
@@ -8,6 +9,9 @@ import pytest
 
 from conventional_git.generation.protocol import MissingCredentialsError
 from conventional_git.generation.typesafe import JevProvider
+
+if TYPE_CHECKING:
+    from typing import Final
 
 
 @dataclass
@@ -48,7 +52,7 @@ def _provider(response: _FakeResponse) -> JevProvider:
     return JevProvider(client_factory=lambda: _FakeClient(response))
 
 
-_MISSING_CREDENTIALS_MESSAGE = "no key"
+_MISSING_CREDENTIALS_MESSAGE: Final[str] = "no key"
 
 
 def _raise_missing_credentials() -> _FakeClient:

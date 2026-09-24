@@ -8,8 +8,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Final
 
-_SAMPLE_DIFF = (
+_SAMPLE_DIFF: Final[str] = (
     "diff --git a/src/conventional_git/cli/create.py b/src/conventional_git/cli/create.py\n"
     "--- a/src/conventional_git/cli/create.py\n"
     "+++ b/src/conventional_git/cli/create.py\n"

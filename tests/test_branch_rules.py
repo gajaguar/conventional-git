@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from typing import Final
 
 import pytest
 
@@ -13,6 +12,7 @@ from conventional_git.branch.vocabulary import merge_trunks
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Final
 
 DESCRIPTION_CASES: Final[list[tuple[str, str]]] = [
     ("Add OAuth login", "add-oauth-login"),

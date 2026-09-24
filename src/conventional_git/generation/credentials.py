@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import contextlib
 import os
-from typing import Final
+from typing import TYPE_CHECKING
 
 import keyring
 from keyring.errors import KeyringError
 
 from conventional_git.generation.protocol import MissingCredentialsError
+
+if TYPE_CHECKING:
+    from typing import Final
 
 _SERVICE: Final[str] = "conventional-git"
 _TYPESAFE_ENV: Final[str] = "TYPESAFE_API_KEY"

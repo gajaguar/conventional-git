@@ -15,6 +15,7 @@ from conventional_git.config import Config
 from conventional_git.violations import Report
 from conventional_git.violations import Severity
 
+# pylint: disable-next=app-require-final,app-module-const-naming
 app = typer.Typer(help="Validate messages and branch names against the rules.")
 
 

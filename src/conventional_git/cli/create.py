@@ -16,6 +16,7 @@ from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
 from conventional_git.helpers import strip_attribution
 
+# pylint: disable-next=app-require-final,app-module-const-naming
 app = typer.Typer(help="Generate a Conventional Commits message or branch name from inputs.")
 
 
