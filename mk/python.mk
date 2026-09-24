@@ -42,7 +42,7 @@ pytest: ## Run the test suite — accepts FILES="..." to limit scope
 	$(UV) run pytest $(FILES)
 
 coverage: ## Run tests with an HTML coverage report
-	$(UV) run pytest --cov --cov-report=html
+	$(UV) run pytest --cov-report=html
 
 .PHONY: install-python lint format-check mypy pyright typecheck pylint \
 	format lint-fix lint-fix-unsafe pytest coverage
