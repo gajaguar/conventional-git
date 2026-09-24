@@ -14,20 +14,21 @@ interpreter instead of shadowing it with its own; `jdx/mise-action`
 exports this env in CI, and it also applies for an end user with mise
 active who runs `uv tool install .`.
 
-| Tool                                         | Where                                      | Why                                      |
-| :------------------------------------------- | :----------------------------------------- | :--------------------------------------- |
-| node, pnpm, python, uv                       | `mise.toml`                                | bootstrap: nothing else can install them |
-| checkmake                                    | `mise.toml`                                | Go binary, no ecosystem in this repo     |
-| pre-commit                                   | `mise.toml`                                | meta-tool that runs everything else      |
-| cspell, markdownlint-cli2                    | `package.json`                             | Node dev deps, lockfile-managed          |
-| ruff, mypy, pyright, pytest, pylint, gitlint | `pyproject.toml` `[dependency-groups].dev` | Python dev deps, `uv.lock`-managed       |
-| typer, mcp                                   | `pyproject.toml` `[project.dependencies]`  | Python runtime deps, `uv.lock`-managed   |
+| Tool                                         | Where                                              | Why                                      |
+| :------------------------------------------- | :------------------------------------------------- | :--------------------------------------- |
+| node, pnpm, python, uv                       | `mise.toml`                                        | bootstrap: nothing else can install them |
+| checkmake                                    | `mise.toml`                                        | Go binary, no ecosystem in this repo     |
+| pre-commit                                   | `mise.toml`                                        | meta-tool that runs everything else      |
+| cspell, markdownlint-cli2                    | `package.json`                                     | Node dev deps, lockfile-managed          |
+| ruff, mypy, pyright, pytest, pylint, gitlint | `pyproject.toml` `[dependency-groups].dev`         | Python dev deps, `uv.lock`-managed       |
+| typer                                        | `pyproject.toml` `[project.dependencies]`          | Python runtime deps, `uv.lock`-managed   |
+| gitlint, keyring, typesafe-sdk, mcp          | `pyproject.toml` `[project.optional-dependencies]` | Opt-in runtime extras, `uv.lock`-managed |
 
-`gitlint` is also declared under `[project.optional-dependencies]` as the
-`gitlint` extra, since only `adapters/gitlint_rules.py` needs it at
-runtime, for consumers who register the gitlint adapter. It stays in the
-dev group too so mypy, pyright, and pylint can resolve it during `make
-check`.
+`gitlint`, `keyring`, `typesafe-sdk`, and `mcp` are optional extras
+(`gitlint`, `llm`, `mcp`), since only the adapter or front-end that imports
+them needs them at runtime. The dev group pulls them in through a
+self-reference, `conventional-git[gitlint,llm,mcp]`, so mypy, pyright, and
+pylint can resolve them during `make check` without a second, drifting pin.
 
 ### Rejected alternatives
 
