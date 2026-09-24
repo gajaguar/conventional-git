@@ -12,7 +12,7 @@ docstrings must be removed by hand.
 ## Custom pylint checkers (`pylint-plugin`)
 
 A standalone pylint plugin encoding personal code-review preferences beyond
-ruff's rule set, installed as a `uv` git dependency pinned in
+ruff's rule set, installed as a `uv` git dependency tracked in
 `pyproject.toml`'s `[tool.uv.sources]` — see
 [the plugin's README](https://github.com/gajaguar/pylint-plugin) for the
 full checker list. It's a separate repo, not vendored, so the same rules can

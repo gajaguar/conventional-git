@@ -39,7 +39,7 @@ conventional-git-mcp = "conventional_git.mcp.server:run"
 dev = [
   "conventional-git[gitlint,llm,mcp]",
   "mypy>=2.3.1",
-  "pylint-plugin>=1.1.2",
+  "pylint-plugin",
   "pylint>=4.0.9",
   "pyright>=1.1.414",
   "pytest-cov>=7.1",
@@ -48,7 +48,7 @@ dev = [
 ]
 
 [tool.uv.sources]
-pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin", tag = "v1.1.2" }
+pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin" }
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-report=term-missing"
