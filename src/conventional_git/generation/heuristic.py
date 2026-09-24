@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import re
-from typing import Final
+from typing import TYPE_CHECKING
 
 from conventional_git.generation.protocol import CommitSuggestion
 from conventional_git.generation.protocol import register_provider
+
+if TYPE_CHECKING:
+    from typing import Final
 
 _TEST_SUFFIXES: Final[tuple[str, ...]] = ("_test.py",)
 _TEST_PREFIXES: Final[tuple[str, ...]] = ("tests/", "test/", "tests\\", "test\\")

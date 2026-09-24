@@ -12,6 +12,7 @@ from conventional_git.commit import grammar as commit_grammar
 from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
 
+# pylint: disable-next=app-require-final,app-module-const-naming
 mcp = FastMCP("conventional-git")
 
 

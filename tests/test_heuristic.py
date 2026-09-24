@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Final
+from typing import TYPE_CHECKING
 
 import pytest
 
 from conventional_git.generation.heuristic import HeuristicProvider
+
+if TYPE_CHECKING:
+    from typing import Final
 
 CASES: Final[list[tuple[tuple[str, ...], str]]] = [
     (("tests/test_foo.py",), "test"),

@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from typing import Final
+from typing import TYPE_CHECKING
 
 from conventional_git.branch import grammar
 from conventional_git.branch import vocabulary
 from conventional_git.violations import Report
 from conventional_git.violations import Severity
 from conventional_git.violations import Violation
+
+if TYPE_CHECKING:
+    from typing import Final
 
 DEFAULT_DESCRIPTION: Final[str] = "work-in-progress"
 
