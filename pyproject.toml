@@ -90,13 +90,18 @@ load-plugins = ["checkers"]
 [tool.pylint."messages control"]
 disable = ["all"]
 enable = [
+  "app-frozenset-constant",
+  "app-module-const-naming",
   "app-no-docstrings",
   "app-no-file-level-disable",
   "app-no-inline-imports",
   "app-no-relative-imports",
+  "app-require-final",
   "app-test-aaa-markers",
+  "app-test-name-implementation-detail",
   "app-test-no-blank-lines",
   "app-test-no-extra-comments",
+  "app-test-partial-assertion",
   "app-unused-arg-use-del",
   "app-use-contextlib-suppress",
 ]

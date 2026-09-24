@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING
 from typing import NoReturn
 
 import typer
 
 from conventional_git.commit import vocabulary as commit_vocabulary
 from conventional_git.config import Config
+
+if TYPE_CHECKING:
+    from typing import Final
 
 # Stripping (used by `create commit`) is intentionally broader than the
 # `commit.attribution` validation rule: it also removes bare mentions of the

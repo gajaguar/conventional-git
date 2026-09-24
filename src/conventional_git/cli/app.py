@@ -10,6 +10,7 @@ from conventional_git.cli import check as check_module
 from conventional_git.cli import create as create_module
 from conventional_git.cli import hook as hook_module
 
+# pylint: disable-next=app-require-final,app-module-const-naming
 app = typer.Typer(
     name="conventional-git",
     help="Validate, enforce, and generate Conventional Commits / Conventional Branch names.",
@@ -25,6 +26,7 @@ app.add_typer(hook_module.app, name="hook")
 # starlette, ...) that most CLI/hook-only installs don't need, so the
 # subcommand only appears when `conventional-git[mcp]` is installed.
 with contextlib.suppress(ImportError):
+    # pylint: disable-next=app-require-final,app-module-const-naming
     mcp_module = import_module("conventional_git.cli.mcp")
     app.add_typer(mcp_module.app, name="mcp")
 

@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import re
-from typing import Final
+from typing import TYPE_CHECKING
 
 from conventional_git.commit import grammar
 from conventional_git.commit import vocabulary
 from conventional_git.violations import Report
 from conventional_git.violations import Severity
 from conventional_git.violations import Violation
+
+if TYPE_CHECKING:
+    from typing import Final
 
 _BODY_LINE_MAX: Final[int] = 140
 _MESSAGE_MAX_BYTES: Final[int] = 2048
@@ -42,7 +45,7 @@ def _parse_header(message: str) -> tuple[str, str | None, bool, str] | None:
     )
 
 
-_BODY_SPLIT_PARTS = 2
+_BODY_SPLIT_PARTS: Final[int] = 2
 
 
 def _body_lines(message: str) -> list[str]:

@@ -3,7 +3,11 @@ from __future__ import annotations
 import contextlib
 from dataclasses import dataclass
 from importlib import import_module
+from typing import TYPE_CHECKING
 from typing import Protocol
+
+if TYPE_CHECKING:
+    from typing import Final
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,7 +34,7 @@ class MissingCredentialsError(RuntimeError):
     pass
 
 
-_REGISTRY: dict[str, SuggestionProvider] = {}
+_REGISTRY: Final[dict[str, SuggestionProvider]] = {}
 
 
 def register_provider(provider: SuggestionProvider) -> None:

@@ -3,7 +3,10 @@ from __future__ import annotations
 import csv
 from functools import lru_cache
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Final
 
 PACKAGE_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 

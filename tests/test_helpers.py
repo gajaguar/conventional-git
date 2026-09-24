@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING
 
 from conventional_git.commit.vocabulary import load_from_csv
 from conventional_git.config import Config
 from conventional_git.helpers import strip_attribution
 from conventional_git.violations import Severity
 from conventional_git.violations import Violation
+
+if TYPE_CHECKING:
+    from typing import Final
 
 _STRIPPED_CLAUDE: Final[str] = (
     "feat: add login\n\n- bullet one\nCo-Authored-By: Claude <noreply@anthropic.com>\n- bullet two"

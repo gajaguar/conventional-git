@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import Annotated
 
 import typer
 
+if TYPE_CHECKING:
+    from typing import Final
+
+# pylint: disable-next=app-require-final,app-module-const-naming
 app = typer.Typer(help="Install / uninstall pre-commit hooks in any git repo.")
 
 
-_HOOK_DIR = Path(".git/hooks")
+_HOOK_DIR: Final[Path] = Path(".git/hooks")
 
 
 def _repo_root() -> Path:

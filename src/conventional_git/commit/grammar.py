@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import re
-from typing import Final
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Final
 
 MAX_TITLE_LENGTH: Final[int] = 120
 MAX_DESCRIPTION_LENGTH: Final[int] = MAX_TITLE_LENGTH - 8

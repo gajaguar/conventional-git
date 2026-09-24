@@ -4,7 +4,6 @@ import csv
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
-from typing import Final
 
 from typesafe_sdk import Choice
 from typesafe_sdk import Noul
@@ -21,6 +20,7 @@ from conventional_git.generation.protocol import register_provider
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from typing import Final
 
 _DATA_DIR: Final[Path] = Path(__file__).resolve().parents[1] / "data"
 _DIFF_MAX_CHARS: Final[int] = 12_000
