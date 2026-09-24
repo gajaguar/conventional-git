@@ -1,4 +1,5 @@
 UV := uv
+GIT_DEPS := pylint-plugin
 
 LANG_INSTALL_TARGETS    += install-python
 LANG_CHECK_TARGETS      += lint format-check typecheck pylint
@@ -9,7 +10,7 @@ LANG_TEST_TARGETS       += pytest
 ##@ Python
 
 install-python: ## Sync Python deps and register console scripts
-	$(UV) sync
+	$(UV) sync $(addprefix --upgrade-package ,$(GIT_DEPS))
 	$(UV) tool install --editable . --force
 
 lint: ## Lint with Ruff — accepts FILES="..." to limit scope

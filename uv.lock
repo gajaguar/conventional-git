@@ -244,7 +244,7 @@ dev = [
     { name = "conventional-git", extras = ["gitlint", "llm", "mcp"] },
     { name = "mypy", specifier = ">=2.3.1" },
     { name = "pylint", specifier = ">=4.0.9" },
-    { name = "pylint-plugin", git = "https://github.com/gajaguar/pylint-plugin?tag=v1.1.2" },
+    { name = "pylint-plugin", git = "https://github.com/gajaguar/pylint-plugin" },
     { name = "pyright", specifier = ">=1.1.414" },
     { name = "pytest", specifier = ">=9.1" },
     { name = "pytest-cov", specifier = ">=7.1" },
@@ -897,7 +897,7 @@ wheels = [
 [[package]]
 name = "pylint-plugin"
 version = "1.1.2"
-source = { git = "https://github.com/gajaguar/pylint-plugin?tag=v1.1.2#bef114a80bb2c3825ab3cfa4c4ededd73d00e10f" }
+source = { git = "https://github.com/gajaguar/pylint-plugin#bef114a80bb2c3825ab3cfa4c4ededd73d00e10f" }
 
 [[package]]
 name = "pyright"
