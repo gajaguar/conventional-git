@@ -86,5 +86,8 @@ description of this template verbatim.
   `make check`/`make pylint` otherwise.
 - The agent MUST run `make check` and `make test` before committing Python
   changes, and SHOULD run `make fix` first for anything auto-fixable.
+- The agent MUST NOT add a `pyproject.toml` setting that equals the tool's
+  default, and every `lint.per-file-ignores` entry MUST match a current
+  violation — see [`docs/python.md`](docs/python.md#defaults-we-rely-on).
 - The spec core MUST stay free of `git` imports and `SystemExit`. Returning a
   `Report` is the contract; only front-ends turn violations into exit codes.

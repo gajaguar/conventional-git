@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from gitlint.git import GitContext
 
 from conventional_git.adapters import gitlint_rules
 
+if TYPE_CHECKING:
+    from gitlint.git import GitCommit
 
-def _commit(message: str):
+
+def _commit(message: str) -> GitCommit:
     return GitContext.from_commit_msg(message).commits[-1]
 
 

@@ -8,7 +8,6 @@ version = "0.1.0"
 description = "Conventional Commits and Conventional Branch enforcement, validation, and generation"
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENSE"]
 authors = [{ name = "G.A.JAGUAR", email = "dev@gajaguar.com" }]
 keywords = [
   "cli",
@@ -21,14 +20,12 @@ keywords = [
   "validation",
 ]
 requires-python = ">=3.14"
-dependencies = [
-  "typer>=0.15",
-]
+dependencies = ["typer>=0.27"]
 
 [project.optional-dependencies]
 gitlint = ["gitlint>=0.19"]
-llm = ["keyring>=25", "typesafe-sdk>=0.7"]
-mcp = ["mcp>=1.0,<2.0"]
+llm = ["keyring>=25.7", "typesafe-sdk>=0.7"]
+mcp = ["mcp>=1.30,<2"]
 
 [project.urls]
 Repository = "https://github.com/gajaguar/conventional-git"
@@ -38,15 +35,23 @@ Issues = "https://github.com/gajaguar/conventional-git/issues"
 conventional-git = "conventional_git.cli.app:main"
 conventional-git-mcp = "conventional_git.mcp.server:run"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/conventional_git"]
+[dependency-groups]
+dev = [
+  "conventional-git[gitlint,llm,mcp]",
+  "mypy>=2.3.1",
+  "pylint-plugin>=1.1.2",
+  "pylint>=4.0.9",
+  "pyright>=1.1.414",
+  "pytest-cov>=7.1",
+  "pytest>=9.1",
+  "ruff>=0.16.8",
+]
+
+[tool.uv.sources]
+pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin", tag = "v1.1.2" }
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "--cov --cov-report=term-missing"
-
-[tool.coverage.run]
-source = ["src/conventional_git"]
+addopts = "--cov=src --cov-report=term-missing"
 
 [tool.coverage.report]
 exclude_also = ["if __name__ == .__main__.:"]
@@ -54,35 +59,19 @@ exclude_also = ["if __name__ == .__main__.:"]
 [tool.ruff]
 line-length = 119
 lint.select = ["ALL"]
-lint.ignore = [
-  "CPY",
-  "D",
-  "missing-trailing-comma",
-  "shebang-missing-executable-file",
-]
+lint.ignore = ["CPY", "D", "missing-trailing-comma"]
 lint.isort.force-single-line = true
-lint.isort.case-sensitive = true
 lint.per-file-ignores."tests/**/*.py" = [
-  "ANN",
-  "ARG",
   "assert",
-  "magic-value-comparison",
-  "private-member-access",
   "subprocess-without-shell-equals-true",
   "suspicious-subprocess-import",
 ]
 lint.per-file-ignores."src/conventional_git/cli/*.py" = [
-  "FBT002",
-  "PLR0913",
-  "PLR0917",
+  "boolean-default-value-positional-argument",
+  "too-many-arguments",
+  "too-many-positional-arguments",
 ]
-lint.per-file-ignores."src/conventional_git/adapters/*.py" = [
-  "ANN401",
-  "no-self-use",
-]
-lint.per-file-ignores."src/conventional_git/generation/*.py" = [
-  "no-self-use",
-]
+lint.per-file-ignores."src/conventional_git/{adapters,generation}/*.py" = ["no-self-use"]
 
 [tool.mypy]
 strict = true
@@ -91,6 +80,9 @@ exclude = ["tests/"]
 [[tool.mypy.overrides]]
 module = ["gitlint.*"]
 ignore_missing_imports = true
+
+[tool.pyright]
+include = ["src"]
 
 [tool.pylint.main]
 load-plugins = ["checkers"]
@@ -108,24 +100,3 @@ enable = [
   "app-unused-arg-use-del",
   "app-use-contextlib-suppress",
 ]
-
-[tool.pyright]
-include = ["src"]
-
-[dependency-groups]
-dev = [
-  "gitlint>=0.19",
-  "keyring>=25",
-  "mcp>=1.0,<2.0",
-  "mypy>=2.1.0",
-  "pylint-plugin>=1.1.2",
-  "pylint>=4.0.5",
-  "pyright>=1.1.409",
-  "pytest>=8.0",
-  "pytest-cov>=6.0",
-  "ruff>=0.15.15",
-  "typesafe-sdk>=0.7",
-]
-
-[tool.uv.sources]
-pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin" }

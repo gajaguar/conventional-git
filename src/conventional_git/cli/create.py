@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import shutil
-import subprocess  # noqa: S404 — fixed argv, no shell, no user-controlled input
-from pathlib import Path  # noqa: TC003 — Typer resolves at runtime
+import subprocess  # ruff: ignore[suspicious-subprocess-import] — fixed argv, no shell, no user-controlled input
+from pathlib import Path  # ruff: ignore[typing-only-standard-library-import] — Typer resolves at runtime
 from typing import Annotated
 
 import typer
@@ -186,7 +186,7 @@ def suggest_commit(
 
 def _staged_diff() -> str:
     git = shutil.which("git") or "git"
-    result = subprocess.run(  # noqa: S603 — fixed argv, no shell, no user-controlled input
+    result = subprocess.run(  # ruff: ignore[subprocess-without-shell-equals-true] — fixed argv, no shell, no user-controlled input
         [git, "diff", "--cached"],
         check=False,
         capture_output=True,

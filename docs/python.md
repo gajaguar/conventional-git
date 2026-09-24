@@ -27,11 +27,33 @@ in one place.
 
 `mise.toml` is the single source for the pinned Python version;
 `.python-version` is intentionally absent (mise ignores it by default) to
-avoid a second, silently divergent source of truth. `pyproject.toml` forces
-`uv` to use the mise-provided interpreter instead of downloading its own:
+avoid a second, silently divergent source of truth. `mise.toml`'s `[env]`
+forces `uv` to use the mise-provided interpreter instead of downloading its
+own:
 
 ```toml
-[tool.uv]
-python-preference = "only-system"
-python-downloads = "never"
+[env]
+UV_PYTHON_PREFERENCE = "only-system"
+UV_PYTHON_DOWNLOADS = "never"
 ```
+
+## Defaults we rely on
+
+`pyproject.toml` only holds settings that change a tool's behavior. A
+setting equal to the tool's default is noise: it hides the real decisions
+and drifts when the default moves. These are left out on purpose:
+
+| Omitted setting                                    | Why it is not needed                                                     |
+| :------------------------------------------------- | :----------------------------------------------------------------------- |
+| `license-files`                                    | hatchling picks up `LICENSE` by default                                  |
+| `[tool.hatch.build.targets.wheel].packages`        | hatchling auto-detects `src/<normalized project name>`                   |
+| `[tool.pytest.ini_options].testpaths`              | pytest's default recursion rules already skip `.venv` and `node_modules` |
+| `[tool.coverage.run].source`                       | `addopts` passes `--cov=src`                                             |
+| `exclude_lines` with `pragma: no cover`            | already a default; `exclude_also` only adds the `__main__` guard         |
+| ruff `target-version`                              | inferred from `requires-python`                                          |
+| ruff `lint.isort.section-order` / `case-sensitive` | ruff's defaults produce the same order                                   |
+| pyright `exclude` for `.venv` / `node_modules`     | pyright excludes `**/.*` and `**/node_modules` by default                |
+| extras repeated in the dev group                   | the dev group installs `conventional-git[gitlint,llm,mcp]` instead       |
+
+Every `lint.per-file-ignores` entry must match at least one current
+violation; drop it when the code that needed it goes away.
