@@ -79,7 +79,9 @@ which provider answered:
 This is **advice**, not a rule: `provider` is `"heuristic"` whenever the `llm`
 extra isn't installed or no `TYPESAFE_API_KEY`/`OPENROUTER_API_KEY` resolves
 (the call still returns a suggestion — see
-[`docs/architecture.md`](architecture.md)). An agent should still call
+[`docs/architecture.md`](architecture.md)). When `provider` is `"jev"`, the
+`diff` argument was sent to TypeSafe or OpenRouter — see
+[`docs/llm.md`](llm.md) for exactly what's sent. An agent should still call
 `validate_commit_message` on the message it actually writes; a suggestion
 passing this tool is not itself a validation result.
 

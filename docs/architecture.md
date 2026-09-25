@@ -78,9 +78,10 @@ front-ends, not tied to one of them:
   `generation/credentials.py`). Any `ProviderError` — missing credentials, a
   connection failure, an authentication or rate-limit error from the SDK —
   makes `create suggest` and `suggest_commit_message` fall back to
-  `HeuristicProvider` and print a notice; they never fail the command, unless
-  `--provider jev` was explicitly requested, in which case the CLI exits 1
-  with a one-line message instead.
+  `HeuristicProvider`: the CLI prints a stderr notice, MCP returns a
+  `"warning"` field. Neither fails the command, unless `--provider jev` was
+  explicitly requested, in which case the CLI exits 1 with a one-line message
+  instead. See [`docs/llm.md`](llm.md) for what data this sends and to whom.
 - This follows validation-vs-generation, not CLI-vs-MCP: MCP sampling (the
   spec mechanism that would let a server borrow the client's model) was
   deprecated upstream (SEP-2577, 2026-07-28) and Claude Code, Codex, and
