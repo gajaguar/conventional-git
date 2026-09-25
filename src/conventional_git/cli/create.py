@@ -48,16 +48,15 @@ def create_commit(
     ] = False,
 ) -> None:
     config = Config.load()
-    types = commit_vocab.merge_vocabularies(config.commit_type_overrides)
-    if types_csv is not None:
-        types = commit_vocab.merge_vocabularies((types_csv, *config.commit_type_overrides))
+    policy = commit_vocab.resolve_policy(config, extra_types_csv=types_csv)
     _render_commit(
         commit_type,
         scope,
         description,
         body,
         breaking=breaking,
-        types=types,
+        types=policy.types,
+        config=config,
     )
     if dry_run:
         raise typer.Exit(0)
@@ -71,6 +70,7 @@ def _render_commit(
     *,
     breaking: bool,
     types: frozenset[str],
+    config: Config,
 ) -> None:
     if commit_type not in types:
         message = f"Commit type {commit_type!r} is not allowed. Allowed: {', '.join(sorted(types))}"
@@ -99,7 +99,7 @@ def _render_commit(
         raise typer.Exit(1)
 
     bullets: list[str] = []
-    for line in strip_attribution(body, config=Config.load()):
+    for line in strip_attribution(body, config=config):
         bullet = line if line.startswith("- ") else f"- {line.lstrip('-').strip()}"
         if len(bullet) > commit_rules.body_line_max():
             typer.echo(
@@ -130,13 +130,11 @@ def create_branch(
         typer.Option("--dry-run/--no-dry-run", help="Print the branch name and exit"),
     ] = False,
 ) -> None:
-    _ = Config.load()
-    types = branch_vocab.default_types()
-    if types_csv is not None:
-        types = branch_vocab.merge_vocabularies((types_csv,))
-    if branch_type not in types:
+    config = Config.load()
+    policy = branch_vocab.resolve_policy(config, extra_types_csv=types_csv)
+    if branch_type not in policy.types:
         typer.echo(
-            f"Branch type {branch_type!r} is not allowed. Allowed: {', '.join(sorted(types))}",
+            f"Branch type {branch_type!r} is not allowed. Allowed: {', '.join(sorted(policy.types))}",
             err=True,
         )
         raise typer.Exit(1)
@@ -176,6 +174,7 @@ def suggest_commit(
             None,
             breaking=suggestion.breaking,
             types=frozenset(criteria),
+            config=config,
         )
         return
     typer.echo(f"type: {suggestion.type}")

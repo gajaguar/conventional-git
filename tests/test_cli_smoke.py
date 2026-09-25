@@ -232,6 +232,37 @@ def test_create_branch_outputs_normalized_name() -> None:
     assert completed.stdout.strip() == "feature/add-oauth-login"
 
 
+def test_create_branch_honors_config_type_overrides(tmp_path: Path) -> None:
+    # Arrange
+    overrides_csv = tmp_path / "branch-types.csv"
+    overrides_csv.write_text("type,when_to_use\nspike,Throwaway exploration branch\n", encoding="utf-8")
+    (tmp_path / ".conventional-git.toml").write_text(
+        f'[branch]\ntype_overrides = ["{overrides_csv.name}"]\n', encoding="utf-8"
+    )
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "branch",
+            "--type",
+            "spike",
+            "--description",
+            "try a new approach",
+            "--dry-run",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=tmp_path,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert completed.stdout.strip() == "spike/try-a-new-approach"
+
+
 def test_create_commit_dry_run_prints_message_only() -> None:
     # Arrange
     # Act

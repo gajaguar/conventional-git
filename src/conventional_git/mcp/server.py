@@ -19,28 +19,37 @@ mcp = FastMCP("conventional-git")
 
 @mcp.tool()
 def validate_commit_message(message: str) -> dict[str, object]:
-    report = commit_rules.validate_message(message)
+    policy = commit_vocab.resolve_policy(Config.load())
+    report = commit_rules.validate_message(
+        message,
+        allowed_types=policy.types,
+        attribution_patterns=policy.extra_attribution_patterns,
+    )
     return report.to_dict()
 
 
 @mcp.tool()
 def validate_branch_name(name: str) -> dict[str, object]:
-    report = branch_rules.validate_name(name)
+    policy = branch_vocab.resolve_policy(Config.load())
+    report = branch_rules.validate_name(name, allowed_types=policy.types, trunk_branches=policy.trunks)
     return report.to_dict()
 
 
 @mcp.tool()
 def describe_convention() -> dict[str, object]:
+    config = Config.load()
+    commit_policy = commit_vocab.resolve_policy(config)
+    branch_policy = branch_vocab.resolve_policy(config)
     return {
         "commit": {
-            "types": sorted(commit_vocab.default_types()),
+            "types": sorted(commit_policy.types),
             "title_max_length": commit_grammar.title_max_length(),
             "body_line_max": commit_rules.body_line_max(),
             "message_max_bytes": commit_rules.message_max_bytes(),
         },
         "branch": {
-            "types": sorted(branch_vocab.default_types()),
-            "trunks": sorted(branch_vocab.default_trunks()),
+            "types": sorted(branch_policy.types),
+            "trunks": sorted(branch_policy.trunks),
             "description_max_length": branch_grammar.description_max_length(),
         },
     }

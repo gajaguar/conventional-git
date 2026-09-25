@@ -33,9 +33,8 @@ def _repo_root(commit: GitCommit) -> Path:
 def _config(commit: GitCommit) -> tuple[frozenset[str], tuple[str, ...]]:
     root = _repo_root(commit)
     config = Config.load(root / ".conventional-git.toml")
-    overrides = tuple(path if path.is_absolute() else root / path for path in config.commit_type_overrides)
-    allowed_types = commit_vocab.merge_vocabularies(overrides)
-    return allowed_types, config.extra_attribution_patterns
+    policy = commit_vocab.resolve_policy(config)
+    return policy.types, policy.extra_attribution_patterns
 
 
 def _to_gitlint(

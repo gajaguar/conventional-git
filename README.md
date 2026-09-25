@@ -328,6 +328,12 @@ Create `.conventional-git.toml` in the current repository:
 | `[commit] attribution_patterns` | built-in list   | Extra attribution regexes |
 | `[commit] type_overrides`       | `[]`            | Extra commit types        |
 | `[branch] type_overrides`       | `[]`            | Extra branch types        |
+| `[branch] trunk_overrides`      | `[]`            | Extra trunk branch names  |
+
+Relative CSV paths in `type_overrides` / `trunk_overrides` are resolved
+against the directory containing `.conventional-git.toml`, not the process's
+current directory. Every consumer that loads the file — the CLI, the MCP
+server, and the gitlint adapter — honors it.
 
 `attribution_patterns` extends the default patterns in
 `src/conventional_git/data/commit-attribution.csv`: `Co-Authored-By:`,
@@ -379,9 +385,7 @@ See [architecture](docs/architecture.md) and
 
 ## Open items
 
-- `[branch] type_overrides` is ignored.
 - `--dry-run` has no effect beyond printing the generated value.
-- The MCP tools ignore configuration.
 - The default attribution patterns cannot currently be disabled.
 - The package is not published to PyPI.
 
