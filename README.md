@@ -16,6 +16,7 @@ generation
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Agents](#agents)
 - [CLI reference](#cli-reference)
 - [Configuration](#configuration)
 - [Architecture](#architecture)
@@ -39,8 +40,12 @@ One rule runs on three surfaces:
 - Generate commit messages and branch names with `create`.
 - Install Git hooks with `hook install`.
 - Expose validation and convention details through MCP tools.
+- Report installed extras, providers, and credential sources with
+  `capabilities --json`.
 - Store the vocabulary as CSV data.
 - Adapt the rules for gitlint and commitizen.
+- Distribute as a Claude Code plugin and an Agent Skills-compliant
+  `skills/` directory.
 
 ## Prerequisites
 
@@ -150,7 +155,7 @@ CLI is available on `PATH`:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v0.2.1
+    rev: v0.3.0
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
@@ -175,7 +180,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.1
+          - git+https://github.com/gajaguar/conventional-git@v0.3.0
         stages: [commit-msg]
         pass_filenames: true
       - id: conventional-branch-name
@@ -184,7 +189,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.1
+          - git+https://github.com/gajaguar/conventional-git@v0.3.0
         stages: [pre-commit, pre-push]
         always_run: true
         pass_filenames: false
@@ -262,23 +267,54 @@ The server exposes `validate_commit_message`, `validate_branch_name`,
 `describe_convention`, and `suggest_commit_message`. See
 [MCP documentation](docs/mcp.md).
 
+## Agents
+
+The repository is both a Claude Code plugin and an
+[Agent Skills](https://agentskills.io/specification)-compliant `skills/`
+directory.
+
+**Claude Code** — add the marketplace, then install the plugin (it bundles
+`conventional-commit`, `conventional-branch`, and the MCP server):
+
+```text
+/plugin marketplace add gajaguar/conventional-git
+/plugin install conventional-git@conventional-git-skills
+```
+
+The bundled MCP server (`.mcp.json`) is launched with
+`uvx --from 'conventional-git[mcp] @ git+...@v0.3.0' conventional-git-mcp`;
+it only needs `uv` on `PATH`, not a local install of the CLI.
+
+**Any other agent that supports Agent Skills** (Codex, Cursor, Gemini CLI,
+Copilot, ...):
+
+```bash
+npx skills add gajaguar/conventional-git
+```
+
+Skills call `conventional-git capabilities --json` before drafting, so they
+only offer `create suggest` (see [Suggest](#suggest)) when the `llm` extra
+and a credential are both present, and never send a diff to a third party
+without the user opting in through `--suggest`.
+
 ## CLI reference
 
 All commands return `0` on success. Validation failures and invalid input
 return `1`.
 
-| Command        | Options                                                                                  | Exit          |
+| Command        | Options                                                                                  |          Exit |
 | :------------- | ---------------------------------------------------------------------------------------- | ------------: |
-| check commit   | `-m, --message`; `-f, --file`; `--types-csv`                                             | 0 or 1        |
-| check branch   | `-n, --name`; `--types-csv`                                                              | 0 or 1        |
-| create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`; `--dry-run` | 0 or 1        |
-| create branch  | `--type`; `--description`; `--types-csv`; `--dry-run`                                    | 0 or 1        |
-| create suggest | `--diff-file`; `--provider`; `--apply`                                                   | 0 or 1        |
-| hook install   | `--target`; `--force`                                                                    | 0 or 1        |
-| hook uninstall | `--target`                                                                               | 0             |
-| auth login     | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
-| auth status    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
-| auth logout    | No command-specific options (requires the `llm` extra)                                   | 0 or 1        |
+| check commit   | `-m, --message`; `-f, --file`; `--types-csv`                                             |        0 or 1 |
+| check branch   | `-n, --name`; `--types-csv`                                                              |        0 or 1 |
+| create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`; `--dry-run` |        0 or 1 |
+| create branch  | `--type`; `--description`; `--types-csv`; `--dry-run`                                    |        0 or 1 |
+| create suggest | `--diff-file`; `--provider`; `--apply`                                                   |        0 or 1 |
+| hook install   | `--target`; `--force`                                                                    |        0 or 1 |
+| hook uninstall | `--target`                                                                               |             0 |
+| auth login     | No command-specific options (requires the `llm` extra)                                   |        0 or 1 |
+| auth status    | No command-specific options (requires the `llm` extra)                                   |        0 or 1 |
+| auth logout    | No command-specific options (requires the `llm` extra)                                   |        0 or 1 |
+| capabilities   | `--json`                                                                                 |             0 |
 | mcp serve      | No command-specific options (requires the `mcp` extra)                                   | Server status |
 
 Use `conventional-git <command> --help` for the full option descriptions.

@@ -1,7 +1,7 @@
 UV := uv
 BASE ?= origin/main
 
-LANG_CHECK_TARGETS      += conventional-git-check
+LANG_CHECK_TARGETS      += conventional-git-check skills-validate
 LANG_TEST_TARGETS       += conventional-git-test hooks-selftest
 
 ##@ conventional-git
@@ -12,6 +12,11 @@ conventional-git-check: ## Validate this repo's own commit history and branch na
 		echo "$$message" | $(UV) run conventional-git check commit || exit 1; \
 	done
 	$(UV) run conventional-git check branch --name "$${GITHUB_HEAD_REF:-$$(git branch --show-current)}"
+
+skills-validate: ## Validate skills/*/SKILL.md against the Agent Skills spec
+	@for skill in skills/*/; do \
+		$(UV) run agentskills validate "$$skill" || exit 1; \
+	done
 
 conventional-git-test: ## Smoke-test the conventional-git CLI end to end
 	$(UV) run conventional-git --help
@@ -24,4 +29,4 @@ hooks-selftest: ## Run the published pre-commit hooks against this working tree
 		status=$$?; rm -f "$$msg"; exit $$status
 	$(UV) run pre-commit try-repo . conventional-branch-name --hook-stage pre-commit
 
-.PHONY: conventional-git-check conventional-git-test hooks-selftest
+.PHONY: conventional-git-check skills-validate conventional-git-test hooks-selftest

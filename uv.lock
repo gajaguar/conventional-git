@@ -199,7 +199,7 @@ wheels = [
 
 [[package]]
 name = "conventional-git"
-version = "0.2.1"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "typer" },
@@ -227,6 +227,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
+    { name = "skills-ref" },
 ]
 
 [package.metadata]
@@ -249,6 +250,7 @@ dev = [
     { name = "pytest", specifier = ">=9.1" },
     { name = "pytest-cov", specifier = ">=7.1" },
     { name = "ruff", specifier = ">=0.16.8" },
+    { name = "skills-ref", specifier = ">=0.1.1" },
 ]
 
 [[package]]
@@ -1149,6 +1151,19 @@ wheels = [
 ]
 
 [[package]]
+name = "skills-ref"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "strictyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/23/42/943d3ba8b097af7068b7178563a5062ad8a977982f4a7b4f67facfc575e9/skills_ref-0.1.1.tar.gz", hash = "sha256:6b400ca6e0049be62dca0167ff943ba2745fd67efb37fbba4d0ee341fccd2695", size = 93519, upload-time = "2026-01-10T13:23:41.423Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/af/25/36a43c3a61fb6cc3984e6ad5e556929b8ae71c95eba615dae4cf2f427964/skills_ref-0.1.1-py3-none-any.whl", hash = "sha256:d35db5bb8de71ae301daf5ca9cb71f8a555e8c6f83a6d40e46a5bc09f8f461b5", size = 12918, upload-time = "2026-01-10T13:23:40.106Z" },
+]
+
+[[package]]
 name = "sse-starlette"
 version = "3.4.11"
 source = { registry = "https://pypi.org/simple" }
@@ -1171,6 +1186,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b5/b4/205b0d5241d934e8add0c38aa924c4f9fb7330834ff11e5444db964ec3f9/starlette-1.6.0.tar.gz", hash = "sha256:d4e3ac5e546444960c710297a3c9fc3f7ebae1b7e963f3d36173b49da535be9b", size = 2716969, upload-time = "2026-08-08T18:27:57.512Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c8/cb/6a6a47d5b464bd08695d254f3da6e7986cc70c9fa5d778eda57538edfe56/starlette-1.6.0-py3-none-any.whl", hash = "sha256:a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c", size = 75969, upload-time = "2026-08-08T18:27:56.196Z" },
+]
+
+[[package]]
+name = "strictyaml"
+version = "1.7.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b3/08/efd28d49162ce89c2ad61a88bd80e11fb77bc9f6c145402589112d38f8af/strictyaml-1.7.3.tar.gz", hash = "sha256:22f854a5fcab42b5ddba8030a0e4be51ca89af0267961c8d6cfa86395586c407", size = 115206, upload-time = "2023-03-10T12:50:27.062Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/7c/a81ef5ef10978dd073a854e0fa93b5d8021d0594b639cc8f6453c3c78a1d/strictyaml-1.7.3-py3-none-any.whl", hash = "sha256:fb5c8a4edb43bebb765959e420f9b3978d7f1af88c80606c03fb420888f5d1c7", size = 123917, upload-time = "2023-03-10T12:50:17.242Z" },
 ]
 
 [[package]]

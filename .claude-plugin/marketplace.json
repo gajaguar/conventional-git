@@ -1,15 +1,15 @@
 {
   "name": "conventional-git-skills",
+  "description": "Conventional Commits and Conventional Branch skills, plus an MCP server",
+  "owner": {
+    "name": "G.A.JAGUAR",
+    "email": "dev@gajaguar.com"
+  },
   "plugins": [
     {
-      "name": "conventional-commit",
-      "source": "./skills/conventional-commit",
-      "description": "Generate and create Conventional Commits"
-    },
-    {
-      "name": "conventional-branch",
-      "source": "./skills/conventional-branch",
-      "description": "Generate and create Conventional Branch names"
+      "name": "conventional-git",
+      "source": "./",
+      "description": "Conventional Commits and Conventional Branch skills, plus an MCP server, for Claude Code"
     }
   ]
 }

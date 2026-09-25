@@ -13,6 +13,17 @@ Model Context Protocol. The server is a thin wrapper around the spec core;
 tools return the same `Violation` objects that front-ends print, in a
 machine-readable shape agents can self-correct against.
 
+## Plugin-bundled server
+
+The Claude Code plugin (see [Agents](../README.md#agents)) registers this
+server through the repo's `.mcp.json`, launched with
+`uvx --from 'conventional-git[mcp] @ git+...@v0.3.0' conventional-git-mcp`
+(the full Git URL is in `.mcp.json`). That command needs only `uv` on
+`PATH` — no separate `conventional-git` install or `mcp` extra.
+`conventional-git capabilities --json` reports `extras.mcp` and
+`mcp_tools` so a skill can tell whether these tools are available before
+recommending them.
+
 ## Tools
 
 ### `validate_commit_message(message)`
