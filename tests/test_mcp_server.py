@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import TYPE_CHECKING
 
-from conventional_git import generation
+from conventional_git.generation import protocol
 from conventional_git.generation.heuristic import HeuristicProvider
 from conventional_git.generation.protocol import ProviderError
 from conventional_git.mcp import server
@@ -37,10 +37,10 @@ def test_suggest_commit_message_falls_back_to_heuristic_on_a_provider_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Arrange
-    monkeypatch.setattr(generation, "enable_optional_providers", lambda: None)
-    monkeypatch.setattr(generation, "available_providers", lambda: ("jev", "heuristic"))
+    monkeypatch.setattr(protocol, "enable_optional_providers", lambda: None)
+    monkeypatch.setattr(protocol, "available_providers", lambda: ("jev", "heuristic"))
     providers = {"jev": _FailingProvider(), "heuristic": HeuristicProvider()}
-    monkeypatch.setattr(generation, "get_provider", providers.get)
+    monkeypatch.setattr(protocol, "get_provider", providers.get)
     diff = "diff --git a/src/foo.py b/src/foo.py\n--- a/src/foo.py\n+++ b/src/foo.py\n@@ -1 +1 @@\n-a\n+b\n"
     expected_suggestion = HeuristicProvider().suggest(diff, changed_paths=("src/foo.py",))
     # Act

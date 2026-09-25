@@ -57,29 +57,18 @@ def describe_convention() -> dict[str, object]:
 
 @mcp.tool()
 def suggest_commit_message(diff: str, changed_paths: list[str] | None = None) -> dict[str, object]:
-    generation.enable_optional_providers()
-    provider_name = "jev" if "jev" in generation.available_providers() else "heuristic"
-    provider = generation.get_provider(provider_name)
-    if provider is None:
-        return {"provider": None, "suggestion": None, "error": "No suggestion provider is registered."}
     config = Config.load()
     criteria = commit_vocab.merge_criteria(config.commit_type_overrides)
-    try:
-        suggestion = provider.suggest(diff, changed_paths=tuple(changed_paths or ()), types=criteria)
-    except generation.ProviderError as error:
-        heuristic = generation.get_provider("heuristic")
-        suggestion = (
-            heuristic.suggest(diff, changed_paths=tuple(changed_paths or ()), types=criteria) if heuristic else None
-        )
-        return {
-            "provider": "heuristic",
-            "suggestion": asdict(suggestion) if suggestion else None,
-            "warning": str(error),
-        }
-    return {
-        "provider": provider_name,
-        "suggestion": asdict(suggestion) if suggestion else None,
+    result = generation.suggest(diff, changed_paths=tuple(changed_paths or ()), types=criteria)
+    if result.error is not None:
+        return {"provider": None, "suggestion": None, "error": result.error}
+    payload: dict[str, object] = {
+        "provider": result.provider,
+        "suggestion": asdict(result.suggestion) if result.suggestion else None,
     }
+    if result.warning is not None:
+        payload["warning"] = result.warning
+    return payload
 
 
 def run() -> None:
