@@ -16,4 +16,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: uv sync --locked
       - run: make check
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref || github.ref_name }}
       - run: make test
