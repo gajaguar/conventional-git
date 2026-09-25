@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from conventional_git.branch import grammar
@@ -37,8 +38,8 @@ def normalize_description(raw: str | None) -> str:
     text = re.sub(r"-{2,}", "-", text)
     text = re.sub(r"[.\-]?-[.\-]?", "-", text)
     text = text.strip("-.")
-    if len(text) > grammar.description_max_length():
-        text = text[: grammar.description_max_length()].rsplit("-", 1)[0].strip("-.")
+    if len(text) > grammar.MAX_DESCRIPTION_LENGTH:
+        text = text[: grammar.MAX_DESCRIPTION_LENGTH].rsplit("-", 1)[0].strip("-.")
     if not text:
         text = DEFAULT_DESCRIPTION
     return text
@@ -74,7 +75,7 @@ def validate_name(
     branch_type = parsed["type"]
     description = parsed["description"]
 
-    if not grammar.is_valid_type(branch_type, types):
+    if branch_type not in types:
         violations.append(
             _violation(
                 ViolationCode.BRANCH_TYPE,
@@ -92,13 +93,13 @@ def validate_name(
                 "Provide a non-empty hyphenated description",
             )
         )
-    if len(description) > grammar.description_max_length():
+    if len(description) > grammar.MAX_DESCRIPTION_LENGTH:
         violations.append(
             _violation(
                 ViolationCode.BRANCH_DESCRIPTION_LENGTH,
                 "description",
-                f"Description exceeds {grammar.description_max_length()} characters ({len(description)})",
-                f"Shorten the description to at most {grammar.description_max_length()} characters",
+                f"Description exceeds {grammar.MAX_DESCRIPTION_LENGTH} characters ({len(description)})",
+                f"Shorten the description to at most {grammar.MAX_DESCRIPTION_LENGTH} characters",
             )
         )
 
@@ -107,3 +108,12 @@ def validate_name(
 
 def default_description() -> str:
     return DEFAULT_DESCRIPTION
+
+
+@dataclass(frozen=True, slots=True)
+class Limits:
+    description_max_length: int
+
+
+def limits() -> Limits:
+    return Limits(description_max_length=grammar.MAX_DESCRIPTION_LENGTH)
