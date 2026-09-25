@@ -64,13 +64,11 @@ def check_commit(
 ) -> None:
     config = Config.load()
     text = _resolve_message(message, message_file)
-    types = commit_vocab.merge_vocabularies(config.commit_type_overrides)
-    if types_csv is not None:
-        types = commit_vocab.merge_vocabularies((types_csv, *config.commit_type_overrides))
+    policy = commit_vocab.resolve_policy(config, extra_types_csv=types_csv)
     report = commit_rules.validate_message(
         text,
-        allowed_types=types,
-        attribution_patterns=config.extra_attribution_patterns,
+        allowed_types=policy.types,
+        attribution_patterns=policy.extra_attribution_patterns,
     )
     _print_report("commit", report)
     _report_to_exit_code(valid=report.valid)
@@ -102,14 +100,9 @@ def check_branch(
     ] = None,
 ) -> None:
     config = Config.load()
-    types = branch_vocab.merge_vocabularies(config.branch_type_overrides)
-    if types_csv is not None:
-        types = branch_vocab.merge_vocabularies((types_csv, *config.branch_type_overrides))
-    trunks = branch_vocab.merge_trunks(config.branch_trunk_overrides)
-    if trunks_csv is not None:
-        trunks = branch_vocab.merge_trunks((trunks_csv, *config.branch_trunk_overrides))
+    policy = branch_vocab.resolve_policy(config, extra_types_csv=types_csv, extra_trunks_csv=trunks_csv)
     resolved_name = name if name is not None else _current_branch()
-    report = branch_rules.validate_name(resolved_name, allowed_types=types, trunk_branches=trunks)
+    report = branch_rules.validate_name(resolved_name, allowed_types=policy.types, trunk_branches=policy.trunks)
     _print_report("branch", report)
     _report_to_exit_code(valid=report.valid)
 
