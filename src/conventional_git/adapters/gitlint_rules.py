@@ -8,7 +8,6 @@ from gitlint.rules import CommitRule
 from gitlint.rules import LineRule
 from gitlint.rules import RuleViolation
 
-from conventional_git.commit import grammar as commit_grammar
 from conventional_git.commit import rules as commit_rules
 from conventional_git.violations import Severity
 
@@ -65,6 +64,5 @@ def rule_classes() -> list[type[Any]]:
 __all__ = [
     "ConventionalCommitBodyLineRule",
     "ConventionalCommitHeaderRule",
-    "commit_grammar",
     "rule_classes",
 ]

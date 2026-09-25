@@ -14,10 +14,6 @@ if TYPE_CHECKING:
 
 _BODY_LINE_MAX: Final[int] = 140
 _MESSAGE_MAX_BYTES: Final[int] = 2048
-_FOOTER_PREFIX: Final[str] = "BREAKING CHANGE:"
-_HEADER_PATTERN: Final[re.Pattern[str]] = re.compile(
-    r"^(?P<type>[a-z]+)(?:\((?P<scope>[a-z0-9.\-]+)\))?(?P<breaking>!)?: (?P<description>.+)$"
-)
 _BULLET_PREFIXES: Final[tuple[str, ...]] = ("- ", "* ")
 
 
@@ -34,14 +30,14 @@ def _violation(
 
 def _parse_header(message: str) -> tuple[str, str | None, bool, str] | None:
     header = message.split("\n", 1)[0].strip()
-    match = _HEADER_PATTERN.match(header)
-    if not match:
+    parsed = grammar.split_title(header)
+    if parsed is None:
         return None
     return (
-        match.group("type"),
-        match.group("scope"),
-        bool(match.group("breaking")),
-        match.group("description"),
+        parsed["type"],
+        parsed.get("scope"),
+        bool(parsed.get("breaking")),
+        parsed["description"],
     )
 
 
@@ -54,10 +50,6 @@ def _body_lines(message: str) -> list[str]:
         return []
     body = parts[1].split("\n\n", 1)[0]
     return [line for line in body.splitlines() if line.strip()]
-
-
-def _has_breaking_footer(message: str) -> bool:
-    return _FOOTER_PREFIX in message
 
 
 def _is_bullet(line: str) -> bool:
@@ -94,7 +86,7 @@ def _check_header(parsed: tuple[str, str | None, bool, str] | None, types: froze
                 "Rewrite the description in lowercase, imperative, present tense",
             )
         )
-    if description.endswith("."):
+    if grammar.TRAILING_DOT.search(description):
         violations.append(
             _violation(
                 "commit.description-trailing-period",
@@ -161,7 +153,7 @@ def _check_message_bytes(message: str) -> list[Violation]:
 
 
 def _check_breaking_footer(parsed: tuple[str, str | None, bool, str] | None, message: str) -> list[Violation]:
-    if parsed is not None and parsed[2] and not _has_breaking_footer(message):
+    if parsed is not None and parsed[2] and not grammar.has_breaking_footer(message):
         return [
             _violation(
                 "commit.breaking-footer",
