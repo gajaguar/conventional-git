@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from importlib.metadata import version as package_version
@@ -179,6 +180,46 @@ def test_check_branch_accepts_main_trunk() -> None:
     # Assert
     assert completed.returncode == 0
     assert "ok" in completed.stdout
+
+
+def test_check_branch_skips_on_detached_head(tmp_path: Path) -> None:
+    # Arrange
+    repository = tmp_path / "repository"
+    git = shutil.which("git")
+    assert git is not None
+    subprocess.run([git, "init", "-b", "feat/native", str(repository)], capture_output=True, check=True)
+    subprocess.run(
+        [
+            git,
+            "-C",
+            str(repository),
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.com",
+            "commit",
+            "--allow-empty",
+            "-m",
+            "feat: initialize",
+        ],
+        capture_output=True,
+        check=True,
+    )
+    subprocess.run([git, "-C", str(repository), "checkout", "--detach"], capture_output=True, check=True)
+    env = dict(os.environ)
+    env.pop("GITHUB_HEAD_REF", None)
+    # Act
+    completed = subprocess.run(
+        [sys.executable, "-m", "conventional_git.cli.app", "check", "branch"],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=repository,
+        env=env,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "skipped" in completed.stdout
 
 
 def test_check_branch_accepts_extra_trunk_via_csv(tmp_path: Path) -> None:
