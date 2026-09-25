@@ -161,25 +161,12 @@ def _staged_diff() -> str:
 
 
 def _suggest(diff: str, provider_name: str | None) -> generation.CommitSuggestion | None:
-    generation.enable_optional_providers()
-    name = provider_name or ("jev" if "jev" in generation.available_providers() else "heuristic")
-    provider = generation.get_provider(name)
-    if provider is None:
-        typer.echo(
-            f"Unknown provider {name!r}. Available: {', '.join(generation.available_providers())}",
-            err=True,
-        )
-        raise typer.Exit(1)
     config = Config.load()
     criteria = commit_vocab.merge_criteria(config.commit_type_overrides)
-    try:
-        return provider.suggest(diff, types=criteria)
-    except generation.ProviderError as error:
-        if provider_name is not None:
-            typer.echo(str(error), err=True)
-            raise typer.Exit(1) from error
-        typer.echo(f"{error} Falling back to the heuristic provider.", err=True)
-        heuristic = generation.get_provider("heuristic")
-        if heuristic is None:
-            raise typer.Exit(1) from error
-        return heuristic.suggest(diff, types=criteria)
+    result = generation.suggest(diff, types=criteria, preferred=provider_name)
+    if result.error is not None:
+        typer.echo(result.error, err=True)
+        raise typer.Exit(1)
+    if result.warning is not None:
+        typer.echo(f"{result.warning} Falling back to the heuristic provider.", err=True)
+    return result.suggestion
