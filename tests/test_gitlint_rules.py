@@ -64,7 +64,7 @@ def test_adapter_registers_only_the_header_rule() -> None:
 
 def test_body_line_length_is_reported_once() -> None:
     # Arrange
-    long_line = "- " + "x" * gitlint_rules.commit_rules.body_line_max()
+    long_line = "- " + "x" * gitlint_rules.commit_rules.limits().body_line_max
     # Act
     violations = _lint(f"feat: add login\n\n{long_line}", ignore=gitlint_rules.RECOMMENDED_IGNORE)
     # Assert

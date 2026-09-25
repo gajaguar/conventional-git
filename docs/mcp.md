@@ -58,13 +58,17 @@ ruleset instead of relying on stale prompt text:
 {
   "commit": {
     "types": ["build", "chore", "ci", "docs", "feat", "fix", ...],
-    "title_max_length": 120,
-    "body_line_max": 140,
-    "message_max_bytes": 2048
+    "limits": {
+      "title_max_length": 120,
+      "body_line_max": 140,
+      "message_max_bytes": 2048
+    }
   },
   "branch": {
     "types": ["bugfix", "chore", "feature", "fix", "hotfix", "release"],
-    "description_max_length": 75
+    "limits": {
+      "description_max_length": 75
+    }
   }
 }
 ```

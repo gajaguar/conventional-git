@@ -5,10 +5,8 @@ from dataclasses import asdict
 from mcp.server.fastmcp import FastMCP
 
 from conventional_git import generation
-from conventional_git.branch import grammar as branch_grammar
 from conventional_git.branch import rules as branch_rules
 from conventional_git.branch import vocabulary as branch_vocab
-from conventional_git.commit import grammar as commit_grammar
 from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
@@ -43,14 +41,12 @@ def describe_convention() -> dict[str, object]:
     return {
         "commit": {
             "types": sorted(commit_policy.types),
-            "title_max_length": commit_grammar.title_max_length(),
-            "body_line_max": commit_rules.body_line_max(),
-            "message_max_bytes": commit_rules.message_max_bytes(),
+            "limits": asdict(commit_rules.limits()),
         },
         "branch": {
             "types": sorted(branch_policy.types),
             "trunks": sorted(branch_policy.trunks),
-            "description_max_length": branch_grammar.description_max_length(),
+            "limits": asdict(branch_rules.limits()),
         },
     }
 

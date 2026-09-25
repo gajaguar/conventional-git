@@ -68,10 +68,6 @@ class Report:
         }
 
     @classmethod
-    def empty(cls) -> Report:
-        return cls(violations=())
-
-    @classmethod
     def from_violations(cls, *violations: Violation) -> Report:
         return cls(violations=tuple(violations))
 
