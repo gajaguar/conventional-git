@@ -15,7 +15,30 @@ app = typer.Typer(help="Install / uninstall pre-commit hooks in any git repo.")
 
 
 _MANAGED_BY: Final[str] = "# managed-by: conventional-git"
-_HOOK_NAMES: Final[tuple[str, ...]] = ("commit-msg", "pre-commit", "pre-push")
+_HOOKS: Final[dict[str, str]] = {
+    "commit-msg": (
+        f'#!/usr/bin/env bash\n{_MANAGED_BY}\nset -euo pipefail\nconventional-git check commit --file "$1"\n'
+    ),
+    "pre-commit": (
+        "#!/usr/bin/env bash\n"
+        f"{_MANAGED_BY}\n"
+        "set -euo pipefail\n"
+        "# detached HEAD: no branch to validate\n"
+        "current=$(git symbolic-ref --quiet --short HEAD) || exit 0\n"
+        'conventional-git check branch --name "$current"\n'
+    ),
+    "pre-push": (
+        "#!/usr/bin/env bash\n"
+        f"{_MANAGED_BY}\n"
+        "set -euo pipefail\n"
+        "while read -r local_ref local_sha remote_ref remote_sha; do\n"
+        '  [ -z "$local_sha" ] && continue\n'
+        '  [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue\n'
+        "  branch=${local_ref#refs/heads/}\n"
+        '  conventional-git check branch --name "$branch" < /dev/null\n'
+        "done\n"
+    ),
+}
 
 
 def _repo_root() -> Path:
@@ -43,34 +66,8 @@ def install_hook(
     hooks_dir = _hooks_dir(cwd)
     hooks_dir.mkdir(parents=True, exist_ok=True)
     _note_for_external_hooks_dir(cwd, hooks_dir)
-    _write_hook(
-        hooks_dir / "commit-msg",
-        f'#!/usr/bin/env bash\n{_MANAGED_BY}\nset -euo pipefail\nconventional-git check commit --file "$1"\n',
-        force=force,
-    )
-    _write_hook(
-        hooks_dir / "pre-commit",
-        "#!/usr/bin/env bash\n"
-        f"{_MANAGED_BY}\n"
-        "set -euo pipefail\n"
-        "# detached HEAD: no branch to validate\n"
-        "current=$(git symbolic-ref --quiet --short HEAD) || exit 0\n"
-        'conventional-git check branch --name "$current"\n',
-        force=force,
-    )
-    _write_hook(
-        hooks_dir / "pre-push",
-        "#!/usr/bin/env bash\n"
-        f"{_MANAGED_BY}\n"
-        "set -euo pipefail\n"
-        "while read -r local_ref local_sha remote_ref remote_sha; do\n"
-        '  [ -z "$local_sha" ] && continue\n'
-        '  [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue\n'
-        "  branch=${local_ref#refs/heads/}\n"
-        '  conventional-git check branch --name "$branch" < /dev/null\n'
-        "done\n",
-        force=force,
-    )
+    for name, content in _HOOKS.items():
+        _write_hook(hooks_dir / name, content, force=force)
     typer.echo(f"Installed hooks in {hooks_dir}")
 
 
@@ -83,7 +80,7 @@ def uninstall_hook(
 ) -> None:
     cwd = (target or _repo_root()).resolve()
     hooks_dir = _hooks_dir(cwd)
-    for name in _HOOK_NAMES:
+    for name in _HOOKS:
         path = hooks_dir / name
         if not path.exists():
             continue
