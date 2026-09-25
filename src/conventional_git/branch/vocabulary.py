@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Final
+
+    from conventional_git.config import Config
 
 PACKAGE_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 
@@ -67,3 +70,31 @@ def merge_trunks(overrides: tuple[Path, ...]) -> frozenset[str]:
             continue
         trunks |= load_trunks_from_csv(path)
     return frozenset(trunks)
+
+
+@dataclass(frozen=True, slots=True)
+class BranchPolicy:
+    types: frozenset[str]
+    trunks: frozenset[str]
+
+
+def resolve_policy(
+    config: Config,
+    *,
+    extra_types_csv: Path | None = None,
+    extra_trunks_csv: Path | None = None,
+) -> BranchPolicy:
+    type_overrides = (
+        (extra_types_csv, *config.branch_type_overrides)
+        if extra_types_csv is not None
+        else config.branch_type_overrides
+    )
+    trunk_overrides = (
+        (extra_trunks_csv, *config.branch_trunk_overrides)
+        if extra_trunks_csv is not None
+        else config.branch_trunk_overrides
+    )
+    return BranchPolicy(
+        types=merge_vocabularies(type_overrides),
+        trunks=merge_trunks(trunk_overrides),
+    )

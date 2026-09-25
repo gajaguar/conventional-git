@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Final
+
+    from conventional_git.config import Config
 
 PACKAGE_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 
@@ -88,3 +91,21 @@ def merge_criteria(overrides: tuple[Path, ...]) -> dict[str, str]:
             continue
         criteria |= load_criteria_from_csv(path)
     return criteria
+
+
+@dataclass(frozen=True, slots=True)
+class CommitPolicy:
+    types: frozenset[str]
+    extra_attribution_patterns: tuple[str, ...]
+
+
+def resolve_policy(config: Config, *, extra_types_csv: Path | None = None) -> CommitPolicy:
+    overrides = (
+        (extra_types_csv, *config.commit_type_overrides)
+        if extra_types_csv is not None
+        else config.commit_type_overrides
+    )
+    return CommitPolicy(
+        types=merge_vocabularies(overrides),
+        extra_attribution_patterns=config.extra_attribution_patterns,
+    )
