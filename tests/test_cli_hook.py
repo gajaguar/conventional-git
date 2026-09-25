@@ -4,10 +4,10 @@ import os
 import stat
 import subprocess
 import sys
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Final
 
 _MANAGED_BY: Final[str] = "# managed-by: conventional-git"
@@ -31,8 +31,49 @@ def _run_cli(*arguments: str, cwd: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def _init_repository(path: Path) -> None:
-    subprocess.run(["git", "init", str(path)], capture_output=True, check=True, env=_isolated_env())  # ruff: ignore[start-process-with-partial-path]
+def _init_repository(path: Path, branch: str | None = None) -> None:
+    init = ["git", "init", *(["-b", branch] if branch else []), str(path)]
+    subprocess.run(init, capture_output=True, check=True, env=_isolated_env())
+
+
+def _commit(repository: Path, message: str) -> None:
+    subprocess.run(
+        [  # ruff: ignore[start-process-with-partial-path]
+            "git",
+            "-C",
+            str(repository),
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.com",
+            "commit",
+            "--allow-empty",
+            "-m",
+            message,
+        ],
+        capture_output=True,
+        check=True,
+        env=_isolated_env(),
+    )
+
+
+# The generated hook calls the conventional-git entry point, so the
+# interpreter's bin directory must come first on PATH.
+def _hook_env() -> dict[str, str]:
+    path = f"{Path(sys.executable).parent}{os.pathsep}{os.environ.get('PATH', os.defpath)}"
+    return {**_isolated_env(), "PATH": path}
+
+
+def _run_pre_commit(repository: Path) -> subprocess.CompletedProcess[str]:
+    hook = repository / ".git" / "hooks" / "pre-commit"
+    return subprocess.run(
+        [str(hook)],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_hook_env(),
+    )
 
 
 def test_install_writes_executable_marked_hooks(tmp_path: Path) -> None:
@@ -57,23 +98,7 @@ def test_install_writes_common_hooks_for_linked_worktree(tmp_path: Path) -> None
     _init_repository(repository)
     (repository / "README.md").write_text("repository\n", encoding="utf-8")
     subprocess.run(["git", "-C", str(repository), "add", "README.md"], check=True, env=_isolated_env())  # ruff: ignore[start-process-with-partial-path]
-    subprocess.run(
-        [  # ruff: ignore[start-process-with-partial-path]
-            "git",
-            "-C",
-            str(repository),
-            "-c",
-            "user.name=Test",
-            "-c",
-            "user.email=test@example.com",
-            "commit",
-            "-m",
-            "feat: initialize",
-        ],
-        capture_output=True,
-        check=True,
-        env=_isolated_env(),
-    )
+    _commit(repository, "feat: initialize")
     subprocess.run(
         ["git", "-C", str(repository), "worktree", "add", str(worktree), "-b", "feat/worktree"],  # ruff: ignore[start-process-with-partial-path]
         check=True,
@@ -161,3 +186,47 @@ def test_uninstall_removes_marked_hooks_and_keeps_foreign_hook(tmp_path: Path) -
     assert foreign_hook.read_text(encoding="utf-8") == "#!/usr/bin/env bash\nexit 0\n"
     assert not (repository / ".git" / "hooks" / "pre-push").exists()
     assert "not installed by conventional-git" in completed.stdout
+
+
+def test_pre_commit_accepts_valid_unborn_branch(tmp_path: Path) -> None:
+    # Arrange
+    repository = tmp_path / "repository"
+    _init_repository(repository, branch="feat/native")
+    installed = _run_cli("hook", "install", cwd=repository)
+    assert installed.returncode == 0
+    # Act
+    completed = _run_pre_commit(repository)
+    # Assert
+    assert completed.returncode == 0
+
+
+def test_pre_commit_rejects_invalid_unborn_branch(tmp_path: Path) -> None:
+    # Arrange
+    repository = tmp_path / "repository"
+    _init_repository(repository, branch="Bad_Branch")
+    installed = _run_cli("hook", "install", cwd=repository)
+    assert installed.returncode == 0
+    # Act
+    completed = _run_pre_commit(repository)
+    # Assert
+    assert completed.returncode != 0
+    assert "branch.format" in completed.stderr
+
+
+def test_pre_commit_skips_detached_head(tmp_path: Path) -> None:
+    # Arrange
+    repository = tmp_path / "repository"
+    _init_repository(repository, branch="feat/native")
+    _commit(repository, "feat: initialize")
+    subprocess.run(
+        ["git", "-C", str(repository), "checkout", "--detach"],  # ruff: ignore[start-process-with-partial-path]
+        capture_output=True,
+        check=True,
+        env=_isolated_env(),
+    )
+    installed = _run_cli("hook", "install", cwd=repository)
+    assert installed.returncode == 0
+    # Act
+    completed = _run_pre_commit(repository)
+    # Assert
+    assert completed.returncode == 0
