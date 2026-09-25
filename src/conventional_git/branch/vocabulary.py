@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import csv
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from conventional_git.csv_columns import read_column
 
 if TYPE_CHECKING:
     from typing import Final
@@ -27,23 +28,11 @@ def _load_default_trunks() -> frozenset[str]:
 
 
 def load_from_csv(path: Path) -> frozenset[str]:
-    types: set[str] = set()
-    with path.open(encoding="utf-8", newline="") as handle:
-        for row in csv.DictReader(handle):
-            branch_type = (row.get("type") or "").strip()
-            if branch_type:
-                types.add(branch_type)
-    return frozenset(types)
+    return frozenset(read_column(path, "type"))
 
 
 def load_trunks_from_csv(path: Path) -> frozenset[str]:
-    trunks: set[str] = set()
-    with path.open(encoding="utf-8", newline="") as handle:
-        for row in csv.DictReader(handle):
-            trunk = (row.get("name") or "").strip()
-            if trunk:
-                trunks.add(trunk)
-    return frozenset(trunks)
+    return frozenset(read_column(path, "name"))
 
 
 def default_types() -> frozenset[str]:

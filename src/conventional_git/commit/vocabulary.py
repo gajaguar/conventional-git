@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import csv
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from conventional_git.csv_columns import read_column
+from conventional_git.csv_columns import read_mapping
 
 if TYPE_CHECKING:
     from typing import Final
@@ -33,34 +35,15 @@ def _load_default_criteria() -> dict[str, str]:
 
 
 def load_from_csv(path: Path) -> frozenset[str]:
-    types: set[str] = set()
-    with path.open(encoding="utf-8", newline="") as handle:
-        for row in csv.DictReader(handle):
-            commit_type = (row.get("type") or "").strip()
-            if commit_type:
-                types.add(commit_type)
-    return frozenset(types)
+    return frozenset(read_column(path, "type"))
 
 
 def load_criteria_from_csv(path: Path) -> dict[str, str]:
-    criteria: dict[str, str] = {}
-    with path.open(encoding="utf-8", newline="") as handle:
-        for row in csv.DictReader(handle):
-            commit_type = (row.get("type") or "").strip()
-            why = (row.get("when_to_use") or "").strip()
-            if commit_type:
-                criteria[commit_type] = why
-    return criteria
+    return read_mapping(path, "type", "when_to_use")
 
 
 def load_attribution_csv(path: Path) -> tuple[str, ...]:
-    patterns: list[str] = []
-    with path.open(encoding="utf-8", newline="") as handle:
-        for row in csv.DictReader(handle):
-            pattern = (row.get("pattern") or "").strip()
-            if pattern:
-                patterns.append(pattern)
-    return tuple(patterns)
+    return read_column(path, "pattern")
 
 
 def default_types() -> frozenset[str]:
