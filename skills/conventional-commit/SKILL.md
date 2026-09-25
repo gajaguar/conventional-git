@@ -72,8 +72,8 @@ BREAKING CHANGE: <description>   ← only when breaking
 3. SHOULD draft 2–5 body bullets when the change spans multiple files or is
    sizable; otherwise you MUST leave the body empty.
 4. MUST determine whether the change is breaking. If it is, pass `--breaking`.
-5. MUST build and run the command below. MUST pass `--amend` if and only if the
-   arguments request to amend or rewording the last commit:
+5. MUST build and run the command below. `--amend` is a skill flag only; the
+   CLI has no `--amend` option and MUST NOT be passed one:
 
    ```bash
    conventional-git create commit \
@@ -83,17 +83,22 @@ BREAKING CHANGE: <description>   ← only when breaking
      --body "<bullets-or-empty>"
    ```
 
-   Omit `--scope` entirely when there is no scope. The CLI does not invoke
-   `git commit` itself; the skill MUST shell out to `git commit` after the
-   CLI prints the rendered message, or use `git commit --amend --file=-`
-   when amending.
+   Omit `--scope` entirely when there is no scope. The CLI never invokes
+   `git commit` itself, whether or not `--dry-run` is passed — it only prints
+   the rendered message; the skill MUST always shell out to `git commit`
+   itself: `git commit --amend --file=-` if and only if the arguments request
+   amending or rewording the last commit, otherwise `git commit --file=-`.
 
 6. If and only if the arguments contain `--ask`, MUST render the message by
-   running the command with `--dry-run`, present it with `AskUserQuestion`, and
-   commit only on approval. Otherwise, MUST commit directly — committing
-   without confirmation is the default behavior.
+   running the command with `--dry-run` (an alias for the default printing
+   behavior kept for forward compatibility, in case the command later gains
+   side effects), present it with `AskUserQuestion`, and commit only on
+   approval. Otherwise, MUST commit directly — committing without
+   confirmation is the default behavior.
 7. You MUST print the result of `git commit`. If either the CLI or `git commit`
    exits non-zero, you MUST fix the offending component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it
-> with `uv tool install conventional-git` or `pipx install conventional-git`.
+> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> (the package is not published on PyPI).

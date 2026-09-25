@@ -150,7 +150,7 @@ CLI is available on `PATH`:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v0.2.0
+    rev: v0.2.1
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
@@ -175,7 +175,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.0
+          - git+https://github.com/gajaguar/conventional-git@v0.2.1
         stages: [commit-msg]
         pass_filenames: true
       - id: conventional-branch-name
@@ -184,7 +184,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.0
+          - git+https://github.com/gajaguar/conventional-git@v0.2.1
         stages: [pre-commit, pre-push]
         always_run: true
         pass_filenames: false
