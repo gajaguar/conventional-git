@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "conventional-git"
-version = "0.2.0"
+version = "0.2.1"
 description = "Conventional Commits and Conventional Branch enforcement, validation, and generation"
 readme = "README.md"
 license = "MIT"
