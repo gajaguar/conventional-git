@@ -168,14 +168,14 @@ def suggest_commit(
         raise typer.Exit(1)
     if apply_suggestion:
         config = Config.load()
-        types = commit_vocab.merge_vocabularies(config.commit_type_overrides)
+        criteria = commit_vocab.merge_criteria(config.commit_type_overrides)
         _render_commit(
             suggestion.type,
             suggestion.scope or None,
             suggestion.description,
             None,
             breaking=suggestion.breaking,
-            types=types,
+            types=frozenset(criteria),
         )
         return
     typer.echo(f"type: {suggestion.type}")
@@ -206,9 +206,11 @@ def _suggest(diff: str, provider_name: str | None) -> generation.CommitSuggestio
             err=True,
         )
         raise typer.Exit(1)
+    config = Config.load()
+    criteria = commit_vocab.merge_criteria(config.commit_type_overrides)
     try:
-        return provider.suggest(diff)
-    except generation.MissingCredentialsError as error:
+        return provider.suggest(diff, types=criteria)
+    except generation.ProviderError as error:
         if provider_name is not None:
             typer.echo(str(error), err=True)
             raise typer.Exit(1) from error
@@ -216,4 +218,4 @@ def _suggest(diff: str, provider_name: str | None) -> generation.CommitSuggestio
         heuristic = generation.get_provider("heuristic")
         if heuristic is None:
             raise typer.Exit(1) from error
-        return heuristic.suggest(diff)
+        return heuristic.suggest(diff, types=criteria)
