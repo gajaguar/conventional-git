@@ -5,22 +5,9 @@ description: >-
   specification. Use when the user says "commit", "conventional commit",
   "create a commit", "commit changes", or asks for commit help outside a
   gitmoji context.
-argument-hint: >-
-  [--ask] [--amend]
-
-  Skill flags:
-    --ask    Show the drafted message and wait for approval before committing
-    --amend  Amend (reword) the last commit instead of creating a new one
-
-  Examples:
-    /conventional-commit
-    /conventional-commit --ask
-    /conventional-commit --amend
-allowed-tools: Bash, Read, AskUserQuestion
-model: haiku
-effort: low
-context: fork
-agent: Bash
+license: MIT
+compatibility: Requires the conventional-git CLI (git, Python 3.14+, uv)
+allowed-tools: Bash Read AskUserQuestion
 ---
 
 # Conventional Commit
@@ -32,6 +19,17 @@ specification, then delegate all validation and the commit itself to
 (type validity, scope format, breaking-change footer, lengths, character set,
 rejection of attribution trailers such as `Co-Authored-By:`); this skill
 only supplies the wording.
+
+## Arguments
+
+- `--ask` — show the drafted message and wait for approval before committing.
+- `--amend` — amend (reword) the last commit instead of creating a new one.
+- `--suggest` — opt into seeding the draft from `conventional-git create
+  suggest` (see step 2 below). Sends the staged diff to a third-party
+  provider when one is configured; never used unless passed.
+
+Examples: `/conventional-commit`, `/conventional-commit --ask`,
+`/conventional-commit --amend`, `/conventional-commit --suggest`.
 
 ## Format
 
@@ -62,17 +60,36 @@ BREAKING CHANGE: <description>   ← only when breaking
 - `status`: !`git status --porcelain`
 - `diff`: !`git diff HEAD`
 
+If `status`/`diff` above are empty or still show the literal `` !`...` ``
+text (the agent doesn't support this injection), run
+`git status --porcelain` and `git diff HEAD` yourself before continuing.
+
 ## Instructions
 
-1. MUST read [commit-types.csv](references/commit-types.csv) and choose the
+1. MUST run `conventional-git capabilities --json` first. If it isn't
+   available, follow the install NOTE below and stop. Otherwise:
+   - Note `version`; if it differs from this plugin's version, warn the user
+     once that the CLI and skill may be out of sync.
+   - If `extras.mcp` is `true`, mention that `validate_commit_message`,
+     `validate_branch_name`, `describe_convention`, and
+     `suggest_commit_message` are also available as MCP tools.
+2. MUST read [commit-types.csv](references/commit-types.csv) and choose the
    single type that matches the change kind.
-2. MUST summarize `diff` (and any untracked files in `status`) into one
-   imperative, present-tense `description` starting with a lowercase
-   letter (e.g. "add oauth login", not "Added login").
-3. SHOULD draft 2–5 body bullets when the change spans multiple files or is
+3. If and only if `--suggest` was passed, AND capabilities reports `jev` in
+   `providers` with a non-null `credentials.typesafe` or
+   `credentials.openrouter`, MAY seed a draft with
+   `git diff --cached | conventional-git create suggest --diff-file -`
+   before refining it in the next step. Skip this step entirely — including
+   the `create suggest` call — when `--suggest` was not passed; the diff
+   MUST NOT leave the machine without that explicit opt-in.
+4. MUST summarize `diff` (and any untracked files in `status`), refining any
+   seed from step 3, into one imperative, present-tense `description`
+   starting with a lowercase letter (e.g. "add oauth login", not "Added
+   login").
+5. SHOULD draft 2–5 body bullets when the change spans multiple files or is
    sizable; otherwise you MUST leave the body empty.
-4. MUST determine whether the change is breaking. If it is, pass `--breaking`.
-5. MUST build and run the command below. `--amend` is a skill flag only; the
+6. MUST determine whether the change is breaking. If it is, pass `--breaking`.
+7. MUST build and run the command below. `--amend` is a skill flag only; the
    CLI has no `--amend` option and MUST NOT be passed one:
 
    ```bash
@@ -89,13 +106,13 @@ BREAKING CHANGE: <description>   ← only when breaking
    itself: `git commit --amend --file=-` if and only if the arguments request
    amending or rewording the last commit, otherwise `git commit --file=-`.
 
-6. If and only if the arguments contain `--ask`, MUST render the message by
+8. If and only if the arguments contain `--ask`, MUST render the message by
    running the command with `--dry-run` (an alias for the default printing
    behavior kept for forward compatibility, in case the command later gains
    side effects), present it with `AskUserQuestion`, and commit only on
    approval. Otherwise, MUST commit directly — committing without
    confirmation is the default behavior.
-7. You MUST print the result of `git commit`. If either the CLI or `git commit`
+9. You MUST print the result of `git commit`. If either the CLI or `git commit`
    exits non-zero, you MUST fix the offending component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it

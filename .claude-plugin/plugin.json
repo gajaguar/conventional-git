@@ -1,11 +1,13 @@
 {
   "name": "conventional-git",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Conventional Commits and Conventional Branch skills for Claude Code",
   "author": {
     "name": "G.A.JAGUAR",
     "email": "dev@gajaguar.com"
   },
+  "license": "MIT",
+  "repository": "https://github.com/gajaguar/conventional-git",
   "keywords": [
     "conventional-commits",
     "conventional-branch",

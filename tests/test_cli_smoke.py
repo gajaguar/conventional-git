@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+from importlib.metadata import version as package_version
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -380,6 +381,36 @@ def test_auth_status_reports_no_credentials_when_unset() -> None:
     # Assert
     assert completed.returncode == 0
     assert "No credentials found" in completed.stdout
+
+
+def test_capabilities_json_is_well_formed_and_never_leaks_a_credential() -> None:
+    # Arrange
+    env = _env_without_llm_credentials()
+    env["OPENROUTER_API_KEY"] = "super-secret-key"
+    # Act
+    completed = subprocess.run(
+        [sys.executable, "-m", "conventional_git.cli.app", "capabilities", "--json"],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+    # Assert
+    assert completed.returncode == 0
+    payload = json.loads(completed.stdout)
+    assert payload == {
+        "version": package_version("conventional-git"),
+        "extras": {"llm": True, "mcp": True, "gitlint": True},
+        "providers": ["heuristic", "jev"],
+        "credentials": {"typesafe": None, "openrouter": "env"},
+        "mcp_tools": [
+            "validate_commit_message",
+            "validate_branch_name",
+            "describe_convention",
+            "suggest_commit_message",
+        ],
+    }
+    assert "super-secret-key" not in completed.stdout
 
 
 def test_help_payload_is_json_shape() -> None:
