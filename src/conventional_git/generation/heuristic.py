@@ -3,10 +3,14 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
+from conventional_git.generation.diff import change_verb
+from conventional_git.generation.diff import parse_diff
+from conventional_git.generation.diff import paths_from_diff
 from conventional_git.generation.protocol import CommitSuggestion
 from conventional_git.generation.protocol import register_provider
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Final
 
 _TEST_SUFFIXES: Final[tuple[str, ...]] = ("_test.py",)
@@ -41,14 +45,17 @@ class HeuristicProvider:
         diff: str,
         *,
         changed_paths: tuple[str, ...] = (),
+        types: Mapping[str, str] | None = None,
     ) -> CommitSuggestion | None:
+        del types
         if not changed_paths and not diff:
             return None
-        paths = changed_paths or _paths_from_diff(diff)
+        paths = changed_paths or paths_from_diff(diff)
         if not paths:
             return None
         commit_type = infer_type(paths)
-        description = infer_description(paths, commit_type)
+        verb = change_verb(parse_diff(diff))
+        description = infer_description(paths, commit_type, verb)
         return CommitSuggestion(
             type=commit_type,
             scope="",
@@ -92,11 +99,11 @@ def _is_ci(path: str) -> bool:
     return leaf in _CI_FILES
 
 
-def infer_description(paths: tuple[str, ...], commit_type: str) -> str:
+def infer_description(paths: tuple[str, ...], commit_type: str, verb: str = "update") -> str:
     first = paths[0].rstrip("/")
     leaf = first.rsplit("/", 1)[-1] if "/" in first else first
     if commit_type == "docs":
-        description = f"update {leaf}" if leaf else "update documentation"
+        description = f"{verb} {leaf}" if leaf else f"{verb} documentation"
     elif commit_type == "test":
         description = "add coverage"
     elif commit_type == "build":
@@ -104,19 +111,9 @@ def infer_description(paths: tuple[str, ...], commit_type: str) -> str:
     elif commit_type == "ci":
         description = "update pipelines"
     else:
-        description = f"update {leaf}" if leaf else "apply changes"
+        description = f"{verb} {leaf}" if leaf else "apply changes"
     cleaned = _TRAILING_PUNCT.sub("", description)
     return cleaned[:1].lower() + cleaned[1:]
-
-
-def _paths_from_diff(diff: str) -> tuple[str, ...]:
-    paths: set[str] = set()
-    for line in diff.splitlines():
-        if line.startswith(("+++ b/", "--- a/")):
-            path = line[6:]
-            if path != "/dev/null":
-                paths.add(path)
-    return tuple(sorted(paths))
 
 
 register_provider(HeuristicProvider())

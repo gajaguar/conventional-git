@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from typing import Protocol
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Final
 
 
@@ -27,10 +28,15 @@ class SuggestionProvider(Protocol):
         diff: str,
         *,
         changed_paths: tuple[str, ...] = (),
+        types: Mapping[str, str] | None = None,
     ) -> CommitSuggestion | None: ...
 
 
-class MissingCredentialsError(RuntimeError):
+class ProviderError(RuntimeError):
+    pass
+
+
+class MissingCredentialsError(ProviderError):
     pass
 
 
