@@ -41,6 +41,7 @@ class Violation:
 
 `adapters/gitlint_rules.py` translates between the core's `Violation` and
 gitlint's error type; it is the only module that imports the gitlint SDK.
+See [`docs/gitlint.md`](gitlint.md) for when and how to use it.
 `adapters/commitizen_config.py` emits a commitizen `pyproject.toml`/`.cz.toml`
 block as plain data (dict/JSON) — commitizen itself reads that config, so the
 adapter has no SDK to import.

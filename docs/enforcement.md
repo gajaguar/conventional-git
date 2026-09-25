@@ -67,24 +67,45 @@ conventional-git check branch -n "$BRANCH_NAME"
 git log --format=%B -n1 | conventional-git check commit
 ```
 
+With the `gitlint` extra installed, check the whole range of commits a pull
+request introduces in one pass — something `check commit` can't do on its
+own — instead of looping over individual messages; see
+[`docs/gitlint.md`](gitlint.md):
+
+```bash
+gitlint --commits origin/main..HEAD
+```
+
 ## Division of labour
 
-- **Conventional Commits spec baseline** — `commitizen` (`cz check
-  --commit-msg-file`). Actively maintained; `cz bump` and changelog
-  generation come free later.
-- **House rules** (imperative mood, lowercase head, no trailing period,
-  bullet bodies, ≤140 char body lines, ≤2048 byte messages) — `gitlint`
-  user rules via `extra-path`. A single `CommitRule` hands the whole
-  message to the core and translates the `Violation` objects, so the
-  gitlint verdict matches `conventional-git check commit`.
+- **All rules** live in the core (`commit.rules.validate_message` and
+  `branch.rules.validate_name`) — the spec baseline (type, scope, header
+  shape) and the house rules (imperative mood, lowercase head, no trailing
+  period, bullet bodies, ≤140 char body lines, ≤2048 byte messages) alike.
+  There is no split between a spec-checking tool and a house-rules tool;
+  every front-end and adapter calls the same functions.
+- **Front-ends** (CLI, hooks, MCP) call the core directly and turn its
+  `Report` into an exit code or a structured response.
+- **The gitlint adapter** (`adapters/gitlint_rules.py`) is an optional
+  translation layer, not a second rule set: it hands the message to the core
+  and reformats the `Violation` objects as `RuleViolation`s, so its verdict
+  matches `conventional-git check commit`. See [`docs/gitlint.md`](gitlint.md)
+  for when to use it.
+- **The commitizen adapter** (`adapters/commitizen_config.py`) is a library
+  function, `commitizen_config.emit_json()`, that emits a `cz_customize`
+  `schema_pattern` built from `data/commit-types.csv` for `cz check` /
+  `cz bump` to consume. It checks only the header's type/scope shape — none
+  of the other house rules — and nothing in this project wires it into the
+  CLI or the hooks; a repository that wants it writes the emitted block into
+  its own `.cz.toml`.
 - **Attribution trailers** — the core rejects `Co-Authored-By:` trailers
   (human or AI), `Generated with …` lines and 🤖 markers as
   `commit.attribution` errors; `[commit] attribution_patterns` in
   `.conventional-git.toml` extends the defaults with case-insensitive regular
   expressions matched against each body line. Every front-end that calls
   `validate_message` enforces this by default.
-- **Branch names** — ours alone. Neither tool validates branch names;
-  this is the genuine gap and the project's differentiator.
+- **Branch names** — ours alone. Neither gitlint nor commitizen validates
+  branch names; this is the genuine gap and the project's differentiator.
 
 ## Single-source vocabulary
 
