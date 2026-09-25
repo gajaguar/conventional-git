@@ -83,14 +83,12 @@ def test_describe_convention_honors_the_config_type_overrides(tmp_path: Path, mo
     assert result == {
         "commit": {
             "types": expected_types,
-            "title_max_length": server.commit_grammar.title_max_length(),
-            "body_line_max": server.commit_rules.body_line_max(),
-            "message_max_bytes": server.commit_rules.message_max_bytes(),
+            "limits": asdict(server.commit_rules.limits()),
         },
         "branch": {
             "types": sorted(server.branch_vocab.default_types()),
             "trunks": sorted(server.branch_vocab.default_trunks()),
-            "description_max_length": server.branch_grammar.description_max_length(),
+            "limits": asdict(server.branch_rules.limits()),
         },
     }
 

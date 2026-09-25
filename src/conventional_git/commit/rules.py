@@ -117,12 +117,12 @@ def _check_header(parsed: ParsedMessage, policy: _RulePolicy) -> Iterable[Violat
 def _check_title_length(parsed: ParsedMessage, policy: _RulePolicy) -> Iterable[Violation]:
     del policy
     title = parsed.message.split("\n", 1)[0]
-    if grammar.title_length(title) > grammar.title_max_length():
+    if len(title) > grammar.MAX_TITLE_LENGTH:
         yield _violation(
             ViolationCode.COMMIT_TITLE_LENGTH,
             "title",
-            f"Title exceeds {grammar.title_max_length()} characters",
-            f"Shorten the title to at most {grammar.title_max_length()} characters",
+            f"Title exceeds {grammar.MAX_TITLE_LENGTH} characters",
+            f"Shorten the title to at most {grammar.MAX_TITLE_LENGTH} characters",
         )
 
 
@@ -222,9 +222,16 @@ def validate_message(
     return Report.from_violations(*violations)
 
 
-def message_max_bytes() -> int:
-    return _MESSAGE_MAX_BYTES
+@dataclass(frozen=True, slots=True)
+class Limits:
+    title_max_length: int
+    body_line_max: int
+    message_max_bytes: int
 
 
-def body_line_max() -> int:
-    return _BODY_LINE_MAX
+def limits() -> Limits:
+    return Limits(
+        title_max_length=grammar.MAX_TITLE_LENGTH,
+        body_line_max=_BODY_LINE_MAX,
+        message_max_bytes=_MESSAGE_MAX_BYTES,
+    )

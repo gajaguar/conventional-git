@@ -19,11 +19,3 @@ def parse(name: str) -> dict[str, str] | None:
     if not match:
         return None
     return match.groupdict()
-
-
-def is_valid_type(type_part: str, allowed: frozenset[str]) -> bool:
-    return type_part in allowed
-
-
-def description_max_length() -> int:
-    return MAX_DESCRIPTION_LENGTH

@@ -39,11 +39,3 @@ def is_valid_scope(text: str) -> bool:
 
 def has_breaking_footer(message: str) -> bool:
     return bool(_BREAKING_FOOTER_PATTERN.search(message))
-
-
-def title_length(title: str) -> int:
-    return len(title)
-
-
-def title_max_length() -> int:
-    return MAX_TITLE_LENGTH
