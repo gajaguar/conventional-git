@@ -60,3 +60,35 @@ def available_providers() -> tuple[str, ...]:
 def enable_optional_providers() -> None:
     with contextlib.suppress(ImportError):
         import_module("conventional_git.generation.typesafe")
+
+
+@dataclass(frozen=True, slots=True)
+class SuggestionResult:
+    provider: str | None
+    suggestion: CommitSuggestion | None
+    warning: str | None = None
+    error: str | None = None
+
+
+def suggest(
+    diff: str,
+    *,
+    changed_paths: tuple[str, ...] = (),
+    types: Mapping[str, str] | None = None,
+    preferred: str | None = None,
+) -> SuggestionResult:
+    enable_optional_providers()
+    name = preferred or ("jev" if "jev" in available_providers() else "heuristic")
+    provider = get_provider(name)
+    if provider is None:
+        error = f"Unknown provider {name!r}. Available: {', '.join(available_providers())}"
+        return SuggestionResult(provider=None, suggestion=None, error=error)
+    try:
+        suggestion = provider.suggest(diff, changed_paths=changed_paths, types=types)
+    except ProviderError as error:
+        if preferred is not None:
+            return SuggestionResult(provider=name, suggestion=None, error=str(error))
+        heuristic = get_provider("heuristic")
+        fallback = heuristic.suggest(diff, changed_paths=changed_paths, types=types) if heuristic else None
+        return SuggestionResult(provider="heuristic", suggestion=fallback, warning=str(error))
+    return SuggestionResult(provider=name, suggestion=suggestion)
