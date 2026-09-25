@@ -116,6 +116,6 @@ text (the agent doesn't support this injection), run
    exits non-zero, you MUST fix the offending component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it
-> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
-> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
+> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v1.0.0'`
+> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v1.0.0'`
 > (the package is not published on PyPI).
