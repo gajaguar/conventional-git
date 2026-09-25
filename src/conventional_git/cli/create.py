@@ -10,7 +10,7 @@ import typer
 from conventional_git import generation
 from conventional_git.branch import rules as branch_rules
 from conventional_git.branch import vocabulary as branch_vocab
-from conventional_git.commit import grammar as commit_grammar
+from conventional_git.commit import compose as commit_compose
 from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
@@ -72,49 +72,14 @@ def _render_commit(
     types: frozenset[str],
     config: Config,
 ) -> None:
-    if commit_type not in types:
-        message = f"Commit type {commit_type!r} is not allowed. Allowed: {', '.join(sorted(types))}"
-        typer.echo(message, err=True)
+    body_lines = strip_attribution(body, config=config)
+    message = commit_compose.build_message(commit_type, scope, description, body_lines, breaking=breaking)
+    report = commit_rules.validate_message(message, allowed_types=types)
+    if not report.valid:
+        for violation in report.errors:
+            typer.echo(f"{violation.field}: {violation.message} (fix: {violation.fix_hint})", err=True)
         raise typer.Exit(1)
-
-    normalized_description = (description or "update implementation").strip().rstrip(
-        "."
-    ).strip() or "update implementation"
-    normalized_description = normalized_description[:1].lower() + normalized_description[1:]
-
-    scope_segment = ""
-    if scope:
-        if not commit_grammar.is_valid_scope(scope):
-            typer.echo(f"Scope must be a single lowercase token: {scope!r}", err=True)
-            raise typer.Exit(1)
-        scope_segment = f"({scope})"
-
-    exclamation = "!" if breaking else ""
-    title = f"{commit_type}{scope_segment}{exclamation}: {normalized_description}"
-    if len(title) > commit_grammar.title_max_length():
-        typer.echo(
-            f"Title exceeds {commit_grammar.title_max_length()} characters ({len(title)})",
-            err=True,
-        )
-        raise typer.Exit(1)
-
-    bullets: list[str] = []
-    for line in strip_attribution(body, config=config):
-        bullet = line if line.startswith("- ") else f"- {line.lstrip('-').strip()}"
-        if len(bullet) > commit_rules.body_line_max():
-            typer.echo(
-                f"Body line exceeds {commit_rules.body_line_max()} characters ({len(bullet)})",
-                err=True,
-            )
-            raise typer.Exit(1)
-        bullets.append(bullet)
-    body_text = "\n".join(bullets)
-    rendered = (
-        f"{title}\n\n{body_text}\n\nBREAKING CHANGE: {normalized_description}"
-        if breaking
-        else (f"{title}\n\n{body_text}" if body_text else title)
-    )
-    typer.echo(rendered)
+    typer.echo(message)
 
 
 @app.command("branch")
