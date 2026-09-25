@@ -9,6 +9,7 @@ from conventional_git.branch import vocabulary
 from conventional_git.violations import Report
 from conventional_git.violations import Severity
 from conventional_git.violations import Violation
+from conventional_git.violations import ViolationCode
 
 if TYPE_CHECKING:
     from typing import Final
@@ -17,7 +18,7 @@ DEFAULT_DESCRIPTION: Final[str] = "work-in-progress"
 
 
 def _violation(
-    code: str,
+    code: ViolationCode,
     field: str,
     message: str,
     fix_hint: str,
@@ -62,7 +63,7 @@ def validate_name(
     if parsed is None:
         return Report.from_violations(
             _violation(
-                "branch.format",
+                ViolationCode.BRANCH_FORMAT,
                 "name",
                 f"Branch name {name!r} does not match <type>/<description>",
                 "Use the form 'type/description' (lowercase letters, digits, hyphens, dots)",
@@ -76,7 +77,7 @@ def validate_name(
     if not grammar.is_valid_type(branch_type, types):
         violations.append(
             _violation(
-                "branch.type",
+                ViolationCode.BRANCH_TYPE,
                 "type",
                 f"Branch type {branch_type!r} is not allowed",
                 f"Use one of: {', '.join(sorted(types))}",
@@ -85,7 +86,7 @@ def validate_name(
     if not description:
         violations.append(
             _violation(
-                "branch.description-empty",
+                ViolationCode.BRANCH_DESCRIPTION_EMPTY,
                 "description",
                 "Description segment is empty",
                 "Provide a non-empty hyphenated description",
@@ -94,7 +95,7 @@ def validate_name(
     if len(description) > grammar.description_max_length():
         violations.append(
             _violation(
-                "branch.description-length",
+                ViolationCode.BRANCH_DESCRIPTION_LENGTH,
                 "description",
                 f"Description exceeds {grammar.description_max_length()} characters ({len(description)})",
                 f"Shorten the description to at most {grammar.description_max_length()} characters",

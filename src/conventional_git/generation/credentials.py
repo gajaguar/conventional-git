@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import os
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 import keyring
@@ -15,21 +16,40 @@ if TYPE_CHECKING:
 
 _SERVICE: Final[str] = "conventional-git"
 
-# Order doubles as resolution priority: env vars are checked in this order,
-# then the keyring entries are checked in this same order.
-PROVIDERS: Final[tuple[str, ...]] = ("typesafe", "openrouter")
+
+class CredentialProvider(StrEnum):
+    # Definition order doubles as resolution priority: env vars are checked
+    # in this order, then the keyring entries are checked in this same order.
+    TYPESAFE = "typesafe"
+    OPENROUTER = "openrouter"
+
+    @property
+    def display_name(self) -> str:
+        return _DISPLAY_NAMES[self]
+
+
+class CredentialSource(StrEnum):
+    ENV = "env"
+    KEYRING = "keyring"
+
 
 _ENV_VARS: Final[dict[str, str]] = {
-    "typesafe": "TYPESAFE_API_KEY",
-    "openrouter": "OPENROUTER_API_KEY",
+    CredentialProvider.TYPESAFE: "TYPESAFE_API_KEY",
+    CredentialProvider.OPENROUTER: "OPENROUTER_API_KEY",
 }
+_DISPLAY_NAMES: Final[dict[str, str]] = {
+    CredentialProvider.TYPESAFE: "TypeSafe",
+    CredentialProvider.OPENROUTER: "OpenRouter",
+}
+
+PROVIDERS: Final[tuple[CredentialProvider, ...]] = tuple(CredentialProvider)
 
 
 @dataclass(frozen=True, slots=True)
 class Credential:
     provider: str
     key: str
-    source: str  # "env" or "keyring"
+    source: CredentialSource
 
 
 def env_var_name(provider: str) -> str:
@@ -51,10 +71,10 @@ def stored_key(provider: str) -> str | None:
 def resolve_credential(provider: str) -> Credential | None:
     key = env_key(provider)
     if key:
-        return Credential(provider=provider, key=key, source="env")
+        return Credential(provider=provider, key=key, source=CredentialSource.ENV)
     key = stored_key(provider)
     if key:
-        return Credential(provider=provider, key=key, source="keyring")
+        return Credential(provider=provider, key=key, source=CredentialSource.KEYRING)
     return None
 
 
@@ -62,11 +82,11 @@ def resolve_active_credential() -> Credential | None:
     for provider in PROVIDERS:
         key = env_key(provider)
         if key:
-            return Credential(provider=provider, key=key, source="env")
+            return Credential(provider=provider, key=key, source=CredentialSource.ENV)
     for provider in PROVIDERS:
         key = stored_key(provider)
         if key:
-            return Credential(provider=provider, key=key, source="keyring")
+            return Credential(provider=provider, key=key, source=CredentialSource.KEYRING)
     return None
 
 

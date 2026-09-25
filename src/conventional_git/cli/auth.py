@@ -22,10 +22,10 @@ app = typer.Typer(help="Manage credentials for LLM-backed suggestion providers (
 
 _INSTALL_HINT: Final[str] = "Install the LLM extra first: pip install 'conventional-git[llm]'"
 _MASK_MIN_VISIBLE_LENGTH: Final[int] = 4
-_DISPLAY_NAMES: Final[dict[str, str]] = {
-    "typesafe": "TypeSafe",
-    "openrouter": "OpenRouter",
-}
+
+
+def _display_name(creds: ModuleType, provider: str) -> str:
+    return str(creds.CredentialProvider(provider).display_name)
 
 
 def _require_credentials() -> ModuleType:
@@ -51,7 +51,7 @@ def login(
 ) -> None:
     creds = _require_credentials()
     _require_provider(creds, provider)
-    key = typer.prompt(f"{_DISPLAY_NAMES[provider]} API key", hide_input=True)
+    key = typer.prompt(f"{_display_name(creds, provider)} API key", hide_input=True)
     if not key.strip():
         typer.echo("Refusing to store an empty key.", err=True)
         raise typer.Exit(1)
@@ -60,7 +60,7 @@ def login(
     except MissingCredentialsError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(1) from error
-    typer.echo(f"Stored the {_DISPLAY_NAMES[provider]} API key in the OS keyring.")
+    typer.echo(f"Stored the {_display_name(creds, provider)} API key in the OS keyring.")
 
 
 @app.command("status")
@@ -70,7 +70,7 @@ def status() -> None:
     found_any = False
     for provider in creds.PROVIDERS:
         credential = creds.resolve_credential(provider)
-        name = _DISPLAY_NAMES[provider]
+        name = _display_name(creds, provider)
         if credential is None:
             typer.echo(f"{name}: not set")
             continue
@@ -98,7 +98,7 @@ def logout(
         return
     _require_provider(creds, provider)
     creds.clear_key(provider)
-    typer.echo(f"Removed the stored {_DISPLAY_NAMES[provider]} API key.")
+    typer.echo(f"Removed the stored {_display_name(creds, provider)} API key.")
 
 
 def _mask(key: str) -> str:
