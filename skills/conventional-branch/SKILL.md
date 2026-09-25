@@ -77,6 +77,6 @@ continuing.
    component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it
-> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
-> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
+> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
 > (the package is not published on PyPI).

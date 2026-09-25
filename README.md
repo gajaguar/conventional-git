@@ -155,7 +155,7 @@ CLI is available on `PATH`:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v0.2.1
+    rev: v0.3.0
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
@@ -180,7 +180,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.1
+          - git+https://github.com/gajaguar/conventional-git@v0.3.0
         stages: [commit-msg]
         pass_filenames: true
       - id: conventional-branch-name
@@ -189,7 +189,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.2.1
+          - git+https://github.com/gajaguar/conventional-git@v0.3.0
         stages: [pre-commit, pre-push]
         always_run: true
         pass_filenames: false
@@ -282,7 +282,7 @@ directory.
 ```
 
 The bundled MCP server (`.mcp.json`) is launched with
-`uvx --from 'conventional-git[mcp] @ git+...@v0.2.1' conventional-git-mcp`;
+`uvx --from 'conventional-git[mcp] @ git+...@v0.3.0' conventional-git-mcp`;
 it only needs `uv` on `PATH`, not a local install of the CLI.
 
 **Any other agent that supports Agent Skills** (Codex, Cursor, Gemini CLI,

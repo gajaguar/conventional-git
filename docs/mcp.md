@@ -17,7 +17,7 @@ machine-readable shape agents can self-correct against.
 
 The Claude Code plugin (see [Agents](../README.md#agents)) registers this
 server through the repo's `.mcp.json`, launched with
-`uvx --from 'conventional-git[mcp] @ git+...@v0.2.1' conventional-git-mcp`
+`uvx --from 'conventional-git[mcp] @ git+...@v0.3.0' conventional-git-mcp`
 (the full Git URL is in `.mcp.json`). That command needs only `uv` on
 `PATH` — no separate `conventional-git` install or `mcp` extra.
 `conventional-git capabilities --json` reports `extras.mcp` and
