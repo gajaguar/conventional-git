@@ -5,21 +5,9 @@ description: >-
   when the user says "create a branch", "new branch", "conventional branch",
   "start working on", "checkout a branch", or asks for branch naming help
   outside a ticket/module/team context.
-argument-hint: >-
-  [--ask]
-
-  Skill flags:
-    --ask    Show the drafted branch name and wait for approval before
-             creating it
-
-  Examples:
-    /conventional-branch
-    /conventional-branch --ask
-allowed-tools: Bash, Read, AskUserQuestion
-model: haiku
-effort: low
-context: fork
-agent: Bash
+license: MIT
+compatibility: Requires the conventional-git CLI (git, Python 3.14+, uv)
+allowed-tools: Bash Read AskUserQuestion
 ---
 
 # Conventional Branch
@@ -30,6 +18,13 @@ delegate all validation and the branch creation itself to
 `conventional-git create branch`. The CLI owns every deterministic rule (type
 validity, character set, segment/separator grammar, normalization); this
 skill only supplies the type and description.
+
+## Arguments
+
+- `--ask` — show the drafted branch name and wait for approval before
+  creating it.
+
+Examples: `/conventional-branch`, `/conventional-branch --ask`.
 
 ## Format
 
@@ -51,6 +46,11 @@ skill only supplies the type and description.
 
 - `current`: !`git branch --show-current`
 - `status`: !`git status --porcelain`
+
+If `current`/`status` above are empty or still show the literal `` !`...` ``
+text (the agent doesn't support this injection), run
+`git branch --show-current` and `git status --porcelain` yourself before
+continuing.
 
 ## Instructions
 
@@ -77,6 +77,6 @@ skill only supplies the type and description.
    component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it
-> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
-> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
+> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.3.0'`
 > (the package is not published on PyPI).

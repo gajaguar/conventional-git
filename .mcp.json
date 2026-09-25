@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "conventional-git": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "conventional-git[mcp] @ git+https://github.com/gajaguar/conventional-git@v0.3.0",
+        "conventional-git-mcp"
+      ]
+    }
+  }
+}

@@ -14,15 +14,16 @@ interpreter instead of shadowing it with its own; `jdx/mise-action`
 exports this env in CI, and it also applies for an end user with mise
 active who runs `uv tool install .`.
 
-| Tool                                         | Where                                              | Why                                      |
-| :------------------------------------------- | :------------------------------------------------- | :--------------------------------------- |
-| node, pnpm, python, uv                       | `mise.toml`                                        | bootstrap: nothing else can install them |
-| checkmake                                    | `mise.toml`                                        | Go binary, no ecosystem in this repo     |
-| pre-commit                                   | `mise.toml`                                        | meta-tool that runs everything else      |
-| cspell, markdownlint-cli2                    | `package.json`                                     | Node dev deps, lockfile-managed          |
-| ruff, mypy, pyright, pytest, pylint, gitlint | `pyproject.toml` `[dependency-groups].dev`         | Python dev deps, `uv.lock`-managed       |
-| typer                                        | `pyproject.toml` `[project.dependencies]`          | Python runtime deps, `uv.lock`-managed   |
-| gitlint, keyring, typesafe-sdk, mcp          | `pyproject.toml` `[project.optional-dependencies]` | Opt-in runtime extras, `uv.lock`-managed |
+| Tool                                         | Where                                              | Why                                           |
+| :------------------------------------------- | :------------------------------------------------- | :-------------------------------------------- |
+| node, pnpm, python, uv                       | `mise.toml`                                        | bootstrap: nothing else can install them      |
+| checkmake                                    | `mise.toml`                                        | Go binary, no ecosystem in this repo          |
+| pre-commit                                   | `mise.toml`                                        | meta-tool that runs everything else           |
+| cspell, markdownlint-cli2                    | `package.json`                                     | Node dev deps, lockfile-managed               |
+| ruff, mypy, pyright, pytest, pylint, gitlint | `pyproject.toml` `[dependency-groups].dev`         | Python dev deps, `uv.lock`-managed            |
+| skills-ref (`agentskills`)                   | `pyproject.toml` `[dependency-groups].dev`         | Python dev dep, validates `skills/*/SKILL.md` |
+| typer                                        | `pyproject.toml` `[project.dependencies]`          | Python runtime deps, `uv.lock`-managed        |
+| gitlint, keyring, typesafe-sdk, mcp          | `pyproject.toml` `[project.optional-dependencies]` | Opt-in runtime extras, `uv.lock`-managed      |
 
 `gitlint`, `keyring`, `typesafe-sdk`, and `mcp` are optional extras
 (`gitlint`, `llm`, `mcp`), since only the adapter or front-end that imports
