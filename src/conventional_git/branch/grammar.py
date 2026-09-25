@@ -25,9 +25,5 @@ def is_valid_type(type_part: str, allowed: frozenset[str]) -> bool:
     return type_part in allowed
 
 
-def is_valid_description(text: str) -> bool:
-    return bool(_BRANCH_NAME_PATTERN.match(f"dummy/{text}"))
-
-
 def description_max_length() -> int:
     return MAX_DESCRIPTION_LENGTH
