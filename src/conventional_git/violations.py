@@ -1,12 +1,30 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class Severity(Enum):
+class Severity(StrEnum):
     ERROR = "error"
     WARNING = "warning"
+
+
+class ViolationCode(StrEnum):
+    COMMIT_EMPTY = "commit.empty"
+    COMMIT_HEADER_FORMAT = "commit.header-format"
+    COMMIT_TYPE = "commit.type"
+    COMMIT_DESCRIPTION_FORMAT = "commit.description-format"
+    COMMIT_DESCRIPTION_TRAILING_PERIOD = "commit.description-trailing-period"
+    COMMIT_TITLE_LENGTH = "commit.title-length"
+    COMMIT_BODY_LINE_LENGTH = "commit.body-line-length"
+    COMMIT_BODY_BULLET = "commit.body-bullet"
+    COMMIT_MESSAGE_BYTES = "commit.message-bytes"
+    COMMIT_BREAKING_FOOTER = "commit.breaking-footer"
+    COMMIT_ATTRIBUTION = "commit.attribution"
+    BRANCH_FORMAT = "branch.format"
+    BRANCH_TYPE = "branch.type"
+    BRANCH_DESCRIPTION_EMPTY = "branch.description-empty"
+    BRANCH_DESCRIPTION_LENGTH = "branch.description-length"
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,22 +1,25 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import TYPE_CHECKING
-from typing import Literal
 
 if TYPE_CHECKING:
     from typing import Final
 
 _SECTION_MARKER: Final[str] = "diff --git "
-_ADDED: Final = "added"
-_DELETED: Final = "deleted"
-_MODIFIED: Final = "modified"
+
+
+class ChangeStatus(StrEnum):
+    ADDED = "added"
+    DELETED = "deleted"
+    MODIFIED = "modified"
 
 
 @dataclass(frozen=True, slots=True)
 class FileChange:
     path: str
-    status: Literal["added", "deleted", "modified"]
+    status: ChangeStatus
     added: int
     removed: int
 
@@ -36,9 +39,9 @@ def paths_from_diff(diff: str) -> tuple[str, ...]:
 def change_verb(changes: tuple[FileChange, ...]) -> str:
     if not changes:
         return "update"
-    if all(change.status == _ADDED for change in changes):
+    if all(change.status == ChangeStatus.ADDED for change in changes):
         return "add"
-    if all(change.status == _DELETED for change in changes):
+    if all(change.status == ChangeStatus.DELETED for change in changes):
         return "remove"
     added = sum(change.added for change in changes)
     removed = sum(change.removed for change in changes)
@@ -66,7 +69,7 @@ def _split_sections(diff: str) -> list[str]:
 
 @dataclass(slots=True)
 class _SectionState:
-    status: Literal["added", "deleted", "modified"] = _MODIFIED
+    status: ChangeStatus = ChangeStatus.MODIFIED
     path: str | None = None
     old_path: str | None = None
     added: int = 0
@@ -89,10 +92,10 @@ def _apply_line(state: _SectionState, line: str) -> None:
         state.in_hunk = True
         return
     if line.startswith("new file mode"):
-        state.status = _ADDED
+        state.status = ChangeStatus.ADDED
         return
     if line.startswith("deleted file mode"):
-        state.status = _DELETED
+        state.status = ChangeStatus.DELETED
         return
     if line.startswith("--- "):
         state.in_hunk = False
@@ -109,14 +112,14 @@ def _apply_line(state: _SectionState, line: str) -> None:
 
 def _apply_old_header(state: _SectionState, target: str) -> None:
     if target == "/dev/null":
-        state.status = _ADDED
+        state.status = ChangeStatus.ADDED
     elif target.startswith("a/"):
         state.old_path = target[2:]
 
 
 def _apply_new_header(state: _SectionState, target: str) -> None:
     if target == "/dev/null":
-        state.status = _DELETED
+        state.status = ChangeStatus.DELETED
     elif target.startswith("b/"):
         state.path = target[2:]
 
