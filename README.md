@@ -64,11 +64,6 @@ Install optional features with extras:
 uv tool install 'conventional-git[mcp,llm] @ git+https://github.com/gajaguar/conventional-git@main'
 ```
 
-The `v0.1.0` tag predates the `mcp` and `llm` extras, the `auth` commands, and
-the current hook installer, so install from `main` until a newer release is
-tagged. The pre-commit snippets below pin `v0.1.0` because its `check`
-commands already match.
-
 Contributors can clone the repository and install the local package instead:
 
 ```bash
@@ -155,7 +150,7 @@ CLI is available on `PATH`:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v0.1.0
+    rev: v0.2.0
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
@@ -180,7 +175,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.1.0
+          - git+https://github.com/gajaguar/conventional-git@v0.2.0
         stages: [commit-msg]
         pass_filenames: true
       - id: conventional-branch-name
@@ -189,7 +184,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v0.1.0
+          - git+https://github.com/gajaguar/conventional-git@v0.2.0
         stages: [pre-commit, pre-push]
         always_run: true
         pass_filenames: false
