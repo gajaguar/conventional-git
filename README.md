@@ -210,7 +210,8 @@ conventional-git create suggest --diff-file changes.diff --apply
 ```
 
 With the `llm` extra installed and a credential available, `create suggest`
-prefers the `jev` provider (TypeSafe's Jev model, routed through OpenRouter):
+prefers the `jev` provider (TypeSafe's Jev model, either called directly or
+routed through OpenRouter, depending on which credential resolves):
 
 ```bash
 conventional-git auth login    # prompts for and stores your OpenRouter API key
@@ -218,10 +219,16 @@ conventional-git auth status
 conventional-git create suggest --provider jev
 ```
 
+> **The staged diff is sent to TypeSafe or OpenRouter.** Enabling `jev`
+> means the diff text (and any secret staged in it) leaves the machine. See
+> [docs/llm.md](docs/llm.md) for exactly what's sent, credential scope, and
+> failure behavior before you enable it.
+
 Credentials resolve in this order: `TYPESAFE_API_KEY`, then
-`OPENROUTER_API_KEY`, then the OS keyring entry written by `auth login`. See
-[architecture](docs/architecture.md) for why this is opt-in in both the CLI
-and MCP, not one or the other.
+`OPENROUTER_API_KEY`, then the OS keyring entry written by `auth login`.
+`--apply` renders and validates the suggested message; it does not run
+`git commit` for you. See [architecture](docs/architecture.md) for why this
+is opt-in in both the CLI and MCP, not one or the other.
 
 ### Python library
 
