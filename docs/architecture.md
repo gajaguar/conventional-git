@@ -75,9 +75,12 @@ front-ends, not tied to one of them:
 - **Suggestion is opt-in.** `JevProvider` only registers when the `llm` extra
   (`typesafe-sdk`, `keyring`) is installed, and only answers when a
   `TYPESAFE_API_KEY` or `OPENROUTER_API_KEY` resolves (see
-  `generation/credentials.py`). Without either, `create suggest` and
-  `suggest_commit_message` fall back to `HeuristicProvider` and print a
-  notice; they never fail the command.
+  `generation/credentials.py`). Any `ProviderError` — missing credentials, a
+  connection failure, an authentication or rate-limit error from the SDK —
+  makes `create suggest` and `suggest_commit_message` fall back to
+  `HeuristicProvider` and print a notice; they never fail the command, unless
+  `--provider jev` was explicitly requested, in which case the CLI exits 1
+  with a one-line message instead.
 - This follows validation-vs-generation, not CLI-vs-MCP: MCP sampling (the
   spec mechanism that would let a server borrow the client's model) was
   deprecated upstream (SEP-2577, 2026-07-28) and Claude Code, Codex, and

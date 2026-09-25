@@ -26,6 +26,14 @@ def _env_without_llm_credentials() -> dict[str, str]:
     return env
 
 
+def _env_with_unreachable_jev_endpoint() -> dict[str, str]:
+    env = dict(os.environ)
+    env.pop("TYPESAFE_API_KEY", None)
+    env["OPENROUTER_API_KEY"] = "fake-key"
+    env["TYPESAFE_BASE_URL"] = "http://127.0.0.1:9"
+    return env
+
+
 def test_app_help_exits_zero() -> None:
     # Arrange
     # Act
@@ -274,6 +282,64 @@ def test_create_suggest_with_explicit_jev_provider_fails_without_credentials(tmp
     # Assert
     assert completed.returncode == 1
     assert "No TypeSafe or OpenRouter API key found" in completed.stderr
+
+
+def test_create_suggest_falls_back_to_heuristic_on_a_connection_error(tmp_path: Path) -> None:
+    # Arrange
+    diff_file = tmp_path / "sample.diff"
+    diff_file.write_text(_SAMPLE_DIFF, encoding="utf-8")
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "suggest",
+            "--diff-file",
+            str(diff_file),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_with_unreachable_jev_endpoint(),
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "Falling back to the heuristic provider" in completed.stderr
+    assert "Traceback" not in completed.stderr
+    assert "type: chore" in completed.stdout
+
+
+def test_create_suggest_with_explicit_jev_provider_exits_cleanly_on_a_connection_error(
+    tmp_path: Path,
+) -> None:
+    # Arrange
+    diff_file = tmp_path / "sample.diff"
+    diff_file.write_text(_SAMPLE_DIFF, encoding="utf-8")
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "suggest",
+            "--diff-file",
+            str(diff_file),
+            "--provider",
+            "jev",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_with_unreachable_jev_endpoint(),
+    )
+    # Assert
+    assert completed.returncode == 1
+    assert "Traceback" not in completed.stderr
+    last_line = completed.stderr.strip().splitlines()[-1]
+    assert last_line.startswith("jev provider failed:")
 
 
 def test_auth_status_reports_no_credentials_when_unset() -> None:

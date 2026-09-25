@@ -3,6 +3,7 @@ from __future__ import annotations
 from conventional_git.generation.heuristic import HeuristicProvider
 from conventional_git.generation.protocol import CommitSuggestion
 from conventional_git.generation.protocol import MissingCredentialsError
+from conventional_git.generation.protocol import ProviderError
 from conventional_git.generation.protocol import SuggestionProvider
 from conventional_git.generation.protocol import available_providers
 from conventional_git.generation.protocol import enable_optional_providers
@@ -13,6 +14,7 @@ __all__ = [
     "CommitSuggestion",
     "HeuristicProvider",
     "MissingCredentialsError",
+    "ProviderError",
     "SuggestionProvider",
     "available_providers",
     "enable_optional_providers",

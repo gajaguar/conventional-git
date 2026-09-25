@@ -71,3 +71,23 @@ def test_heuristic_handles_dev_null_paths() -> None:
     suggestion = provider.suggest(diff=diff)
     # Assert
     assert suggestion is not None
+
+
+def test_heuristic_suggests_add_description_for_a_new_file() -> None:
+    # Arrange
+    diff = (
+        "diff --git a/docs/usage.md b/docs/usage.md\n"
+        "new file mode 100644\n"
+        "--- /dev/null\n"
+        "+++ b/docs/usage.md\n"
+        "@@ -0,0 +1,3 @@\n"
+        "+# Usage\n"
+        "+\n"
+        "+See below.\n"
+    )
+    provider = HeuristicProvider()
+    # Act
+    suggestion = provider.suggest(diff=diff)
+    # Assert
+    assert suggestion is not None
+    assert suggestion.description == "add usage.md"

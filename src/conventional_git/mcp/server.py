@@ -11,6 +11,7 @@ from conventional_git.branch import vocabulary as branch_vocab
 from conventional_git.commit import grammar as commit_grammar
 from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
+from conventional_git.config import Config
 
 # pylint: disable-next=app-require-final,app-module-const-naming
 mcp = FastMCP("conventional-git")
@@ -52,11 +53,15 @@ def suggest_commit_message(diff: str, changed_paths: list[str] | None = None) ->
     provider = generation.get_provider(provider_name)
     if provider is None:
         return {"provider": None, "suggestion": None, "error": "No suggestion provider is registered."}
+    config = Config.load()
+    criteria = commit_vocab.merge_criteria(config.commit_type_overrides)
     try:
-        suggestion = provider.suggest(diff, changed_paths=tuple(changed_paths or ()))
-    except generation.MissingCredentialsError as error:
+        suggestion = provider.suggest(diff, changed_paths=tuple(changed_paths or ()), types=criteria)
+    except generation.ProviderError as error:
         heuristic = generation.get_provider("heuristic")
-        suggestion = heuristic.suggest(diff, changed_paths=tuple(changed_paths or ())) if heuristic else None
+        suggestion = (
+            heuristic.suggest(diff, changed_paths=tuple(changed_paths or ()), types=criteria) if heuristic else None
+        )
         return {
             "provider": "heuristic",
             "suggestion": asdict(suggestion) if suggestion else None,
