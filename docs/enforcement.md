@@ -109,7 +109,10 @@ gitlint --commits origin/main..HEAD
 
 ## Single-source vocabulary
 
-`data/{commit,branch}-types.csv` is read by the core (default vocabulary),
-by `commitizen_config.py` (which emits a `cz customize` `schema_pattern`
-from the same file), and by the SKILL.md files (so an agent's vocabulary
-read from the prompt matches what the validator enforces).
+`data/{commit,branch}-types.csv` is read by the core (default vocabulary) and
+by `commitizen_config.py` (which emits a `cz customize` `schema_pattern` from
+the same file). The SKILL.md files ship their own copy under
+`skills/*/references/`, because a distributed skill cannot read the
+installed package's `data/` directory; `tests/test_skill_vocabularies.py`
+keeps that copy byte-identical to `data/`, and `make test` fails if it
+drifts.

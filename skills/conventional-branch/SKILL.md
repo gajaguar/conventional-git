@@ -67,12 +67,16 @@ skill only supplies the type and description.
    ```
 
 4. If and only if the arguments contain `--ask`, MUST render the branch name
-   by running the command with `--dry-run`, present it with
-   `AskUserQuestion`, and create it only on approval. Otherwise, MUST create
-   it directly — creating without confirmation is the default behavior.
+   by running the command with `--dry-run` (an alias for the default
+   printing behavior kept for forward compatibility, in case the command
+   later gains side effects), present it with `AskUserQuestion`, and create
+   it only on approval. Otherwise, MUST create it directly — creating
+   without confirmation is the default behavior.
 5. MUST print the result of `git switch -c <name>` (the branch name). If either
    the CLI or `git switch -c` exits non-zero, MUST fix the offending
    component and retry.
 
 > NOTE: If `conventional-git` is not available, recommend the user install it
-> with `uv tool install conventional-git` or `pipx install conventional-git`.
+> with `uv tool install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> or `pipx install 'git+https://github.com/gajaguar/conventional-git@v0.2.1'`
+> (the package is not published on PyPI).
