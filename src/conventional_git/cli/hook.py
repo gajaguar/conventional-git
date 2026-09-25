@@ -53,7 +53,8 @@ def install_hook(
         "#!/usr/bin/env bash\n"
         f"{_MANAGED_BY}\n"
         "set -euo pipefail\n"
-        "current=$(git rev-parse --abbrev-ref HEAD)\n"
+        "# detached HEAD: no branch to validate\n"
+        "current=$(git symbolic-ref --quiet --short HEAD) || exit 0\n"
         'conventional-git check branch --name "$current"\n',
         force=force,
     )
