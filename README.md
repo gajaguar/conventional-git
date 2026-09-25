@@ -51,21 +51,35 @@ One rule runs on three surfaces:
 
 ## Installation
 
-Clone the repository and install the local package:
+Install the tool directly from GitHub:
+
+```bash
+uv tool install 'git+https://github.com/gajaguar/conventional-git@main'
+conventional-git --help
+```
+
+Install optional features with extras:
+
+```bash
+uv tool install 'conventional-git[mcp,llm] @ git+https://github.com/gajaguar/conventional-git@main'
+```
+
+The `v0.1.0` tag predates the `mcp` and `llm` extras, the `auth` commands, and
+the current hook installer, so install from `main` until a newer release is
+tagged. The pre-commit snippets below pin `v0.1.0` because its `check`
+commands already match.
+
+Contributors can clone the repository and install the local package instead:
 
 ```bash
 git clone https://github.com/gajaguar/conventional-git
 cd conventional-git
 uv tool install .
-conventional-git --help
 ```
 
-Install with the `gitlint` extra (`uv tool install '.[gitlint]'`) to use
-the gitlint adapter (`adapters/gitlint_rules.py`). Install with the `llm`
-extra (`uv tool install '.[llm]'`) to enable the `jev` suggestion provider
-(see [Suggest](#suggest)).
-
-The package is not published on PyPI.
+Install the `gitlint` extra (`uv tool install '.[gitlint]'`) to use the gitlint
+adapter (`adapters/gitlint_rules.py`). Install the `llm` extra (`uv tool install
+'.[llm]'`) to enable the `jev` suggestion provider (see [Suggest](#suggest)).
 
 ## Usage
 
@@ -120,19 +134,65 @@ conventional-git hook install --target ../my-repo --force
 conventional-git hook uninstall --target ../my-repo
 ```
 
-Omit `--target` to use the current repository. `hook uninstall` removes the
-three hooks created by the installer.
+Omit `--target` to use the current repository. The installer resolves Git's
+configured hooks path, so linked worktrees use the shared `.git/hooks` directory
+and `core.hooksPath` destinations such as `.husky` are honored. A note is
+printed when that destination is outside the default hooks directory because a
+tool such as husky may own it. `--force` overwrites existing hooks without a
+backup. `hook uninstall` removes only hooks containing the
+`# managed-by: conventional-git` marker and leaves other hooks in place.
 
-For the pre-commit framework, register the commit-message hook with
-`language: system` so the CLI is available on `PATH`:
+The hooks call `conventional-git` from `PATH`. Git does not version
+`.git/hooks`, so each contributor installs the CLI and runs `hook install`.
+
+For the pre-commit framework, register both hooks with `language: system` so the
+CLI is available on `PATH`:
 
 ```yaml
-- repo: https://github.com/gajaguar/conventional-git
-  rev: v0.1.0
-  hooks:
-    - id: conventional-commit-msg
-      language: system
+repos:
+  - repo: https://github.com/gajaguar/conventional-git
+    rev: v0.1.0
+    hooks:
+      - id: conventional-commit-msg
+      - id: conventional-branch-name
 ```
+
+Install all required hook types in the repository:
+
+```bash
+pre-commit install --hook-type commit-msg --hook-type pre-commit --hook-type pre-push
+```
+
+The framework can instead create an isolated Python environment without a
+globally installed CLI. This local hook configuration pins the same release:
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: conventional-commit-msg
+        name: conventional-git commit message
+        entry: conventional-git check commit --file
+        language: python
+        language_version: python3.14
+        additional_dependencies:
+          - git+https://github.com/gajaguar/conventional-git@v0.1.0
+        stages: [commit-msg]
+        pass_filenames: true
+      - id: conventional-branch-name
+        name: conventional-git branch name
+        entry: conventional-git check branch
+        language: python
+        language_version: python3.14
+        additional_dependencies:
+          - git+https://github.com/gajaguar/conventional-git@v0.1.0
+        stages: [pre-commit, pre-push]
+        always_run: true
+        pass_filenames: false
+```
+
+The hook environment requires Python >=3.14. The local configuration can drift
+from a separately installed global CLI.
 
 ### Suggest
 
@@ -218,11 +278,17 @@ Use `conventional-git <command> --help` for the full option descriptions.
 
 Create `.conventional-git.toml` in the current repository:
 
-| Key                             | Default | Purpose                                                   |
-| :------------------------------ | ------- | --------------------------------------------------------- |
-| `[commit] attribution_patterns` | `[]`    | Extra attribution patterns rejected by `check commit`     |
-| `[commit] type_overrides`       | `[]`    | CSV files extending commit types                          |
-| `[branch] type_overrides`       | `[]`    | CSV files intended to extend branch types                 |
+| Key                             | Default         | Purpose                   |
+| :------------------------------ | :-------------- | ------------------------- |
+| `[commit] attribution_patterns` | built-in list   | Extra attribution regexes |
+| `[commit] type_overrides`       | `[]`            | Extra commit types        |
+| `[branch] type_overrides`       | `[]`            | Extra branch types        |
+
+`attribution_patterns` extends the default patterns in
+`src/conventional_git/data/commit-attribution.csv`: `Co-Authored-By:`,
+`Generated with` / `Generated by`, and 🤖. Entries are case-insensitive regular
+expressions matched against each body line. The default patterns cannot
+currently be disabled; this is listed under [Open items](#open-items).
 
 The `--types-csv` option extends the default vocabulary; it does not replace
 it. Vocabulary files live in `data/{commit,branch}-types.csv`.
@@ -271,6 +337,7 @@ See [architecture](docs/architecture.md) and
 - `[branch] type_overrides` is ignored.
 - `--dry-run` has no effect beyond printing the generated value.
 - The MCP tools ignore configuration.
+- The default attribution patterns cannot currently be disabled.
 - The package is not published to PyPI.
 
 ## Contributing
