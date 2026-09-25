@@ -99,10 +99,15 @@ def check_branch(
         ),
     ] = None,
 ) -> None:
+    if name is None:
+        current = _current_branch()
+        if not current:
+            typer.echo("branch: skipped (detached HEAD)")
+            return
+        name = current
     config = Config.load()
     policy = branch_vocab.resolve_policy(config, extra_types_csv=types_csv, extra_trunks_csv=trunks_csv)
-    resolved_name = name if name is not None else _current_branch()
-    report = branch_rules.validate_name(resolved_name, allowed_types=policy.types, trunk_branches=policy.trunks)
+    report = branch_rules.validate_name(name, allowed_types=policy.types, trunk_branches=policy.trunks)
     _print_report("branch", report)
     _report_to_exit_code(valid=report.valid)
 
