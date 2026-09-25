@@ -38,7 +38,7 @@ checks via the `pre-commit` framework:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v0.2.0
+    rev: v0.2.1
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
@@ -53,7 +53,7 @@ pre-commit install --hook-type commit-msg --hook-type pre-commit --hook-type pre
 The `commit-msg` hook accepts `--file <path>` where pre-commit passes
 `.git/COMMIT_EDITMSG`. The published hooks use `language: system`, so
 `conventional-git` must be on `PATH`. A `repo: local` configuration can use
-`language: python` and `additional_dependencies: [git+https://github.com/gajaguar/conventional-git@v0.2.0]`
+`language: python` and `additional_dependencies: [git+https://github.com/gajaguar/conventional-git@v0.2.1]`
 to create an isolated environment without a global CLI. Set
 `language_version: python3.14`; the hook environment requires Python >=3.14.
 The local environment can drift from a separately installed global CLI.
@@ -109,7 +109,10 @@ gitlint --commits origin/main..HEAD
 
 ## Single-source vocabulary
 
-`data/{commit,branch}-types.csv` is read by the core (default vocabulary),
-by `commitizen_config.py` (which emits a `cz customize` `schema_pattern`
-from the same file), and by the SKILL.md files (so an agent's vocabulary
-read from the prompt matches what the validator enforces).
+`data/{commit,branch}-types.csv` is read by the core (default vocabulary) and
+by `commitizen_config.py` (which emits a `cz customize` `schema_pattern` from
+the same file). The SKILL.md files ship their own copy under
+`skills/*/references/`, because a distributed skill cannot read the
+installed package's `data/` directory; `tests/test_skill_vocabularies.py`
+keeps that copy byte-identical to `data/`, and `make test` fails if it
+drifts.

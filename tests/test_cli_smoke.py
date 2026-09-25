@@ -231,6 +231,31 @@ def test_create_branch_outputs_normalized_name() -> None:
     assert completed.stdout.strip() == "feature/add-oauth-login"
 
 
+def test_create_commit_dry_run_prints_message_only() -> None:
+    # Arrange
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "commit",
+            "--type",
+            "feat",
+            "--description",
+            "add oauth login",
+            "--dry-run",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert completed.stdout.strip() == "feat: add oauth login"
+
+
 def test_create_suggest_falls_back_to_heuristic_without_credentials(tmp_path: Path) -> None:
     # Arrange
     diff_file = tmp_path / "sample.diff"
