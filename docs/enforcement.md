@@ -74,9 +74,9 @@ git log --format=%B -n1 | conventional-git check commit
   generation come free later.
 - **House rules** (imperative mood, lowercase head, no trailing period,
   bullet bodies, ≤140 char body lines, ≤2048 byte messages) — `gitlint`
-  user rules via `extra-path`. Its `CommitRule` / `LineRule` API is
-  exactly this shape, and the rules are pure translations of
-  `Violation` objects.
+  user rules via `extra-path`. A single `CommitRule` hands the whole
+  message to the core and translates the `Violation` objects, so the
+  gitlint verdict matches `conventional-git check commit`.
 - **Attribution trailers** — the core rejects `Co-Authored-By:` trailers
   (human or AI), `Generated with …` lines and 🤖 markers as
   `commit.attribution` errors; `[commit] attribution_patterns` in

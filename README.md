@@ -78,8 +78,20 @@ uv tool install .
 ```
 
 Install the `gitlint` extra (`uv tool install '.[gitlint]'`) to use the gitlint
-adapter (`adapters/gitlint_rules.py`). Install the `llm` extra (`uv tool install
-'.[llm]'`) to enable the `jev` suggestion provider (see [Suggest](#suggest)).
+adapter (`adapters/gitlint_rules.py`). Load it from `.gitlint` at the repository
+root, ignoring the built-in rules that contradict the core; `.conventional-git.toml`
+is honored:
+
+```ini
+[general]
+extra-path = /path/to/conventional-git/src/conventional_git/adapters/gitlint_rules.py
+ignore = B1,B5,B6,T1,T3,T5
+```
+
+Add `[CG1]` with `warnings = true` to also report core warnings (which do not
+fail `conventional-git check commit`) as gitlint violations. Install the `llm`
+extra (`uv tool install '.[llm]'`) to enable the `jev` suggestion provider (see
+[Suggest](#suggest)).
 
 ## Usage
 
