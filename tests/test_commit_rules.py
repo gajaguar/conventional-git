@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from conventional_git.commit.rules import validate_message
 from conventional_git.violations import Severity
 
@@ -37,6 +39,33 @@ def test_breaking_marker_requires_footer() -> None:
     # Assert
     assert not report.valid
     assert any(v.code == "commit.breaking-footer" for v in report.violations)
+
+
+@pytest.mark.parametrize(
+    ("footer", "expected_violation"),
+    [
+        ("BREAKING CHANGE: drop v1", None),
+        ("BREAKING-CHANGE: drop v1", None),
+        ("- see BREAKING CHANGE: drop v1", "commit.breaking-footer"),
+        ("  BREAKING CHANGE: drop v1", "commit.breaking-footer"),
+        ("BREAKING CHANGE:", "commit.breaking-footer"),
+        ("BREAKING CHANGE:   ", "commit.breaking-footer"),
+        ("BREAKING CHANGE:\ndrop v1", "commit.breaking-footer"),
+    ],
+)
+def test_breaking_footer_requires_line_start_and_nonblank_same_line_value(
+    footer: str, expected_violation: str | None
+) -> None:
+    # Arrange
+    message = f"feat!: x\n\n{footer}"
+    # Act
+    report = validate_message(message)
+    # Assert
+    violation_codes = {violation.code for violation in report.violations}
+    if expected_violation is None:
+        assert "commit.breaking-footer" not in violation_codes
+    else:
+        assert expected_violation in violation_codes
 
 
 def test_title_length_violation() -> None:

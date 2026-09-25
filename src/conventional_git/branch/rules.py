@@ -73,7 +73,7 @@ def validate_name(
     branch_type = parsed["type"]
     description = parsed["description"]
 
-    if branch_type not in types:
+    if not grammar.is_valid_type(branch_type, types):
         violations.append(
             _violation(
                 "branch.type",

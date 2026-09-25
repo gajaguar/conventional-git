@@ -7,14 +7,15 @@ if TYPE_CHECKING:
     from typing import Final
 
 MAX_TITLE_LENGTH: Final[int] = 120
-MAX_DESCRIPTION_LENGTH: Final[int] = MAX_TITLE_LENGTH - 8
 
 _DESCRIPTION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z0-9].*$")
-_SCOPE_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z0-9.\-]+$")
-_BREAKING_FOOTER_PATTERN: Final[re.Pattern[str]] = re.compile(r"^BREAKING CHANGE:\s*.+", re.MULTILINE)
+_SCOPE: Final[str] = r"[a-z0-9.\-]+"
+_SCOPE_PATTERN: Final[re.Pattern[str]] = re.compile(rf"^{_SCOPE}$")
+# §16 allows BREAKING-CHANGE; line anchoring and spaces keep its nonblank value on that line.
+_BREAKING_FOOTER_PATTERN: Final[re.Pattern[str]] = re.compile(r"^BREAKING[ -]CHANGE: *\S.*$", re.MULTILINE)
 _TITLE_PATTERN: Final[re.Pattern[str]] = re.compile(
     r"^(?P<type>[a-z]+)"
-    r"(?:\((?P<scope>[a-z0-9.\-]+)\))?"
+    rf"(?:\((?P<scope>{_SCOPE})\))?"
     r"(?P<breaking>!)?"
     r": (?P<description>.+)$"
 )
@@ -42,10 +43,6 @@ def has_breaking_footer(message: str) -> bool:
 
 def title_length(title: str) -> int:
     return len(title)
-
-
-def description_max_length() -> int:
-    return MAX_DESCRIPTION_LENGTH
 
 
 def title_max_length() -> int:
