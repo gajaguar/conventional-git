@@ -5,10 +5,12 @@ from conventional_git.generation.protocol import CommitSuggestion
 from conventional_git.generation.protocol import MissingCredentialsError
 from conventional_git.generation.protocol import ProviderError
 from conventional_git.generation.protocol import SuggestionProvider
+from conventional_git.generation.protocol import SuggestionResult
 from conventional_git.generation.protocol import available_providers
 from conventional_git.generation.protocol import enable_optional_providers
 from conventional_git.generation.protocol import get_provider
 from conventional_git.generation.protocol import register_provider
+from conventional_git.generation.protocol import suggest
 
 __all__ = [
     "CommitSuggestion",
@@ -16,8 +18,10 @@ __all__ = [
     "MissingCredentialsError",
     "ProviderError",
     "SuggestionProvider",
+    "SuggestionResult",
     "available_providers",
     "enable_optional_providers",
     "get_provider",
     "register_provider",
+    "suggest",
 ]
