@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import TYPE_CHECKING
-from typing import NoReturn
-
-import typer
 
 from conventional_git.commit import vocabulary as commit_vocabulary
 from conventional_git.config import Config
@@ -21,8 +17,6 @@ DEFAULT_ATTRIBUTION_PATTERN: Final[re.Pattern[str]] = re.compile(
     "|".join((*commit_vocabulary.default_attribution_patterns(), *_GENERATOR_ONLY_PATTERNS)),
     re.IGNORECASE,
 )
-MAX_BODY_LINE_LENGTH: Final[int] = 140
-MAX_MESSAGE_BYTES: Final[int] = 2048
 
 
 def _compile(config: Config) -> re.Pattern[str]:
@@ -43,27 +37,3 @@ def strip_attribution(raw: str | None, *, config: Config | None = None) -> list[
             continue
         lines.append(stripped)
     return lines
-
-
-def check_body_line_length(line: str) -> None:
-    if len(line) > MAX_BODY_LINE_LENGTH:
-        fail(f"Body line exceeds {MAX_BODY_LINE_LENGTH} characters ({len(line)}): {line}")
-
-
-def fail(message: str) -> NoReturn:
-    typer.echo(message, err=True)
-    raise SystemExit(1)
-
-
-def message_max_bytes() -> int:
-    return MAX_MESSAGE_BYTES
-
-
-def body_line_max() -> int:
-    return MAX_BODY_LINE_LENGTH
-
-
-def load_config(path: str | Path | None = None) -> Config:
-    if path is None:
-        return Config.load()
-    return Config.load(Path(path))
