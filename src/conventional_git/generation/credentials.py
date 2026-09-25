@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import keyring
@@ -13,33 +14,79 @@ if TYPE_CHECKING:
     from typing import Final
 
 _SERVICE: Final[str] = "conventional-git"
-_TYPESAFE_ENV: Final[str] = "TYPESAFE_API_KEY"
-_OPENROUTER_ENV: Final[str] = "OPENROUTER_API_KEY"
-_OPENROUTER_KEYRING_USER: Final[str] = "openrouter"
+
+# Order doubles as resolution priority: env vars are checked in this order,
+# then the keyring entries are checked in this same order.
+PROVIDERS: Final[tuple[str, ...]] = ("typesafe", "openrouter")
+
+_ENV_VARS: Final[dict[str, str]] = {
+    "typesafe": "TYPESAFE_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
+}
 
 
-def resolve_typesafe_key() -> str | None:
-    key = os.environ.get(_TYPESAFE_ENV, "").strip()
+@dataclass(frozen=True, slots=True)
+class Credential:
+    provider: str
+    key: str
+    source: str  # "env" or "keyring"
+
+
+def env_var_name(provider: str) -> str:
+    return _ENV_VARS[provider]
+
+
+def env_key(provider: str) -> str | None:
+    key = os.environ.get(env_var_name(provider), "").strip()
     return key or None
 
 
-def resolve_openrouter_key() -> str | None:
-    key = os.environ.get(_OPENROUTER_ENV, "").strip()
-    if key:
-        return key
+def stored_key(provider: str) -> str | None:
     with contextlib.suppress(KeyringError):
-        return keyring.get_password(_SERVICE, _OPENROUTER_KEYRING_USER)
+        key = keyring.get_password(_SERVICE, provider)
+        return key.strip() if key and key.strip() else None
     return None
 
 
-def store_openrouter_key(key: str) -> None:
+def resolve_credential(provider: str) -> Credential | None:
+    key = env_key(provider)
+    if key:
+        return Credential(provider=provider, key=key, source="env")
+    key = stored_key(provider)
+    if key:
+        return Credential(provider=provider, key=key, source="keyring")
+    return None
+
+
+def resolve_active_credential() -> Credential | None:
+    for provider in PROVIDERS:
+        key = env_key(provider)
+        if key:
+            return Credential(provider=provider, key=key, source="env")
+    for provider in PROVIDERS:
+        key = stored_key(provider)
+        if key:
+            return Credential(provider=provider, key=key, source="keyring")
+    return None
+
+
+def store_key(provider: str, key: str) -> None:
+    if provider not in PROVIDERS:
+        message = f"Unknown provider {provider!r}"
+        raise ValueError(message)
     try:
-        keyring.set_password(_SERVICE, _OPENROUTER_KEYRING_USER, key)
+        keyring.set_password(_SERVICE, provider, key)
     except KeyringError as error:
-        message = f"No usable OS keyring backend is available: {error}"
+        message = (
+            f"No usable OS keyring backend is available: {error}. "
+            f"Set {env_var_name(provider)} in the environment instead."
+        )
         raise MissingCredentialsError(message) from error
 
 
-def clear_openrouter_key() -> None:
+def clear_key(provider: str) -> None:
+    if provider not in PROVIDERS:
+        message = f"Unknown provider {provider!r}"
+        raise ValueError(message)
     with contextlib.suppress(KeyringError):
-        keyring.delete_password(_SERVICE, _OPENROUTER_KEYRING_USER)
+        keyring.delete_password(_SERVICE, provider)

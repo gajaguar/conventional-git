@@ -214,7 +214,7 @@ prefers the `jev` provider (TypeSafe's Jev model, either called directly or
 routed through OpenRouter, depending on which credential resolves):
 
 ```bash
-conventional-git auth login    # prompts for and stores your OpenRouter API key
+conventional-git auth login --provider openrouter  # or --provider typesafe
 conventional-git auth status
 conventional-git create suggest --provider jev
 ```
@@ -225,7 +225,10 @@ conventional-git create suggest --provider jev
 > failure behavior before you enable it.
 
 Credentials resolve in this order: `TYPESAFE_API_KEY`, then
-`OPENROUTER_API_KEY`, then the OS keyring entry written by `auth login`.
+`OPENROUTER_API_KEY`, then the keyring entry written by
+`auth login --provider typesafe`, then the one written by
+`auth login --provider openrouter` (the default). `auth logout [--provider ...]`
+removes one entry, or all of them when no provider is given.
 `--apply` renders and validates the suggested message; it does not run
 `git commit` for you. See [architecture](docs/architecture.md) for why this
 is opt-in in both the CLI and MCP, not one or the other.

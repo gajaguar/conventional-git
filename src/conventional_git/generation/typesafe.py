@@ -52,16 +52,19 @@ def _description_candidates(paths: tuple[str, ...], commit_type: str, diff: str)
 
 
 def _build_client() -> TypeSafeClient:
-    typesafe_key = credentials.resolve_typesafe_key()
-    if typesafe_key:
-        return TypeSafeClient(api_key=typesafe_key)
-    openrouter_key = credentials.resolve_openrouter_key()
-    if not openrouter_key:
-        message = "No TypeSafe or OpenRouter API key found. Run 'conventional-git auth login'."
+    credential = credentials.resolve_active_credential()
+    if credential is None:
+        message = (
+            "No TypeSafe or OpenRouter API key found. Set TYPESAFE_API_KEY or "
+            "OPENROUTER_API_KEY, or run 'conventional-git auth login --provider "
+            "typesafe|openrouter'."
+        )
         raise MissingCredentialsError(message)
+    if credential.provider == "typesafe":
+        return TypeSafeClient(api_key=credential.key)
     base_url = os.environ.get(_BASE_URL_ENV, "").strip() or _OPENROUTER_BASE_URL
     model = os.environ.get(_MODEL_ENV, "").strip() or _OPENROUTER_MODEL
-    return TypeSafeClient(api_key=openrouter_key, base_url=base_url, model=model)
+    return TypeSafeClient(api_key=credential.key, base_url=base_url, model=model)
 
 
 class JevProvider:

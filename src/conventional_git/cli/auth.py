@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import Annotated
 
 import typer
 
@@ -21,6 +22,10 @@ app = typer.Typer(help="Manage credentials for LLM-backed suggestion providers (
 
 _INSTALL_HINT: Final[str] = "Install the LLM extra first: pip install 'conventional-git[llm]'"
 _MASK_MIN_VISIBLE_LENGTH: Final[int] = 4
+_DISPLAY_NAMES: Final[dict[str, str]] = {
+    "typesafe": "TypeSafe",
+    "openrouter": "OpenRouter",
+}
 
 
 def _require_credentials() -> ModuleType:
@@ -30,40 +35,70 @@ def _require_credentials() -> ModuleType:
     return credentials
 
 
+def _require_provider(creds: ModuleType, provider: str) -> None:
+    if provider not in creds.PROVIDERS:
+        available = ", ".join(creds.PROVIDERS)
+        typer.echo(f"Unknown provider {provider!r}. Available: {available}", err=True)
+        raise typer.Exit(2)
+
+
 @app.command("login")
-def login() -> None:
+def login(
+    provider: Annotated[
+        str,
+        typer.Option("--provider", help="Which provider to store a key for (typesafe or openrouter)"),
+    ] = "openrouter",
+) -> None:
     creds = _require_credentials()
-    key = typer.prompt("OpenRouter API key", hide_input=True)
+    _require_provider(creds, provider)
+    key = typer.prompt(f"{_DISPLAY_NAMES[provider]} API key", hide_input=True)
     if not key.strip():
         typer.echo("Refusing to store an empty key.", err=True)
         raise typer.Exit(1)
     try:
-        creds.store_openrouter_key(key.strip())
+        creds.store_key(provider, key.strip())
     except MissingCredentialsError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(1) from error
-    typer.echo("Stored the OpenRouter API key in the OS keyring.")
+    typer.echo(f"Stored the {_DISPLAY_NAMES[provider]} API key in the OS keyring.")
 
 
 @app.command("status")
 def status() -> None:
     creds = _require_credentials()
-    typesafe_key = creds.resolve_typesafe_key()
-    if typesafe_key:
-        typer.echo(f"TypeSafe key: env (TYPESAFE_API_KEY), {_mask(typesafe_key)}")
-        return
-    openrouter_key = creds.resolve_openrouter_key()
-    if openrouter_key:
-        typer.echo(f"OpenRouter key: available, {_mask(openrouter_key)}")
-        return
-    typer.echo("No credentials found. Run 'conventional-git auth login'.")
+    active = creds.resolve_active_credential()
+    found_any = False
+    for provider in creds.PROVIDERS:
+        credential = creds.resolve_credential(provider)
+        name = _DISPLAY_NAMES[provider]
+        if credential is None:
+            typer.echo(f"{name}: not set")
+            continue
+        found_any = True
+        env_var = creds.env_var_name(provider)
+        source = f"env ({env_var})" if credential.source == "env" else "keyring"
+        marker = " (active)" if active is not None and active.provider == provider else ""
+        typer.echo(f"{name}: {source}, {_mask(credential.key)}{marker}")
+    if not found_any:
+        typer.echo("No credentials found. Run 'conventional-git auth login'.")
 
 
 @app.command("logout")
-def logout() -> None:
+def logout(
+    provider: Annotated[
+        str | None,
+        typer.Option("--provider", help="Which provider's stored key to remove (default: all)"),
+    ] = None,
+) -> None:
     creds = _require_credentials()
-    creds.clear_openrouter_key()
-    typer.echo("Removed the stored OpenRouter API key.")
+    if provider is None:
+        for name in creds.PROVIDERS:
+            creds.clear_key(name)
+        typer.echo("Removed all stored API keys.")
+        return
+    _require_provider(creds, provider)
+    creds.clear_key(provider)
+    typer.echo(f"Removed the stored {_DISPLAY_NAMES[provider]} API key.")
 
 
 def _mask(key: str) -> str:

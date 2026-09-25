@@ -24,13 +24,14 @@ hooks, CI) never calls an LLM regardless of what's installed.
 
 ## Providers and credentials
 
-| Credential resolves                                          | Talks to          | Base URL (default)          | Model (default)     |
-| ------------------------------------------------------------ | ----------------- | --------------------------- | ------------------- |
-| `TYPESAFE_API_KEY`                                           | TypeSafe directly | `https://api.typesafe.ai`   | `jev-latest`        |
-| `OPENROUTER_API_KEY`, or the keyring entry from `auth login` | OpenRouter        | `https://openrouter.ai/api` | `typesafe/jev-1.13` |
+| Credential resolves                                                       | Talks to          | Base URL (default)          | Model (default)     |
+| ------------------------------------------------------------------------- | ----------------- | --------------------------- | ------------------- |
+| `TYPESAFE_API_KEY`, or the `typesafe` keyring entry from `auth login`     | TypeSafe directly | `https://api.typesafe.ai`   | `jev-latest`        |
+| `OPENROUTER_API_KEY`, or the `openrouter` keyring entry from `auth login` | OpenRouter        | `https://openrouter.ai/api` | `typesafe/jev-1.13` |
 
-Credentials resolve in that order — `TYPESAFE_API_KEY` first, then
-`OPENROUTER_API_KEY`, then the OS keyring (`generation/credentials.py`).
+Credentials resolve in that order — `TYPESAFE_API_KEY`, then
+`OPENROUTER_API_KEY`, then the `typesafe` keyring entry, then the
+`openrouter` keyring entry (`generation/credentials.py`).
 
 `TYPESAFE_BASE_URL` and `TYPESAFE_DEFAULT_MODEL` override the endpoint and
 model on **both** paths: the TypeSafe SDK itself reads them when a
@@ -40,12 +41,15 @@ differ between the two paths.
 
 ## Keyring scope
 
-`conventional-git auth login` stores only an **OpenRouter** key, in the OS
-keyring under service `conventional-git`, user `openrouter`. `auth logout`
-clears that same entry. There is no keyring storage for a TypeSafe key — set
-`TYPESAFE_API_KEY` in the environment to use it. `auth status` reports
-whichever credential would actually be used (`TYPESAFE_API_KEY` first, then
-the resolved OpenRouter key), not the keyring contents specifically.
+`conventional-git auth login --provider typesafe|openrouter` stores one key
+per provider, in the OS keyring under service `conventional-git`, user
+`typesafe` or `openrouter` (default: `openrouter`, which keeps the
+pre-existing entry compatible). `auth logout --provider ...` removes one
+entry; `auth logout` with no flag removes both. `auth status` lists every
+provider, its source (`env` or `keyring`) and which one `_build_client()`
+would actually use. There is no plaintext fallback: without a usable OS
+keyring backend, `auth login` fails with a message pointing at the
+environment variables instead.
 
 Without the `llm` extra installed, the `auth` subcommands still appear in
 `--help` but each one prints an install hint and exits 1.
