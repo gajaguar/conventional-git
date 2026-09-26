@@ -4,27 +4,29 @@
 [![Python CI](https://img.shields.io/github/actions/workflow/status/gajaguar/conventional-git/python.yml?style=flat-square&label=python)](https://github.com/gajaguar/conventional-git/actions/workflows/python.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.14-blue.svg?style=flat-square)](pyproject.toml)
-[![Topics](https://img.shields.io/badge/topics-pre--commit%20%7C%20mcp%20%7C%20conventional--commits%20%7C%20conventional--branch%20%7C%20validation-informational?style=flat-square)](https://github.com/gajaguar/conventional-git)
+[![Topics](https://img.shields.io/badge/topics-cli%20%7C%20conventional--branch%20%7C%20conventional--commits%20%7C%20git%20%7C%20mcp--server%20%7C%20pre--commit--hook%20%7C%20python%20%7C%20validation-informational?style=flat-square)](https://github.com/gajaguar/conventional-git)
 
 Conventional Commits and Conventional Branch enforcement, validation, and
 generation
 
 ## Contents
 
-- [Why](#why)
+- [About](#about)
 - [Key features](#key-features)
-- [Prerequisites](#prerequisites)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Agents](#agents)
 - [CLI reference](#cli-reference)
 - [Configuration](#configuration)
 - [Architecture](#architecture)
+- [Platform notes](#platform-notes)
+- [Documentation](#documentation)
 - [Open items](#open-items)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Why
+## About
 
 One rule runs on three surfaces:
 
@@ -47,7 +49,7 @@ One rule runs on three surfaces:
 - Distribute as a Claude Code plugin and an Agent Skills-compliant
   `skills/` directory.
 
-## Prerequisites
+## Requirements
 
 - Git
 - Python >=3.14
@@ -56,17 +58,17 @@ One rule runs on three surfaces:
 
 ## Installation
 
-Install the tool directly from GitHub:
+Install the tool from PyPI:
 
 ```bash
-uv tool install 'git+https://github.com/gajaguar/conventional-git@main'
+uv tool install conventional-git
 conventional-git --help
 ```
 
 Install optional features with extras:
 
 ```bash
-uv tool install 'conventional-git[mcp,llm] @ git+https://github.com/gajaguar/conventional-git@main'
+uv tool install 'conventional-git[mcp,llm]'
 ```
 
 Contributors can clone the repository and install the local package instead:
@@ -77,13 +79,10 @@ cd conventional-git
 uv tool install .
 ```
 
-Install the `gitlint` extra (`uv tool install '.[gitlint]'`) to use the gitlint
-adapter (`adapters/gitlint_rules.py`) — useful for repositories that already
-run gitlint, or for checking a range of commits in CI. See
-[`docs/gitlint.md`](docs/gitlint.md) for when to reach for it, how to locate
-and wire up `extra-path`, and the recommended `.gitlint`. Install the `llm`
-extra (`uv tool install '.[llm]'`) to enable the `jev` suggestion provider (see
-[Suggest](#suggest)).
+Install the `gitlint` extra to use the gitlint adapter for a repository that
+already runs gitlint, or to check a whole commit range in CI — see
+[`docs/gitlint/index.md`](docs/gitlint/index.md). Install the `llm` extra to
+enable the `jev` suggestion provider (see [Suggest](#suggest)).
 
 ## Usage
 
@@ -110,9 +109,9 @@ conventional-git check branch -n feat/add-login
 conventional-git check branch
 ```
 
-The branch command uses the same exit codes: `0` for valid and `1` for an
-invalid name. Trunk branches listed in `data/branch-trunks.csv` (`main`,
-`master`, `develop`) are always valid and skip the `<type>/` requirement.
+The branch command uses the same exit codes. Trunk branches listed in
+`data/branch-trunks.csv` (`main`, `master`, `develop`) are always valid and
+skip the `<type>/` requirement.
 
 ### Generate
 
@@ -134,69 +133,13 @@ Install `commit-msg`, `pre-commit`, and `pre-push` hooks in a repository:
 
 ```bash
 conventional-git hook install --target ../my-repo
-conventional-git hook install --target ../my-repo --force
-conventional-git hook uninstall --target ../my-repo
 ```
 
-Omit `--target` to use the current repository. The installer resolves Git's
-configured hooks path, so linked worktrees use the shared `.git/hooks` directory
-and `core.hooksPath` destinations such as `.husky` are honored. A note is
-printed when that destination is outside the default hooks directory because a
-tool such as husky may own it. `--force` overwrites existing hooks without a
-backup. `hook uninstall` removes only hooks containing the
-`# managed-by: conventional-git` marker and leaves other hooks in place.
-
-The hooks call `conventional-git` from `PATH`. Git does not version
-`.git/hooks`, so each contributor installs the CLI and runs `hook install`.
-
-For the pre-commit framework, register both hooks with `language: system` so the
-CLI is available on `PATH`:
-
-```yaml
-repos:
-  - repo: https://github.com/gajaguar/conventional-git
-    rev: v1.0.0
-    hooks:
-      - id: conventional-commit-msg
-      - id: conventional-branch-name
-```
-
-Install all required hook types in the repository:
-
-```bash
-pre-commit install --hook-type commit-msg --hook-type pre-commit --hook-type pre-push
-```
-
-The framework can instead create an isolated Python environment without a
-globally installed CLI. This local hook configuration pins the same release:
-
-```yaml
-repos:
-  - repo: local
-    hooks:
-      - id: conventional-commit-msg
-        name: conventional-git commit message
-        entry: conventional-git check commit --file
-        language: python
-        language_version: python3.14
-        additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v1.0.0
-        stages: [commit-msg]
-        pass_filenames: true
-      - id: conventional-branch-name
-        name: conventional-git branch name
-        entry: conventional-git check branch
-        language: python
-        language_version: python3.14
-        additional_dependencies:
-          - git+https://github.com/gajaguar/conventional-git@v1.0.0
-        stages: [pre-commit, pre-push]
-        always_run: true
-        pass_filenames: false
-```
-
-The hook environment requires Python >=3.14. The local configuration can drift
-from a separately installed global CLI.
+Omit `--target` to use the current repository. See
+[`docs/enforcement/index.md`](docs/enforcement/index.md) for how the
+installer handles worktrees and `core.hooksPath`, wiring the hooks through
+the pre-commit framework instead, and the CI recipe for re-checking after
+`--no-verify`.
 
 ### Suggest
 
@@ -211,27 +154,17 @@ conventional-git create suggest --diff-file changes.diff --apply
 
 With the `llm` extra installed and a credential available, `create suggest`
 prefers the `jev` provider (TypeSafe's Jev model, either called directly or
-routed through OpenRouter, depending on which credential resolves):
+routed through OpenRouter):
 
 ```bash
 conventional-git auth login --provider openrouter  # or --provider typesafe
-conventional-git auth status
 conventional-git create suggest --provider jev
 ```
 
 > **The staged diff is sent to TypeSafe or OpenRouter.** Enabling `jev`
 > means the diff text (and any secret staged in it) leaves the machine. See
-> [docs/llm.md](docs/llm.md) for exactly what's sent, credential scope, and
-> failure behavior before you enable it.
-
-Credentials resolve in this order: `TYPESAFE_API_KEY`, then
-`OPENROUTER_API_KEY`, then the keyring entry written by
-`auth login --provider typesafe`, then the one written by
-`auth login --provider openrouter` (the default). `auth logout [--provider ...]`
-removes one entry, or all of them when no provider is given.
-`--apply` renders and validates the suggested message; it does not run
-`git commit` for you. See [architecture](docs/architecture.md) for why this
-is opt-in in both the CLI and MCP, not one or the other.
+> [`docs/suggestions/index.md`](docs/suggestions/index.md) for exactly
+> what's sent, credential scope, and failure behavior before you enable it.
 
 ### Python library
 
@@ -249,9 +182,8 @@ Each call returns a `Report` containing `Violation` objects.
 
 ### MCP
 
-Requires the `mcp` extra: `pip install 'conventional-git[mcp]'` (or
-`uv pip install 'conventional-git[mcp]'`). Serve the Model Context Protocol
-over standard input and output:
+Requires the `mcp` extra: `pip install 'conventional-git[mcp]'`. Serve the
+Model Context Protocol over standard input and output:
 
 ```bash
 conventional-git mcp serve
@@ -265,7 +197,7 @@ uvx --from 'conventional-git[mcp]' conventional-git-mcp
 
 The server exposes `validate_commit_message`, `validate_branch_name`,
 `describe_convention`, and `suggest_commit_message`. See
-[MCP documentation](docs/mcp.md).
+[`docs/mcp/index.md`](docs/mcp/index.md).
 
 ## Agents
 
@@ -281,9 +213,8 @@ directory.
 /plugin install conventional-git@conventional-git-skills
 ```
 
-The bundled MCP server (`.mcp.json`) is launched with
-`uvx --from 'conventional-git[mcp] @ git+...@v1.0.0' conventional-git-mcp`;
-it only needs `uv` on `PATH`, not a local install of the CLI.
+See [`docs/mcp/plugin-bundled-server.md`](docs/mcp/plugin-bundled-server.md)
+for how the bundled `.mcp.json` launches the server.
 
 **Any other agent that supports Agent Skills** (Codex, Cursor, Gemini CLI,
 Copilot, ...):
@@ -323,23 +254,19 @@ Use `conventional-git <command> --help` for the full option descriptions.
 
 Create `.conventional-git.toml` in the current repository:
 
-| Key                             | Default         | Purpose                   |
-| :------------------------------ | :-------------- | ------------------------- |
-| `[commit] attribution_patterns` | built-in list   | Extra attribution regexes |
-| `[commit] type_overrides`       | `[]`            | Extra commit types        |
-| `[branch] type_overrides`       | `[]`            | Extra branch types        |
-| `[branch] trunk_overrides`      | `[]`            | Extra trunk branch names  |
+| Key                             | Default       | Purpose                   |
+| :------------------------------ | :------------ | ------------------------- |
+| `[commit] attribution_patterns` | built-in list | Extra attribution regexes |
+| `[commit] type_overrides`       | `[]`          | Extra commit types        |
+| `[branch] type_overrides`       | `[]`          | Extra branch types        |
+| `[branch] trunk_overrides`      | `[]`          | Extra trunk branch names  |
 
 Relative CSV paths in `type_overrides` / `trunk_overrides` are resolved
 against the directory containing `.conventional-git.toml`, not the process's
 current directory. Every consumer that loads the file — the CLI, the MCP
-server, and the gitlint adapter — honors it.
-
-`attribution_patterns` extends the default patterns in
-`src/conventional_git/data/commit-attribution.csv`: `Co-Authored-By:`,
-`Generated with` / `Generated by`, and 🤖. Entries are case-insensitive regular
-expressions matched against each body line. The default patterns cannot
-currently be disabled; this is listed under [Open items](#open-items).
+server, and the gitlint adapter — honors it. See
+[`docs/enforcement/attribution-trailers.md`](docs/enforcement/attribution-trailers.md)
+for what `attribution_patterns` extends.
 
 The `--types-csv` option extends the default vocabulary; it does not replace
 it. Vocabulary files live in `data/{commit,branch}-types.csv`.
@@ -357,10 +284,7 @@ flowchart TD
 
 The spec core contains the rules and returns `Report` objects. Adapters map
 violations to consumer tools. Front-ends map user or agent input to the core
-and render its output.
-
-See [architecture](docs/architecture.md) and
-[enforcement](docs/enforcement.md) for the detailed design.
+and render its output. See [`docs/architecture/index.md`](docs/architecture/index.md).
 
 ```text
 .
@@ -383,6 +307,20 @@ See [architecture](docs/architecture.md) and
 └── tests/
 ```
 
+## Platform notes
+
+Git does not version `.git/hooks`, so each contributor installs the CLI and
+runs `hook install` themselves rather than relying on a committed hook
+script. A repository with `core.hooksPath` pointing elsewhere (for example
+`.husky/`, set by another tool) still gets the hooks installed there — see
+[`docs/enforcement/hook-install-path.md`](docs/enforcement/hook-install-path.md).
+
+## Documentation
+
+`docs/` is an [OKF](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+bundle: one Markdown note per concept, indexed by
+[`docs/index.md`](docs/index.md).
+
 ## Open items
 
 - `--dry-run` has no effect beyond printing the generated value.
@@ -391,27 +329,15 @@ See [architecture](docs/architecture.md) and
 
 ## Contributing
 
-Use mise to install the pinned toolchain, then install project dependencies:
-
 ```bash
+mise install
 make install
 make check
 make test
 ```
 
-| Target               | Purpose                                |
-| :------------------- | -------------------------------------- |
-| `make install`       | Install tools, dependencies, and hooks |
-| `make check`         | Run the read-only quality gate         |
-| `make fix`           | Apply safe formatting and lint fixes   |
-| `make test`          | Run the test suite                     |
-| `make makefile-lint` | Check the Makefile                     |
-| `make md-lint`       | Check Markdown                         |
-| `make spell`         | Check spelling                         |
-
-Use Conventional Commits for commit messages and Conventional Branch for
-branch names. See [AGENTS.md](AGENTS.md) for the required workflow and coding
-rules. See [toolchain.md](docs/toolchain.md) for tool placement decisions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, and
+[AGENTS.md](AGENTS.md) for the coding rules an agent MUST follow.
 
 ## License
 

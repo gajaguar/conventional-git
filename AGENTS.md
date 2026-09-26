@@ -14,7 +14,7 @@ MUST NOT add a target without its `##` help line.
 
 Commit messages MUST follow
 [Conventional Commits](https://www.conventionalcommits.org/); branch names
-MUST follow [Conventional Branch](https://conventional-branch.github.io/)
+MUST follow [Conventional Branch](https://conventionalbranch.org/)
 (`<type>/<description>`, e.g. `feat/add-enforcement`,
 `fix/normalize-description-grammar`). Both share the same `type` vocabulary
 (`feat`, `fix`, `docs`, `build`, `ci`, `refactor`, `test`, `chore`, ...).
@@ -24,6 +24,14 @@ MUST follow [Conventional Branch](https://conventional-branch.github.io/)
 `make check` MUST pass before any commit. Findings SHOULD be fixed with
 `make fix` before editing by hand.
 
+## Documentation
+
+Documentation MUST follow the organization's shared documentation-writing
+guide, kept in one place rather than copied into this repository so it
+cannot drift from other projects that follow the same guide. A new `docs/`
+note MUST be added to its directory's `index.md` and to
+[`docs/log.md`](docs/log.md). A note MUST cover exactly one concept.
+
 ## Dependencies
 
 A new tool MUST be added to the ecosystem manager that owns it
@@ -31,8 +39,8 @@ A new tool MUST be added to the ecosystem manager that owns it
 Python, ...) and MUST only go in `mise.toml` when it bootstraps an
 ecosystem or has none in this repo. A tool MUST NOT be declared in two
 layers — the two pins can drift and the gate would no longer cover
-both. See [`docs/toolchain.md`](docs/toolchain.md) for the full rule
-and placement table.
+both. See [`docs/toolchain/layering-rule.md`](docs/toolchain/layering-rule.md)
+for the full rule and placement table.
 
 ## Layering
 
@@ -88,6 +96,7 @@ description of this template verbatim.
   changes, and SHOULD run `make fix` first for anything auto-fixable.
 - The agent MUST NOT add a `pyproject.toml` setting that equals the tool's
   default, and every `lint.per-file-ignores` entry MUST match a current
-  violation — see [`docs/python.md`](docs/python.md#defaults-we-rely-on).
+  violation — see
+  [`docs/python/pyproject-defaults.md`](docs/python/pyproject-defaults.md).
 - The spec core MUST stay free of `git` imports and `SystemExit`. Returning a
   `Report` is the contract; only front-ends turn violations into exit codes.
