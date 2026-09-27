@@ -7,6 +7,9 @@ mise.local.toml
 # Artifacts
 .prompts/
 
+# Obsidian vault metadata (docs/ is opened directly as a vault)
+.obsidian/
+
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,jetbrains+all,visualstudiocode,node,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,jetbrains+all,visualstudiocode,node,python
 
@@ -121,7 +124,6 @@ fabric.properties
 
 # Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*

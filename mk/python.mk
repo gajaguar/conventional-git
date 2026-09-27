@@ -1,6 +1,10 @@
 UV := uv
 GIT_DEPS := pylint-plugin
 
+# Use the project's own pinned, dev-dependency copy in make commits-check
+# (defined in the base Makefile) instead of an ephemeral uvx fetch.
+CONVENTIONAL_GIT := $(UV) run conventional-git
+
 LANG_INSTALL_TARGETS    += install-python
 LANG_CHECK_TARGETS      += lint format-check typecheck pylint
 LANG_FIX_TARGETS        += format lint-fix

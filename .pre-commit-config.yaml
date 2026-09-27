@@ -27,6 +27,22 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: conventional-commit-msg
+        name: conventional-git commit message
+        entry: uvx conventional-git check commit --file
+        language: system
+        stages: [commit-msg]
+        types: [text]
+        pass_filenames: true
+
+      - id: conventional-branch-name
+        name: conventional-git branch name
+        entry: uvx conventional-git check branch
+        language: system
+        stages: [pre-commit, pre-push]
+        always_run: true
+        pass_filenames: false
+
   - repo: https://github.com/checkmake/checkmake
     rev: v0.3.2
     hooks:
@@ -60,20 +76,4 @@ repos:
         entry: make pylint
         language: system
         types: [python]
-        pass_filenames: false
-
-      - id: conventional-commit-msg
-        name: conventional-git commit message
-        entry: uv run conventional-git check commit --file
-        language: system
-        stages: [commit-msg]
-        types: [text]
-        pass_filenames: true
-
-      - id: conventional-branch-name
-        name: conventional-git branch name
-        entry: uv run conventional-git check branch
-        language: system
-        stages: [pre-commit, pre-push]
-        always_run: true
         pass_filenames: false
