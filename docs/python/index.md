@@ -10,3 +10,5 @@ Decisions specific to this project's Python implementation.
   source for the pinned Python version.
 * [Defaults relied on](pyproject-defaults.md) - settings intentionally left
   out because they equal a tool's default.
+* [Re-checking the commit range in CI](commit-range-in-ci.md) - why
+  `make commits-check` runs in CI, not `make check`, and what it validates.

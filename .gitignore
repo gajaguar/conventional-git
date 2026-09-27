@@ -4,9 +4,6 @@
 mise.local.toml
 .mise.local.toml
 
-# Artifacts
-.prompts/
-
 # Obsidian vault metadata (docs/ is opened directly as a vault)
 .obsidian/
 
