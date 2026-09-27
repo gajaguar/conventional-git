@@ -22,7 +22,6 @@ generation
 - [Architecture](#architecture)
 - [Platform notes](#platform-notes)
 - [Documentation](#documentation)
-- [Open items](#open-items)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -320,11 +319,6 @@ script. A repository with `core.hooksPath` pointing elsewhere (for example
 `docs/` is an [OKF](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
 bundle: one Markdown note per concept, indexed by
 [`docs/index.md`](docs/index.md).
-
-## Open items
-
-- `--dry-run` has no effect beyond printing the generated value.
-- The default attribution patterns cannot currently be disabled.
 
 ## Contributing
 
