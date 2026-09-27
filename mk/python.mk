@@ -45,5 +45,9 @@ pytest: ## Run the test suite — accepts FILES="..." to limit scope
 coverage: ## Run tests with an HTML coverage report
 	$(UV) run pytest --cov-report=html
 
+build: ## Build the sdist and wheel into dist/
+	rm -rf dist
+	$(UV) build
+
 .PHONY: install-python lint format-check mypy pyright typecheck pylint \
-	format lint-fix lint-fix-unsafe pytest coverage
+	format lint-fix lint-fix-unsafe pytest coverage build
