@@ -325,7 +325,6 @@ bundle: one Markdown note per concept, indexed by
 
 - `--dry-run` has no effect beyond printing the generated value.
 - The default attribution patterns cannot currently be disabled.
-- The package is not published to PyPI.
 
 ## Contributing
 
