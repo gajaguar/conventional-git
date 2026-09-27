@@ -17,7 +17,9 @@ Commit messages MUST follow
 MUST follow [Conventional Branch](https://conventionalbranch.org/)
 (`<type>/<description>`, e.g. `feat/add-enforcement`,
 `fix/normalize-description-grammar`). Both share the same `type` vocabulary
-(`feat`, `fix`, `docs`, `build`, `ci`, `refactor`, `test`, `chore`, ...).
+(`feat`, `fix`, `docs`, `build`, `ci`, `refactor`, `test`, `chore`, ...). A
+pre-commit hook and `make commits-check` enforce both — see
+[`docs/conventions/commits-check.md`](docs/conventions/commits-check.md).
 
 ## Gate
 

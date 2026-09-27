@@ -14,3 +14,11 @@
   enforces the Conventional Commits/Conventional Branch specs via its own
   hooks; the Makefile-scaffold conventions it used to share space with are
   documented once, outside this repository, rather than duplicated here.
+
+## 2026-09-27
+
+* **Addition**: Added `docs/conventions/commits-check.md` and
+  `docs/python/commit-range-in-ci.md`, documenting the two-layer enforcement
+  (pre-commit hooks + `make commits-check` in CI) that project-template now
+  ships to every generated project, and this project's `CONVENTIONAL_GIT`
+  override to run its own pinned dependency in CI instead of `uvx`.
