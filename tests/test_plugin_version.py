@@ -40,10 +40,9 @@ def test_plugin_manifest_version_matches_pyproject() -> None:
     }, ".claude-plugin/plugin.json has drifted from pyproject.toml; bump both together on release"
 
 
-def test_mcp_json_pins_the_same_release_as_pyproject() -> None:
+def test_mcp_json_tracks_latest_pypi_release() -> None:
     # Arrange
     manifest = json.loads((_REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
-    version = _pyproject_version()
     # Act
     # Assert
     assert manifest == {
@@ -52,9 +51,9 @@ def test_mcp_json_pins_the_same_release_as_pyproject() -> None:
                 "command": "uvx",
                 "args": [
                     "--from",
-                    f"conventional-git[mcp]=={version}",
+                    "conventional-git[mcp]@latest",
                     "conventional-git-mcp",
                 ],
             },
         },
-    }, f".mcp.json isn't pinned to {version}; bump the PyPI pin alongside pyproject.toml"
+    }, ".mcp.json must resolve conventional-git from PyPI at @latest"

@@ -12,7 +12,7 @@ FILES ?=
 # project-pinned copy instead of an ephemeral uvx fetch — see
 # docs/conventions/commits-check.md.
 BASE ?= origin/main
-CONVENTIONAL_GIT ?= uvx conventional-git
+CONVENTIONAL_GIT ?= uvx conventional-git@latest
 
 .DEFAULT_GOAL := help
 
