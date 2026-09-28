@@ -8,17 +8,16 @@ NPM := pnpm
 FILES ?=
 
 # The commit range commits-check re-validates in CI (a local hook can be
-# skipped with --no-verify). A language branch overrides CONVENTIONAL_GIT to
-# run its own project-pinned copy instead of an ephemeral uvx fetch — see
+# skipped with --no-verify). Override CONVENTIONAL_GIT to run a
+# project-pinned copy instead of an ephemeral uvx fetch — see
 # docs/conventions/commits-check.md.
 BASE ?= origin/main
 CONVENTIONAL_GIT ?= uvx conventional-git
 
 .DEFAULT_GOAL := help
 
-# Extension points. Each language branch appends to these variables from its
-# own mk/*.mk; main ships only mk/template.mk, so main and the language
-# branches never edit the same file.
+# Extension points. Each mk/*.mk file appends its own targets to these
+# variables; -include mk/*.mk below picks up every one.
 LANG_INSTALL_TARGETS     :=
 LANG_CHECK_TARGETS       :=
 LANG_FIX_TARGETS         :=
