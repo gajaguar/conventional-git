@@ -1,5 +1,16 @@
 # Directory Update Log
 
+## 2026-09-28
+
+* **Pruning**: Removed `docs/toolchain/{checkmake,markdown-tooling,mise,
+  pre-commit}.md` and `docs/python/{docstring-policy,pylint-plugin}.md` —
+  each only restated what `make help` or a linter's own message already
+  says. Folded `docs/python/commit-range-in-ci.md` into
+  `docs/conventions/commits-check.md`, and dropped `AGENTS.md`'s
+  "Repository metadata" section (an instantiation-only checklist, stale
+  since this project's first release), which had also leaked a scaffold
+  tool's own name in its wording.
+
 ## 2026-09-26
 
 * **Addition**: Added `docs/release/`, documenting the new
@@ -17,8 +28,7 @@
 
 ## 2026-09-27
 
-* **Addition**: Added `docs/conventions/commits-check.md` and
-  `docs/python/commit-range-in-ci.md`, documenting the two-layer enforcement
-  (pre-commit hooks + `make commits-check` in CI) that project-template now
-  ships to every generated project, and this project's `CONVENTIONAL_GIT`
-  override to run its own pinned dependency in CI instead of `uvx`.
+* **Addition**: Added `docs/conventions/commits-check.md`, documenting the
+  two-layer enforcement (pre-commit hooks + `make commits-check` in CI) and
+  this project's `CONVENTIONAL_GIT` override to run its own pinned
+  dependency in CI instead of `uvx`.
