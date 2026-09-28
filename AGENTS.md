@@ -64,30 +64,6 @@ duplicates it. A new vocabulary entry MUST land in
 `data/{commit,branch}-types.csv`; a regex inside the core is a bug, not a
 feature.
 
-## Repository metadata
-
-The agent MUST populate the GitHub repository metadata before the first
-release, and SHOULD do so in the first commit that follows instantiation of
-this template:
-
-- The repository description MUST be set to a single sentence, in English,
-  without a trailing period.
-- Repository topics MUST include the primary language and the project kind,
-  and SHOULD include the main framework or runtime.
-- The homepage URL MUST be set when the project is deployed or published,
-  and MAY be left empty otherwise.
-- `README.md` MUST NOT be the only place where the purpose of the project is
-  stated; the description and the README first paragraph MUST agree.
-
-The agent SHOULD apply these with `gh`:
-
-```bash
-gh repo edit --description "..." --add-topic <topic> --homepage "..."
-```
-
-The agent MUST NOT leave the description empty, and MUST NOT copy the
-description of this template verbatim.
-
 ## Python
 
 - The agent MUST NOT add docstrings to functions, methods, or classes; use a
