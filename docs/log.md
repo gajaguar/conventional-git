@@ -2,6 +2,10 @@
 
 ## 2026-09-28
 
+* **Change**: The plugin's `.mcp.json`, the pre-commit hooks and the
+  `Makefile` now resolve `conventional-git` from PyPI at `@latest` instead of
+  a pinned version or the editable local install; updated
+  `docs/mcp/plugin-bundled-server.md` to match.
 * **Pruning**: Removed `docs/toolchain/{checkmake,markdown-tooling,mise,
   pre-commit}.md` and `docs/python/{docstring-policy,pylint-plugin}.md` —
   each only restated what `make help` or a linter's own message already
