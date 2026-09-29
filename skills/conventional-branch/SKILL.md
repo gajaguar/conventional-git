@@ -39,8 +39,9 @@ Examples: `/conventional-branch`, `/conventional-branch --ask`.
   (dots only inside a version-like segment, e.g. `v1.2.0`); MUST NOT contain
   spaces, underscores, uppercase letters, or consecutive/leading/trailing
   hyphens or dots.
-- Trunk branches (`main`, `master`, `develop`) are exempt from this format and
-  MUST NOT be renamed by this skill.
+- Trunk branches (`main`, `master`, `develop`) and bot branches (`dependabot/`,
+  `renovate/` prefixes) are exempt from this format and MUST NOT be renamed by
+  this skill.
 
 ## Context
 

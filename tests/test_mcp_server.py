@@ -88,6 +88,7 @@ def test_describe_convention_honors_the_config_type_overrides(tmp_path: Path, mo
         "branch": {
             "types": sorted(server.branch_vocab.default_types()),
             "trunks": sorted(server.branch_vocab.default_trunks()),
+            "exempt_prefixes": sorted(server.branch_vocab.default_exempt_prefixes()),
             "limits": asdict(server.branch_rules.limits()),
         },
     }

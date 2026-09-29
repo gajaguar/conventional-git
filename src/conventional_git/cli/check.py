@@ -98,6 +98,13 @@ def check_branch(
             help="Optional CSV adding to the default trunk branch names exempt from the <type>/<description> format",
         ),
     ] = None,
+    exempt_prefixes_csv: Annotated[
+        Path | None,
+        typer.Option(
+            "--exempt-prefixes-csv",
+            help="Optional CSV adding to the default branch name prefixes (like dependabot/) exempt from the format",
+        ),
+    ] = None,
 ) -> None:
     if name is None:
         current = _current_branch()
@@ -106,8 +113,18 @@ def check_branch(
             return
         name = current
     config = Config.load()
-    policy = branch_vocab.resolve_policy(config, extra_types_csv=types_csv, extra_trunks_csv=trunks_csv)
-    report = branch_rules.validate_name(name, allowed_types=policy.types, trunk_branches=policy.trunks)
+    policy = branch_vocab.resolve_policy(
+        config,
+        extra_types_csv=types_csv,
+        extra_trunks_csv=trunks_csv,
+        extra_exempt_prefixes_csv=exempt_prefixes_csv,
+    )
+    report = branch_rules.validate_name(
+        name,
+        allowed_types=policy.types,
+        trunk_branches=policy.trunks,
+        exempt_prefixes=policy.exempt_prefixes,
+    )
     _print_report("branch", report)
     _report_to_exit_code(valid=report.valid)
 
