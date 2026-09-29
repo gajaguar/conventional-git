@@ -29,7 +29,12 @@ def validate_commit_message(message: str) -> dict[str, object]:
 @mcp.tool()
 def validate_branch_name(name: str) -> dict[str, object]:
     policy = branch_vocab.resolve_policy(Config.load())
-    report = branch_rules.validate_name(name, allowed_types=policy.types, trunk_branches=policy.trunks)
+    report = branch_rules.validate_name(
+        name,
+        allowed_types=policy.types,
+        trunk_branches=policy.trunks,
+        exempt_prefixes=policy.exempt_prefixes,
+    )
     return report.to_dict()
 
 
@@ -46,6 +51,7 @@ def describe_convention() -> dict[str, object]:
         "branch": {
             "types": sorted(branch_policy.types),
             "trunks": sorted(branch_policy.trunks),
+            "exempt_prefixes": sorted(branch_policy.exempt_prefixes),
             "limits": asdict(branch_rules.limits()),
         },
     }

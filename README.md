@@ -110,7 +110,9 @@ conventional-git check branch
 
 The branch command uses the same exit codes. Trunk branches listed in
 `data/branch-trunks.csv` (`main`, `master`, `develop`) are always valid and
-skip the `<type>/` requirement.
+skip the `<type>/` requirement. So are branches that start with a prefix in
+`data/branch-exempt-prefixes.csv` (`dependabot/`, `renovate/`): a bot names
+those branches, and GitHub does not let you rename them.
 
 ### Generate
 
@@ -253,14 +255,16 @@ Use `conventional-git <command> --help` for the full option descriptions.
 
 Create `.conventional-git.toml` in the current repository:
 
-| Key                             | Default       | Purpose                   |
-| :------------------------------ | :------------ | ------------------------- |
-| `[commit] attribution_patterns` | built-in list | Extra attribution regexes |
-| `[commit] type_overrides`       | `[]`          | Extra commit types        |
-| `[branch] type_overrides`       | `[]`          | Extra branch types        |
-| `[branch] trunk_overrides`      | `[]`          | Extra trunk branch names  |
+| Key                                | Default       | Purpose                    |
+| :--------------------------------- | ------------- | -------------------------- |
+| `[commit] attribution_patterns`    | built-in list | Extra attribution regexes  |
+| `[commit] type_overrides`          | `[]`          | Extra commit types         |
+| `[branch] type_overrides`          | `[]`          | Extra branch types         |
+| `[branch] trunk_overrides`         | `[]`          | Extra trunk branch names   |
+| `[branch] exempt_prefix_overrides` | `[]`          | Extra exempt name prefixes |
 
-Relative CSV paths in `type_overrides` / `trunk_overrides` are resolved
+Relative CSV paths in `type_overrides` / `trunk_overrides` /
+`exempt_prefix_overrides` are resolved
 against the directory containing `.conventional-git.toml`, not the process's
 current directory. Every consumer that loads the file — the CLI, the MCP
 server, and the gitlint adapter — honors it. See

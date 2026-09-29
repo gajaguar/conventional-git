@@ -1,5 +1,13 @@
 # Directory Update Log
 
+## 2026-09-29
+
+* **Addition**: Branch names starting with a prefix listed in
+  `data/branch-exempt-prefixes.csv` (`dependabot/`, `renovate/`) now pass
+  `check branch`, extendable through `[branch] exempt_prefix_overrides` and
+  `--exempt-prefixes-csv`; recorded in
+  [`architecture/vocabulary-as-data.md`](architecture/vocabulary-as-data.md).
+
 ## 2026-09-28 (2)
 
 * **Addition**: Added `.github/dependabot.yml` (GitHub Actions, uv, npm,

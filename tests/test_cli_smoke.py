@@ -248,6 +248,54 @@ def test_check_branch_accepts_extra_trunk_via_csv(tmp_path: Path) -> None:
     assert "ok" in completed.stdout
 
 
+def test_check_branch_accepts_dependabot_branch_by_default() -> None:
+    # Arrange
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "check",
+            "branch",
+            "--name",
+            "dependabot/uv/ruff-0.16.9",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "ok" in completed.stdout
+
+
+def test_check_branch_accepts_extra_prefix_via_csv(tmp_path: Path) -> None:
+    # Arrange
+    prefixes_csv = tmp_path / "branch-prefixes.csv"
+    prefixes_csv.write_text("prefix,when_to_use\ngreenkeeper/,Legacy bot\n", encoding="utf-8")
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "check",
+            "branch",
+            "--name",
+            "greenkeeper/lodash-4",
+            "--exempt-prefixes-csv",
+            str(prefixes_csv),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "ok" in completed.stdout
+
+
 def test_create_branch_outputs_normalized_name() -> None:
     # Arrange
     # Act

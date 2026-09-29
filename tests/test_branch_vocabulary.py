@@ -61,3 +61,23 @@ def test_resolve_policy_layers_extra_csvs_on_top_of_config_overrides(tmp_path: P
     assert "fromconfig" in policy.types
     assert "fromflag" in policy.types
     assert "python" in policy.trunks
+
+
+def test_resolve_policy_layers_exempt_prefixes_on_top_of_the_defaults(tmp_path: Path) -> None:
+    # Arrange
+    config_csv = tmp_path / "config-prefixes.csv"
+    config_csv.write_text("prefix,when_to_use\nfromconfig/,From config\n", encoding="utf-8")
+    flag_csv = tmp_path / "flag-prefixes.csv"
+    flag_csv.write_text("prefix,when_to_use\nfromflag/,From --exempt-prefixes-csv\n", encoding="utf-8")
+    config = Config(
+        extra_attribution_patterns=(),
+        commit_type_overrides=(),
+        branch_type_overrides=(),
+        branch_trunk_overrides=(),
+        branch_exempt_prefix_overrides=(config_csv,),
+    )
+    # Act
+    policy = vocabulary.resolve_policy(config, extra_exempt_prefixes_csv=flag_csv)
+    # Assert
+    assert {"fromconfig/", "fromflag/"} <= policy.exempt_prefixes
+    assert policy.exempt_prefixes >= vocabulary.default_exempt_prefixes()

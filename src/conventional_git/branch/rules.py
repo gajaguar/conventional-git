@@ -54,9 +54,13 @@ def validate_name(
     *,
     allowed_types: frozenset[str] | None = None,
     trunk_branches: frozenset[str] | None = None,
+    exempt_prefixes: frozenset[str] | None = None,
 ) -> Report:
     trunks = trunk_branches if trunk_branches is not None else vocabulary.default_trunks()
     if name in trunks:
+        return Report.from_violations()
+    prefixes = exempt_prefixes if exempt_prefixes is not None else vocabulary.default_exempt_prefixes()
+    if name.startswith(tuple(prefixes)):
         return Report.from_violations()
 
     types = allowed_types if allowed_types is not None else vocabulary.default_types()
