@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from conventional_git import generation
 from conventional_git.branch import rules as branch_rules
@@ -12,7 +12,7 @@ from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
 
 # pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
-mcp = FastMCP("conventional-git")
+mcp = MCPServer("conventional-git")
 
 
 @mcp.tool()

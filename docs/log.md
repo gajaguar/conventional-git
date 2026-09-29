@@ -1,5 +1,13 @@
 # Directory Update Log
 
+## 2026-09-29 (3)
+
+* **Change**: The `mcp` extra now requires `mcp>=2.2,<3`. `mcp/server.py`
+  builds an `MCPServer` (`mcp.server.mcpserver`), the name `FastMCP` took in
+  2.x; the tools and their contract are unchanged. Updated
+  [`architecture/three-layers.md`](architecture/three-layers.md) and
+  [`architecture/optional-extras.md`](architecture/optional-extras.md).
+
 ## 2026-09-29 (2)
 
 * **Change**: `pylint-plugin` (a git dependency whose package was renamed,
