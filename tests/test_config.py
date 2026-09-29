@@ -28,7 +28,8 @@ def test_load_resolves_relative_override_paths_against_the_config_directory(tmp_
     config_path.parent.mkdir()
     config_path.write_text(
         '[commit]\ntype_overrides = ["commit-types.csv"]\n'
-        '[branch]\ntype_overrides = ["branch-types.csv"]\ntrunk_overrides = ["branch-trunks.csv"]\n',
+        '[branch]\ntype_overrides = ["branch-types.csv"]\ntrunk_overrides = ["branch-trunks.csv"]\n'
+        'exempt_prefix_overrides = ["branch-prefixes.csv"]\n',
         encoding="utf-8",
     )
     # Act
@@ -37,6 +38,7 @@ def test_load_resolves_relative_override_paths_against_the_config_directory(tmp_
     assert config.commit_type_overrides == (config_path.parent / "commit-types.csv",)
     assert config.branch_type_overrides == (config_path.parent / "branch-types.csv",)
     assert config.branch_trunk_overrides == (config_path.parent / "branch-trunks.csv",)
+    assert config.branch_exempt_prefix_overrides == (config_path.parent / "branch-prefixes.csv",)
 
 
 def test_load_keeps_absolute_override_paths_unchanged(tmp_path: Path) -> None:

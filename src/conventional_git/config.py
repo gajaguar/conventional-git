@@ -15,6 +15,7 @@ class Config:
     commit_type_overrides: tuple[Path, ...]
     branch_type_overrides: tuple[Path, ...]
     branch_trunk_overrides: tuple[Path, ...]
+    branch_exempt_prefix_overrides: tuple[Path, ...] = ()
 
     @classmethod
     def load(cls, path: Path | None = None) -> Config:
@@ -40,6 +41,7 @@ class Config:
             commit_type_overrides=_resolve_paths(base, commit.get("type_overrides", ()) or ()),
             branch_type_overrides=_resolve_paths(base, branch.get("type_overrides", ()) or ()),
             branch_trunk_overrides=_resolve_paths(base, branch.get("trunk_overrides", ()) or ()),
+            branch_exempt_prefix_overrides=_resolve_paths(base, branch.get("exempt_prefix_overrides", ()) or ()),
         )
 
 

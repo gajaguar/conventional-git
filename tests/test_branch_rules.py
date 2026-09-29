@@ -153,3 +153,29 @@ def test_merge_trunks_skips_missing_paths(tmp_path: Path) -> None:
     trunks = merge_trunks((missing,))
     # Assert
     assert trunks == {"main", "master", "develop"}
+
+
+@pytest.mark.parametrize("name", ["dependabot/npm_and_yarn/cspell-10.3.4", "renovate/lock-file-maintenance"])
+def test_validate_name_accepts_default_bot_prefixes(name: str) -> None:
+    # Arrange
+    # Act
+    report = validate_name(name)
+    # Assert
+    assert report.valid
+
+
+def test_validate_name_rejects_a_name_that_only_contains_a_bot_prefix() -> None:
+    # Arrange
+    # Act
+    report = validate_name("feat/dependabot/x")
+    # Assert
+    assert not report.valid
+
+
+def test_validate_name_honors_custom_exempt_prefixes() -> None:
+    # Arrange
+    prefixes = frozenset({"greenkeeper/"})
+    # Act
+    report = validate_name("greenkeeper/lodash-4", exempt_prefixes=prefixes)
+    # Assert
+    assert report.valid
