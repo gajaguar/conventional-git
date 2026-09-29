@@ -11,7 +11,7 @@ from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
 
-# pylint: disable-next=app-require-final,app-module-const-naming
+# pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
 mcp = FastMCP("conventional-git")
 
 

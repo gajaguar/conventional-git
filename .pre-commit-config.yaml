@@ -72,7 +72,7 @@ repos:
         pass_filenames: false
 
       - id: pylint
-        name: pylint (pylint-plugin)
+        name: pylint (pylint-gajaguar)
         entry: make pylint
         language: system
         types: [python]

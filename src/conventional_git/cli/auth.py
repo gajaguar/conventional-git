@@ -10,14 +10,14 @@ from conventional_git.generation.protocol import MissingCredentialsError
 try:
     from conventional_git.generation import credentials
 except ImportError:
-    # pylint: disable-next=app-require-final,app-module-const-naming
+    # pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
     credentials = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Final
 
-# pylint: disable-next=app-require-final,app-module-const-naming
+# pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
 app = typer.Typer(help="Manage credentials for LLM-backed suggestion providers (requires the 'llm' extra).")
 
 _INSTALL_HINT: Final[str] = "Install the LLM extra first: pip install 'conventional-git[llm]'"

@@ -68,7 +68,7 @@ feature.
 
 - The agent MUST NOT add docstrings to functions, methods, or classes; use a
   comment only where the *why* is not obvious from the code. The
-  `pylint-plugin` `app-no-docstrings` checker enforces this and fails
+  `pylint-gajaguar` `gajaguar-no-docstrings` checker enforces this and fails
   `make check`/`make pylint` otherwise.
 - The agent MUST run `make check` and `make test` before committing Python
   changes, and SHOULD run `make fix` first for anything auto-fixable.
