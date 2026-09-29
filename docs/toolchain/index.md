@@ -10,3 +10,5 @@ and why.
   out.
 * [The dev group self-references its own extras](extras-self-reference.md) -
   `conventional-git[gitlint,llm,mcp]`, not a second pin.
+* [The sh advisory is dismissed](sh-uid-unused.md) - why the `sh` alert is
+  not used here and which test reopens the question.

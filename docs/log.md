@@ -1,5 +1,12 @@
 # Directory Update Log
 
+## 2026-09-29 (4)
+
+* **Addition**: [`toolchain/sh-uid-unused.md`](toolchain/sh-uid-unused.md)
+  records why the Dependabot alert on `sh` is dismissed as not used, and
+  `tests/test_sh_uid_unused.py` fails if `gitlint` or `src/` starts passing
+  `_uid`.
+
 ## 2026-09-29 (3)
 
 * **Change**: The `mcp` extra now requires `mcp>=2.2,<3`. `mcp/server.py`
