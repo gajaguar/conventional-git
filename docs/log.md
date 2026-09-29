@@ -1,5 +1,14 @@
 # Directory Update Log
 
+## 2026-09-29 (2)
+
+* **Change**: `pylint-plugin` (a git dependency whose package was renamed,
+  which broke `make install`) is replaced by `pylint-gajaguar` from PyPI, and
+  `pyproject.toml` enables it with `enable = ["gajaguar"]`. The `dependabot/*`
+  skip in `make commits-check` is gone: the project's own 1.1.0 accepts
+  `dependabot/` and `renovate/` branch names. Updated
+  [`conventions/commits-check.md`](conventions/commits-check.md).
+
 ## 2026-09-29
 
 * **Addition**: Branch names starting with a prefix listed in

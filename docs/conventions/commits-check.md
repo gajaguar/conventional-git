@@ -19,7 +19,7 @@ Two layers enforce [Commits and branches](commits-and-branches.md):
   `--no-verify`. It runs as part of `make check`.
 
 `mk/python.mk` overrides the base Makefile's `CONVENTIONAL_GIT ?= uvx
-conventional-git` with `$(UV) run conventional-git`, so `make commits-check`
+conventional-git@latest` with `$(UV) run conventional-git`, so `make commits-check`
 uses this project's own pinned dev dependency (already synced by `uv sync`)
 instead of an ephemeral `uvx` fetch — faster, and reproducible from the
 lockfile. `.github/workflows/{ci,python}.yml`'s checkout uses `fetch-depth:
@@ -28,6 +28,7 @@ branch name resolve correctly instead of hitting a detached `HEAD`.
 
 Dependabot always names its branches `dependabot/<ecosystem>/<dependency>`,
 which is not a Conventional Branch type, and its prefix can't be changed.
-`make commits-check` therefore skips the branch-name check for
-`dependabot/*` branches; the commit messages are still validated, and
+`conventional-git` therefore accepts names that start with `dependabot/` or
+`renovate/` (1.1.0 and later), in the hook and in `make commits-check`
+alike; the commit messages are still validated, and
 `.github/dependabot.yml` sets their `ci`/`chore` prefixes.

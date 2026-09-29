@@ -16,19 +16,19 @@ from conventional_git import generation
 try:
     from conventional_git.generation import credentials
 except ImportError:
-    # pylint: disable-next=app-require-final,app-module-const-naming
+    # pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
     credentials = None  # type: ignore[assignment]
 
 try:
     from conventional_git.mcp import server as mcp_server
 except ImportError:
-    # pylint: disable-next=app-require-final,app-module-const-naming
+    # pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
     mcp_server = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from typing import Final
 
-# pylint: disable-next=app-require-final,app-module-const-naming
+# pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
 app = typer.Typer(help="Report what this installed conventional-git supports.")
 
 _PACKAGE_NAME: Final[str] = "conventional-git"
