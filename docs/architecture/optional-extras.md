@@ -8,7 +8,7 @@ status: stable
 
 # Optional extras stay lazily imported
 
-`mcp/server.py` — FastMCP server exposing `validate_commit_message`,
+`mcp/server.py` — `MCPServer` exposing `validate_commit_message`,
 `validate_branch_name`, `describe_convention`, and `suggest_commit_message`.
 The `validate_*`/`describe_*` tools return the same structured `Violation`
 shape so agents can self-correct; `suggest_commit_message` returns advice,
