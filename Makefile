@@ -13,6 +13,7 @@ FILES ?=
 # docs/conventions/commits-check.md.
 BASE ?= origin/main
 CONVENTIONAL_GIT ?= uvx conventional-git@latest
+BRANCH ?= $(or $(GITHUB_HEAD_REF),$(shell git branch --show-current))
 
 .DEFAULT_GOAL := help
 
@@ -70,7 +71,7 @@ commits-check: ## Validate the commit range and branch name against Conventional
 		message="$${message#$$'\n'}"; [ -z "$$message" ] && continue; \
 		echo "$$message" | $(CONVENTIONAL_GIT) check commit || exit 1; \
 	done
-	$(CONVENTIONAL_GIT) check branch --name "$${GITHUB_HEAD_REF:-$$(git branch --show-current)}"
+	@$(if $(filter dependabot/%,$(BRANCH)),echo "skipping branch check for $(BRANCH)",$(CONVENTIONAL_GIT) check branch --name "$(BRANCH)")
 
 check: makefile-lint md-lint spell commits-check $(LANG_CHECK_TARGETS) ## Run the full read-only validation gate
 
