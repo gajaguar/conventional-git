@@ -14,7 +14,7 @@ the CLI is available on `PATH`:
 ```yaml
 repos:
   - repo: https://github.com/gajaguar/conventional-git
-    rev: v1.0.0
+    rev: v1.1.0
     hooks:
       - id: conventional-commit-msg
       - id: conventional-branch-name
