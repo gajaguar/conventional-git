@@ -1,5 +1,12 @@
 # Directory Update Log
 
+## 2026-09-28 (2)
+
+* **Addition**: Added `.github/dependabot.yml` (GitHub Actions, uv, npm,
+  weekly). [`conventions/commits-check.md`](conventions/commits-check.md)
+  now records that `make commits-check` skips the branch-name check for
+  Dependabot's `dependabot/*` branches.
+
 ## 2026-09-28
 
 * **Change**: The plugin's `.mcp.json`, the pre-commit hooks and the

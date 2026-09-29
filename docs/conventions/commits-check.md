@@ -25,3 +25,9 @@ instead of an ephemeral `uvx` fetch — faster, and reproducible from the
 lockfile. `.github/workflows/{ci,python}.yml`'s checkout uses `fetch-depth:
 0` and the pull request's head ref, so `$(BASE)` (`origin/main`) and the
 branch name resolve correctly instead of hitting a detached `HEAD`.
+
+Dependabot always names its branches `dependabot/<ecosystem>/<dependency>`,
+which is not a Conventional Branch type, and its prefix can't be changed.
+`make commits-check` therefore skips the branch-name check for
+`dependabot/*` branches; the commit messages are still validated, and
+`.github/dependabot.yml` sets their `ci`/`chore` prefixes.
