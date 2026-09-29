@@ -67,11 +67,11 @@ spell: ## Spell-check files with cspell — accepts FILES="..."
 	fi
 
 commits-check: ## Validate the commit range and branch name against Conventional Commits/Branch — see docs/conventions/commits-check.md
-	@git log --format='%B%x00' $(BASE)..HEAD | while IFS= read -r -d '' message; do \
+	@git log --no-merges --format='%B%x00' $(BASE)..HEAD | while IFS= read -r -d '' message; do \
 		message="$${message#$$'\n'}"; [ -z "$$message" ] && continue; \
 		echo "$$message" | $(CONVENTIONAL_GIT) check commit || exit 1; \
 	done
-	@$(if $(filter dependabot/%,$(BRANCH)),echo "skipping branch check for $(BRANCH)",$(CONVENTIONAL_GIT) check branch --name "$(BRANCH)")
+	@$(CONVENTIONAL_GIT) check branch --name "$(BRANCH)"
 
 check: makefile-lint md-lint spell commits-check $(LANG_CHECK_TARGETS) ## Run the full read-only validation gate
 

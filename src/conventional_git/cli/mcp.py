@@ -4,7 +4,7 @@ import typer
 
 from conventional_git.mcp import server
 
-# pylint: disable-next=app-require-final,app-module-const-naming
+# pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
 app = typer.Typer(help="MCP server surface for conventional-git.")
 
 

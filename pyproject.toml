@@ -39,7 +39,7 @@ conventional-git-mcp = "conventional_git.mcp.server:run"
 dev = [
   "conventional-git[gitlint,llm,mcp]",
   "mypy>=2.3.1",
-  "pylint-plugin",
+  "pylint-gajaguar>=2.0",
   "pylint>=4.0.9",
   "pyright>=1.1.414",
   "pytest-cov>=7.1",
@@ -47,9 +47,6 @@ dev = [
   "ruff>=0.16.8",
   "skills-ref>=0.1.1",
 ]
-
-[tool.uv.sources]
-pylint-plugin = { git = "https://github.com/gajaguar/pylint-plugin" }
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-report=term-missing"
@@ -86,23 +83,8 @@ ignore_missing_imports = true
 include = ["src"]
 
 [tool.pylint.main]
-load-plugins = ["checkers"]
+load-plugins = ["pylint_gajaguar"]
 
 [tool.pylint."messages control"]
 disable = ["all"]
-enable = [
-  "app-frozenset-constant",
-  "app-module-const-naming",
-  "app-no-docstrings",
-  "app-no-file-level-disable",
-  "app-no-inline-imports",
-  "app-no-relative-imports",
-  "app-require-final",
-  "app-test-aaa-markers",
-  "app-test-name-implementation-detail",
-  "app-test-no-blank-lines",
-  "app-test-no-extra-comments",
-  "app-test-partial-assertion",
-  "app-unused-arg-use-del",
-  "app-use-contextlib-suppress",
-]
+enable = ["gajaguar"]

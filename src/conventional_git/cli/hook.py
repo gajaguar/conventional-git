@@ -10,7 +10,7 @@ import typer
 if TYPE_CHECKING:
     from typing import Final
 
-# pylint: disable-next=app-require-final,app-module-const-naming
+# pylint: disable-next=gajaguar-require-final,gajaguar-module-const-naming
 app = typer.Typer(help="Install / uninstall pre-commit hooks in any git repo.")
 
 
