@@ -21,7 +21,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - conventional-git==1.0.0
+          - conventional-git==1.1.0
         stages: [commit-msg]
         pass_filenames: true
       - id: conventional-branch-name
@@ -30,7 +30,7 @@ repos:
         language: python
         language_version: python3.14
         additional_dependencies:
-          - conventional-git==1.0.0
+          - conventional-git==1.1.0
         stages: [pre-commit, pre-push]
         always_run: true
         pass_filenames: false
