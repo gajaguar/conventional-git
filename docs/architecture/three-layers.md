@@ -50,7 +50,7 @@ itself reads that config, so the adapter has no SDK to import. See
 - `cli/auth.py` — stores/reads the TypeSafe or OpenRouter credential used by
   the `jev` suggestion provider (requires the `llm` extra). See
   [`suggestions/keyring-scope.md`](../suggestions/keyring-scope.md).
-- `mcp/server.py` — FastMCP server exposing `validate_commit_message`,
+- `mcp/server.py` — `MCPServer` exposing `validate_commit_message`,
   `validate_branch_name`, `describe_convention`, and `suggest_commit_message`.
   See [`mcp/index.md`](../mcp/index.md). Requires the `mcp` extra; see
   [`optional-extras.md`](optional-extras.md) for how it stays lazy.
