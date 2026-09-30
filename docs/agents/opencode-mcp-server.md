@@ -23,10 +23,11 @@ The bundled server uses the same command and arguments as this
 repository's `.mcp.json` (see
 [`../mcp/plugin-bundled-server.md`](../mcp/plugin-bundled-server.md)).
 
-## `~/.config/opencode/config.json`
+## Global config: `~/.config/opencode/opencode.json`
 
 ```json
 {
+  "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "conventional-git": {
       "type": "local",
@@ -42,17 +43,17 @@ repository's `.mcp.json` (see
 ```
 
 `type` is `"local"` (a process the opencode runtime spawns); `command`
-is an argument array — executable first, then each argument. Leave
-`enabled` out (defaults to `true`) or set it explicitly to `true` to
-load the server on every opencode start.[^opencode-mcp]
+is an argument array — executable first, then each argument. Add
+`"enabled": true` to make the intent explicit.[^opencode-mcp]
 
-## `.opencode/config.json`
+## Project config: `opencode.json`
 
 A project-scoped alternative — useful when only one checkout needs the
-server. Drop the same block into `.opencode/config.json` at the
-project root, or into a top-level `opencode.json`. Path precedence
-favors local config over the global one (see
-[`../mcp/index.md`](../mcp/index.md)).
+server. Put the same `mcp` block in `opencode.json` at the project root.
+Config files are merged and the project file overrides the global one on
+conflicting keys; see
+[`opencode-mcp-config.md`](opencode-mcp-config.md) for the full
+precedence list.
 
 ## Verifying
 
@@ -60,8 +61,8 @@ favors local config over the global one (see
 opencode mcp list
 ```
 
-Lists every configured server, its type, its command, and whether it is
-enabled. The agent can then call `validate_commit_message`,
+Lists every configured MCP server and its authentication status. The
+agent can then call `validate_commit_message`,
 `validate_branch_name`, `describe_convention`, and
 `suggest_commit_message` the same way it does in Claude Code.[^opencode-mcp]
 
