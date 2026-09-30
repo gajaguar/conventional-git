@@ -1,5 +1,17 @@
 # Directory Update Log
 
+## 2026-09-29 (5)
+
+* **Addition**: Added `docs/agents/` with this project's own
+  `plugin-identity.md` (marketplace `conventional-git-skills`, plugin
+  `conventional-git`, MCP server `conventional-git`, plus trigger
+  phrasing for `conventional-commit` and `conventional-branch`) and
+  `opencode-mcp-server.md` (a copy-ready `~/.config/opencode/config.json`
+  snippet that launches the same `uvx` command as the bundled
+  `.mcp.json`). Updated `docs/index.md`, cross-linked from
+  `docs/mcp/plugin-bundled-server.md` and `docs/mcp/index.md`, and
+  trimmed the README's Agents section to one command per channel.
+
 ## 2026-09-29 (4)
 
 * **Addition**: [`toolchain/sh-uid-unused.md`](toolchain/sh-uid-unused.md)
