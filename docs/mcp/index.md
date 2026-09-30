@@ -15,3 +15,6 @@ agents.
   still requires a `validate_commit_message` pass.
 * [Why validate_* is the highest-value tool](self-correction-loop.md) - a
   real draft/validate/fix loop instead of one-shot guessing.
+
+For opencode, the same server can be loaded standalone — see
+[`../agents/opencode-mcp-server.md`](../agents/opencode-mcp-server.md).
