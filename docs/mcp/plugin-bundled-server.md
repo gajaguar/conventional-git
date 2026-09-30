@@ -16,3 +16,8 @@ separate `conventional-git` install or `mcp` extra.
 `conventional-git capabilities --json` reports `extras.mcp` and
 `mcp_tools` so a skill can tell whether these tools are available before
 recommending them.
+
+The same `command` and `args` wire the server into opencode under its
+own `mcp` config key — see
+[`../agents/opencode-mcp-server.md`](../agents/opencode-mcp-server.md)
+for a copy-ready `~/.config/opencode/config.json` snippet.

@@ -204,24 +204,16 @@ The server exposes `validate_commit_message`, `validate_branch_name`,
 
 The repository is both a Claude Code plugin and an
 [Agent Skills](https://agentskills.io/specification)-compliant `skills/`
-directory.
-
-**Claude Code** — add the marketplace, then install the plugin (it bundles
-`conventional-commit`, `conventional-branch`, and the MCP server):
+directory. See [`docs/agents/index.md`](docs/agents/index.md) for the full
+install guide; one command per channel:
 
 ```text
-/plugin marketplace add gajaguar/conventional-git
 /plugin install conventional-git@conventional-git-skills
 ```
 
-See [`docs/mcp/plugin-bundled-server.md`](docs/mcp/plugin-bundled-server.md)
-for how the bundled `.mcp.json` launches the server.
-
-**Any other agent that supports Agent Skills** (Codex, Cursor, Gemini CLI,
-Copilot, ...):
-
 ```bash
 npx skills add gajaguar/conventional-git
+npx skills add gajaguar/conventional-git -a opencode -y
 ```
 
 Skills call `conventional-git capabilities --json` before drafting, so they

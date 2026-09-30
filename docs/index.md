@@ -32,4 +32,9 @@ copied here where it would drift from other projects that follow it.
 * [Release](release/index.md) - how this project ships new versions to
   PyPI.
 
+## Agents
+
+* [Agents](agents/index.md) - install the skills in Claude Code, in
+  `npx skills`, or in opencode, and learn what each channel delivers.
+
 See [`log.md`](log.md) for the bundle's change history.
