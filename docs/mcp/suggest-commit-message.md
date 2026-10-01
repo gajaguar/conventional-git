@@ -35,3 +35,32 @@ OpenRouter — see
 what's sent. An agent should still call `validate_commit_message` on the
 message it actually writes; a suggestion passing this tool is not itself a
 validation result.
+
+## Missing credentials
+
+The tool never requests `jev` explicitly, so a missing credential falls back
+to the heuristic and reports why in `warning`; it does not raise and does not
+set `error`:
+
+```json
+{
+  "provider": "heuristic",
+  "suggestion": {
+    "type": "fix",
+    "scope": null,
+    "description": "...",
+    "confidence": 0.4,
+    "breaking": false
+  },
+  "warning": "No TypeSafe or OpenRouter API key found. ..."
+}
+```
+
+Without the `llm` extra, `jev` never registers: the response is the same
+heuristic suggestion with no `warning`. The `error` field (with `provider`
+and `suggestion` set to `null`) appears only for an unknown provider, which
+this tool cannot request. The MCP server cannot set the credential; see
+[`out-of-band-auth.md`](out-of-band-auth.md) and
+[`no-auth-tools.md`](no-auth-tools.md), and
+[`suggestions/provider-fallback.md`](../suggestions/provider-fallback.md) for
+the other failure modes.
