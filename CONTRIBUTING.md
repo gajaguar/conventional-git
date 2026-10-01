@@ -33,7 +33,10 @@ This repository dogfoods its own rules:
   [Conventional Commits](https://www.conventionalcommits.org/).
 - Branch names MUST follow
   [Conventional Branch](https://conventionalbranch.org/)
-  (`<type>/<description>`, e.g. `fix/normalize-branch-name`).
+  (`<type>/<description>`, e.g. `fix/normalize-branch-name`). The branch
+  type is one of `feat` (or `feature`), `fix` (or `bugfix`), `hotfix`,
+  `release`, or `chore`; documentation and dependency work uses `chore/`,
+  because `docs/` is not a branch type.
 - Commit messages MUST NOT carry an attribution trailer (`Co-Authored-By:`,
   "Generated with …", a 🤖 marker); the project's own commit-msg hook
   rejects them — see

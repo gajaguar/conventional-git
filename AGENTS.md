@@ -4,45 +4,70 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
+## Agent instructions
+
+- `AGENTS.md` is the only agent instructions file; put project rules here. The
+  repository MUST NOT contain a `CLAUDE.md` or any other tool-specific copy,
+  because a second copy drifts from this one; `make claude-md-check` fails on
+  one.
+
 ## Command surface
 
-The agent MUST use the `Makefile` targets (`make check`, `make fix`,
-`make test`, ...) instead of invoking the underlying tools directly, and
-MUST NOT add a target without its `##` help line.
-
-## Commits and branches
-
-Commit messages MUST follow
-[Conventional Commits](https://www.conventionalcommits.org/); branch names
-MUST follow [Conventional Branch](https://conventionalbranch.org/)
-(`<type>/<description>`, e.g. `feat/add-enforcement`,
-`fix/normalize-description-grammar`). Both share the same `type` vocabulary
-(`feat`, `fix`, `docs`, `build`, `ci`, `refactor`, `test`, `chore`, ...). A
-pre-commit hook and `make commits-check` enforce both — see
-[`docs/conventions/commits-check.md`](docs/conventions/commits-check.md).
+- Run the `Makefile` targets (`make check`, `make fix`, `make test`, ...)
+  instead of the underlying tools, so the agent and CI use the same options.
+  `make help` lists them.
+- Give every new target a `##` help line; `make help` prints it and
+  `make help-check` fails on a target without one.
 
 ## Gate
 
-`make check` MUST pass before any commit. Findings SHOULD be fixed with
-`make fix` before editing by hand.
+- `make check` and `make test` MUST pass before any commit.
+- Run `make fix` first for findings it can repair, then edit by hand.
+
+## Commits and branches
+
+- Write commit messages as
+  [Conventional Commits](https://www.conventionalcommits.org/) and branch
+  names as [Conventional Branch](https://conventionalbranch.org/)
+  (`<type>/<description>`, e.g. `feat/add-enforcement`,
+  `fix/normalize-description-grammar`). A pre-commit hook and
+  `make commits-check` enforce both; see
+  [`docs/conventions/commits-check.md`](docs/conventions/commits-check.md).
+- Name a documentation or dependency branch `chore/...`: a branch type is not
+  a commit type, and `docs/` is not one.
+
+## Pull requests
+
+Once a pull request is open, the agent MUST:
+
+1. Wait for CI; while it fails, fix the cause, push to the same branch and
+   wait again until it passes.
+2. Squash-merge a pull request with exactly one commit and use a regular merge
+   commit otherwise (`gh pr view --json commits` gives the count).
+3. Delete the branch on the remote and locally.
+4. Switch back to the base branch, pull it and run `git fetch --prune`.
 
 ## Documentation
 
-Documentation MUST follow the organization's shared documentation-writing
-guide, kept in one place rather than copied into this repository so it
-cannot drift from other projects that follow the same guide. A new `docs/`
-note MUST be added to its directory's `index.md` and to
-[`docs/log.md`](docs/log.md). A note MUST cover exactly one concept.
+- Follow the organization's shared documentation-writing guide, kept in one
+  place rather than copied into this repository so it cannot drift from other
+  projects that follow the same guide.
+- Add a new `docs/` note to its directory's `index.md` and, by file name, to
+  [`docs/log.md`](docs/log.md).
+- Cover exactly one concept per note.
+- Write a note only when it explains something a reader cannot already get
+  from `make help`, a linter's own message, or the configuration it comes
+  from.
 
 ## Dependencies
 
-A new tool MUST be added to the ecosystem manager that owns it
-(`package.json` for Node, `pyproject.toml` `[dependency-groups].dev` for
-Python, ...) and MUST only go in `mise.toml` when it bootstraps an
-ecosystem or has none in this repo. A tool MUST NOT be declared in two
-layers — the two pins can drift and the gate would no longer cover
-both. See [`docs/toolchain/layering-rule.md`](docs/toolchain/layering-rule.md)
-for the full rule and placement table.
+- Add a new tool to the ecosystem manager that owns it (`package.json` for
+  Node, `pyproject.toml` `[dependency-groups].dev` for Python); use
+  `mise.toml` only for a tool that bootstraps an ecosystem or has no manager
+  in this repository.
+- Declare a tool in one layer only: two pins can drift and the gate would no
+  longer cover both. See
+  [`docs/toolchain/layering-rule.md`](docs/toolchain/layering-rule.md).
 
 ## Layering
 
@@ -66,15 +91,15 @@ feature.
 
 ## Python
 
-- The agent MUST NOT add docstrings to functions, methods, or classes; use a
-  comment only where the *why* is not obvious from the code. The
-  `pylint-gajaguar` `gajaguar-no-docstrings` checker enforces this and fails
-  `make check`/`make pylint` otherwise.
-- The agent MUST run `make check` and `make test` before committing Python
-  changes, and SHOULD run `make fix` first for anything auto-fixable.
-- The agent MUST NOT add a `pyproject.toml` setting that equals the tool's
-  default, and every `lint.per-file-ignores` entry MUST match a current
-  violation — see
+- Write no docstrings on functions, methods or classes; add a comment only
+  where the *why* is not obvious from the code. `pylint-gajaguar`'s
+  `gajaguar-no-docstrings` fails `make check` on any docstring.
+- Enable the plugin with `enable = ["gajaguar"]` in `pyproject.toml`'s
+  `[tool.pylint."messages control"]`, not with a list of rules, so a rule
+  added by a `pylint-gajaguar` upgrade runs without a config change.
+- Keep `pyproject.toml` to settings that differ from the tool's default, and
+  keep a `lint.per-file-ignores` entry only while it matches a current
+  violation; see
   [`docs/python/pyproject-defaults.md`](docs/python/pyproject-defaults.md).
-- The spec core MUST stay free of `git` imports and `SystemExit`. Returning a
+- Keep the spec core free of `git` imports and `SystemExit`. Returning a
   `Report` is the contract; only front-ends turn violations into exit codes.

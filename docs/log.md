@@ -1,5 +1,16 @@
 # Directory Update Log
 
+## 2026-09-30
+
+* **Change**: [`conventions/commits-check.md`](conventions/commits-check.md)
+  now says `make commits-check` skips merge commits and lists the valid
+  branch types, with documentation and dependency work on `chore/`.
+
+* **Addition**: Added [`conventions/help-check.md`](conventions/help-check.md)
+  and [`conventions/claude-md-check.md`](conventions/claude-md-check.md) for
+  the `make help-check` and `make claude-md-check` targets, now part of
+  `make check`. Updated [`conventions/index.md`](conventions/index.md).
+
 ## 2026-09-29 (5)
 
 * **Addition**: Added `docs/agents/` with this project's own
