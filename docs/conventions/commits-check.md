@@ -14,9 +14,18 @@ Two layers enforce [Commits and branches](commits-and-branches.md):
   checks the message being written (`commit-msg` stage);
   `conventional-branch-name` checks the current branch name (`pre-commit`
   and `pre-push` stages). Both run through `uvx`, unconditionally.
-* **CI**: `make commits-check` re-validates every commit in `$(BASE)..HEAD`
-  and the branch name, since a local hook can be bypassed with
-  `--no-verify`. It runs as part of `make check`.
+* **CI**: `make commits-check` re-validates every non-merge commit in
+  `$(BASE)..HEAD` and the branch name, since a local hook can be bypassed
+  with `--no-verify`. It runs as part of `make check`.
+
+Merge commits are skipped: their headers are generated (`Merge pull
+request #N from ...`, `Merge branch 'main' into ...`) and are not Conventional
+Commits, while the commits they bring in are still validated.
+
+A commit type may be any Conventional Commits type (`docs`, `build`, `ci`,
+...), but a branch type is one of `feat` (or `feature`), `fix` (or `bugfix`),
+`hotfix`, `release`, or `chore`: documentation and dependency work uses
+`chore/`, so `docs/` is not a valid branch prefix.
 
 `mk/python.mk` overrides the base Makefile's `CONVENTIONAL_GIT ?= uvx
 conventional-git@latest` with `$(UV) run conventional-git`, so `make commits-check`
