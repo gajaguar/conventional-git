@@ -78,8 +78,9 @@ text (the agent doesn't support this injection), run
 3. If and only if `--suggest` was passed, AND capabilities reports `jev` in
    `providers` with a non-null `credentials.typesafe` or
    `credentials.openrouter`, MAY seed a draft with
-   `git diff --cached | conventional-git create suggest --diff-file -`
-   before refining it in the next step. Skip this step entirely — including
+   `conventional-git create suggest` (see the `conventional-suggest` skill;
+   `conventional-auth` sets up credentials) before refining it in the next
+   step. Skip this step entirely — including
    the `create suggest` call — when `--suggest` was not passed; the diff
    MUST NOT leave the machine without that explicit opt-in.
 4. MUST summarize `diff` (and any untracked files in `status`), refining any

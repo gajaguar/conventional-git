@@ -1,5 +1,13 @@
 # Directory Update Log
 
+## 2026-09-30 (2)
+
+* **Addition**: Added the `conventional-suggest` and `conventional-auth`
+  skills under `skills/`, covering `create suggest` and `auth`. Updated the
+  skills table in [`agents/plugin-identity.md`](agents/plugin-identity.md),
+  and dropped `--diff-file -` from the README and `conventional-commit`
+  because the CLI does not read stdin for it.
+
 ## 2026-09-30
 
 * **Change**: [`conventions/commits-check.md`](conventions/commits-check.md)
