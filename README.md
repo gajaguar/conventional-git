@@ -149,7 +149,7 @@ credential, `create suggest` always falls back to the built-in heuristic
 provider and prints a notice; it never fails the command:
 
 ```bash
-git diff --cached | conventional-git create suggest --diff-file -
+conventional-git create suggest
 conventional-git create suggest --diff-file changes.diff --apply
 ```
 
@@ -208,7 +208,8 @@ directory. See [`docs/agents/index.md`](docs/agents/index.md) for the full
 install guide; one command per channel.
 
 **Claude Code**: add the marketplace, then install the plugin. It bundles
-`conventional-commit`, `conventional-branch`, and the MCP server:
+`conventional-commit`, `conventional-branch`, `conventional-suggest`,
+`conventional-auth`, and the MCP server:
 
 ```text
 /plugin marketplace add gajaguar/conventional-git
@@ -314,7 +315,7 @@ and render its output. See [`docs/architecture/index.md`](docs/architecture/inde
 │   ├── adapters/{gitlint_rules,commitizen_config}.py
 │   ├── cli/{app,auth,check,create,hook,mcp}.py
 │   └── mcp/server.py
-├── skills/conventional-{commit,branch}/SKILL.md
+├── skills/conventional-{commit,branch,suggest,auth}/SKILL.md
 └── tests/
 ```
 

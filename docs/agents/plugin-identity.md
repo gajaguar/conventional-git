@@ -30,10 +30,12 @@ plugin, and skill names below match this repository's own
 
 ## Skills
 
-| Skill                 | Trigger phrasing                                                                                                                                                                                  |
-| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `conventional-commit` | `commit`, `conventional commit`, `create a commit`, `commit changes` (outside a gitmoji context)                                                                                                  |
-| `conventional-branch` | `create a branch`, `new branch`, `conventional branch`, `start working on`, `checkout a branch` (outside a ticket/module/team context)                                                            |
+| Skill                  | Trigger phrasing                                                                                                                       |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
+| `conventional-commit`  | `commit`, `conventional commit`, `create a commit`, `commit changes` (outside a gitmoji context)                                       |
+| `conventional-branch`  | `create a branch`, `new branch`, `conventional branch`, `start working on`, `checkout a branch` (outside a ticket/module/team context) |
+| `conventional-suggest` | `suggest a commit message`, `what should this commit be`, `draft a commit from the diff`, `use jev for the commit`                     |
+| `conventional-auth`    | `set up the jev key`, `login to TypeSafe`, `configure OpenRouter`, `check my suggestion credentials`, `remove my API key`              |
 
 ## Prerequisites
 
