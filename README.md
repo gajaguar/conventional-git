@@ -197,7 +197,10 @@ uvx --from 'conventional-git[mcp]' conventional-git-mcp
 ```
 
 The server exposes `validate_commit_message`, `validate_branch_name`,
-`describe_convention`, and `suggest_commit_message`. See
+`describe_convention`, and `suggest_commit_message`. The server has no auth
+tools: for `suggest_commit_message` to use `jev`, run
+`conventional-git auth login` first and launch it with the `llm` extra (see
+[`docs/mcp/out-of-band-auth.md`](docs/mcp/out-of-band-auth.md)). See
 [`docs/mcp/index.md`](docs/mcp/index.md).
 
 ## Agents

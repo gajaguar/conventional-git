@@ -13,6 +13,10 @@ agents.
   types and limits, read live instead of hardcoded in a prompt.
 * [suggest_commit_message is advice, not a rule](suggest-commit-message.md) -
   still requires a `validate_commit_message` pass.
+* [Authenticate the MCP server through the CLI](out-of-band-auth.md) - set
+  the key with `auth login` and launch with the `llm` extra.
+* [Why credential management is not an MCP tool](no-auth-tools.md) - the raw
+  key must not travel through the protocol.
 * [Why validate_* is the highest-value tool](self-correction-loop.md) - a
   real draft/validate/fix loop instead of one-shot guessing.
 

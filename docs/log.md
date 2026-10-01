@@ -1,5 +1,15 @@
 # Directory Update Log
 
+## 2026-09-30 (3)
+
+* **Addition**: Added [`mcp/out-of-band-auth.md`](mcp/out-of-band-auth.md)
+  and [`mcp/no-auth-tools.md`](mcp/no-auth-tools.md): the MCP server has no
+  auth tools, and why. Updated
+  [`mcp/suggest-commit-message.md`](mcp/suggest-commit-message.md) with the
+  missing-credential response and
+  [`mcp/plugin-bundled-server.md`](mcp/plugin-bundled-server.md) with the
+  missing `llm` extra.
+
 ## 2026-09-30 (2)
 
 * **Addition**: Added the `conventional-suggest` and `conventional-auth`

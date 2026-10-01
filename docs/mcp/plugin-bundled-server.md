@@ -17,6 +17,10 @@ separate `conventional-git` install or `mcp` extra.
 `mcp_tools` so a skill can tell whether these tools are available before
 recommending them.
 
+That command does not install the `llm` extra, so the bundled server's
+`suggest_commit_message` always answers with the heuristic provider; see
+[`out-of-band-auth.md`](out-of-band-auth.md) to run a server with `jev`.
+
 The same `command` and `args` wire the server into opencode under its
 own `mcp` config key — see
 [`../agents/opencode-mcp-server.md`](../agents/opencode-mcp-server.md)
