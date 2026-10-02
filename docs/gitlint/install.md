@@ -2,7 +2,7 @@
 type: playbook
 title: Installing the gitlint extra
 description: gitlint and conventional-git must resolve from the same Python environment.
-tags: [gitlint]
+tags: [gitlint, toolchain]
 status: stable
 ---
 

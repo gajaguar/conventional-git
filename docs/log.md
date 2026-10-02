@@ -1,6 +1,19 @@
 # Directory Update Log
 
-## 2026-09-30 (3)
+## 2026-10-02
+
+* **Change**: `conventions/tag-vocabulary.md` has no `git` tag, since every note
+  here is about git.
+* **Change**: the first `make docs-retag` run re-assigned the tags of several
+  notes.
+* **Change**: `agents/opencode-mcp-server.md` and `agents/plugin-identity.md` drop
+  the `generated` field, since git history records authorship.
+* **Addition**: `agents/opencode-mcp-config.md`, and the shared `agents/` notes
+  match their template copy again.
+* **Addition**: `okf-base.yaml`, `make docs-lint`, `tools/docs-retag.py`,
+  `conventions/tag-vocabulary.md` and `toolchain/retag-notes.md`.
+
+## 2026-09-30
 
 * **Addition**: Added [`mcp/out-of-band-auth.md`](mcp/out-of-band-auth.md)
   and [`mcp/no-auth-tools.md`](mcp/no-auth-tools.md): the MCP server has no
@@ -9,27 +22,20 @@
   missing-credential response and
   [`mcp/plugin-bundled-server.md`](mcp/plugin-bundled-server.md) with the
   missing `llm` extra.
-
-## 2026-09-30 (2)
-
 * **Addition**: Added the `conventional-suggest` and `conventional-auth`
   skills under `skills/`, covering `create suggest` and `auth`. Updated the
   skills table in [`agents/plugin-identity.md`](agents/plugin-identity.md),
   and dropped `--diff-file -` from the README and `conventional-commit`
   because the CLI does not read stdin for it.
-
-## 2026-09-30
-
 * **Change**: [`conventions/commits-check.md`](conventions/commits-check.md)
   now says `make commits-check` skips merge commits and lists the valid
   branch types, with documentation and dependency work on `chore/`.
-
 * **Addition**: Added [`conventions/help-check.md`](conventions/help-check.md)
   and [`conventions/claude-md-check.md`](conventions/claude-md-check.md) for
   the `make help-check` and `make claude-md-check` targets, now part of
   `make check`. Updated [`conventions/index.md`](conventions/index.md).
 
-## 2026-09-29 (5)
+## 2026-09-29
 
 * **Addition**: Added `docs/agents/` with this project's own
   `plugin-identity.md` (marketplace `conventional-git-skills`, plugin
@@ -40,48 +46,33 @@
   `.mcp.json`). Updated `docs/index.md`, cross-linked from
   `docs/mcp/plugin-bundled-server.md` and `docs/mcp/index.md`, and
   trimmed the README's Agents section to one command per channel.
-
-## 2026-09-29 (4)
-
 * **Addition**: [`toolchain/sh-uid-unused.md`](toolchain/sh-uid-unused.md)
   records why the Dependabot alert on `sh` is dismissed as not used, and
   `tests/test_sh_uid_unused.py` fails if `gitlint` or `src/` starts passing
   `_uid`.
-
-## 2026-09-29 (3)
-
 * **Change**: The `mcp` extra now requires `mcp>=2.2,<3`. `mcp/server.py`
   builds an `MCPServer` (`mcp.server.mcpserver`), the name `FastMCP` took in
   2.x; the tools and their contract are unchanged. Updated
   [`architecture/three-layers.md`](architecture/three-layers.md) and
   [`architecture/optional-extras.md`](architecture/optional-extras.md).
-
-## 2026-09-29 (2)
-
 * **Change**: `pylint-plugin` (a git dependency whose package was renamed,
   which broke `make install`) is replaced by `pylint-gajaguar` from PyPI, and
   `pyproject.toml` enables it with `enable = ["gajaguar"]`. The `dependabot/*`
   skip in `make commits-check` is gone: the project's own 1.1.0 accepts
   `dependabot/` and `renovate/` branch names. Updated
   [`conventions/commits-check.md`](conventions/commits-check.md).
-
-## 2026-09-29
-
 * **Addition**: Branch names starting with a prefix listed in
   `data/branch-exempt-prefixes.csv` (`dependabot/`, `renovate/`) now pass
   `check branch`, extendable through `[branch] exempt_prefix_overrides` and
   `--exempt-prefixes-csv`; recorded in
   [`architecture/vocabulary-as-data.md`](architecture/vocabulary-as-data.md).
 
-## 2026-09-28 (2)
+## 2026-09-28
 
 * **Addition**: Added `.github/dependabot.yml` (GitHub Actions, uv, npm,
   weekly). [`conventions/commits-check.md`](conventions/commits-check.md)
   now records that `make commits-check` skips the branch-name check for
   Dependabot's `dependabot/*` branches.
-
-## 2026-09-28
-
 * **Change**: The plugin's `.mcp.json`, the pre-commit hooks and the
   `Makefile` now resolve `conventional-git` from PyPI at `@latest` instead of
   a pinned version or the editable local install; updated

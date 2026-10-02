@@ -2,7 +2,7 @@
 type: tool
 title: A repo:local pre-commit configuration
 description: An isolated Python environment alternative to a globally installed CLI, pinned to a PyPI release.
-tags: [enforcement, pre-commit]
+tags: [enforcement, pre-commit, toolchain]
 status: stable
 ---
 
