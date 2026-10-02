@@ -2,7 +2,7 @@
 type: reference
 title: Three enforcement surfaces
 description: The commit-msg, pre-commit, and pre-push hooks and what each one rejects.
-tags: [enforcement, git-hooks]
+tags: [enforcement, hooks]
 status: stable
 ---
 

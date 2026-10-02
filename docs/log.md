@@ -12,6 +12,12 @@
   match their template copy again.
 * **Addition**: `okf-base.yaml`, `make docs-lint`, `tools/docs-retag.py`,
   `conventions/tag-vocabulary.md` and `toolchain/retag-notes.md`.
+* **Addition**: `conventions/versioning.md` sets the SemVer bump criteria, tags
+  only minor and major bumps, and leaves releases on demand.
+* **Addition**: `AGENTS.md` links to `conventions/versioning.md`.
+* **Change**: `conventions/tag-vocabulary.md` states the tag form: lowercase, one
+  word by default, no parent prefix.
+* **Change**: the `git-hooks` tag becomes `hooks`, so a tag carries no parent prefix.
 
 ## 2026-09-30
 

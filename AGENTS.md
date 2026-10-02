@@ -47,6 +47,12 @@ Once a pull request is open, the agent MUST:
 3. Delete the branch on the remote and locally.
 4. Switch back to the base branch, pull it and run `git fetch --prune`.
 
+## Versioning and releases
+
+- Decide every version bump, tag and release as
+  [`docs/conventions/versioning.md`](docs/conventions/versioning.md) defines;
+  it is the only place those rules live.
+
 ## Documentation
 
 - Follow the organization's shared documentation-writing guide, kept in one

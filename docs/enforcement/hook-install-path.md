@@ -2,7 +2,7 @@
 type: tool
 title: Where hooks are installed
 description: The installer resolves Git's configured hooks path, so it handles linked worktrees and core.hooksPath destinations like husky.
-tags: [enforcement, git-hooks]
+tags: [enforcement, hooks]
 status: stable
 ---
 
