@@ -110,3 +110,6 @@ feature.
   [`docs/python/pyproject-defaults.md`](docs/python/pyproject-defaults.md).
 - Keep the spec core free of `git` imports and `SystemExit`. Returning a
   `Report` is the contract; only front-ends turn violations into exit codes.
+- Tag a minor or major bump with `make release-tag` after its pull request
+  merges, as [`docs/conventions/versioning.md`](docs/conventions/versioning.md)
+  describes; the target tags the base branch as `v<project.version>`.
