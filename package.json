@@ -1,5 +1,5 @@
 {
-	"name": "conventional-git",
+	"name": "conventional-git-tools",
 	"private": true,
 	"devDependencies": {
 		"cspell": "^10.3.5",
