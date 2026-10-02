@@ -7,6 +7,8 @@ Commit and branch naming.
   own hooks.
 * [Enforcing commits and branches](commits-check.md) - the pre-commit hook
   and `make commits-check` that enforce them.
+* [Versioning, tags and releases](versioning.md) - SemVer bump criteria, which
+  bumps get a tag, and on-demand releases.
 * [Help-line check](help-check.md) - `make help-check` fails on a Makefile
   target without a `##` help line.
 * [No CLAUDE.md check](claude-md-check.md) - `make claude-md-check` fails
