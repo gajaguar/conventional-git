@@ -4,8 +4,7 @@ title: Managing installed skills
 description: npx skills list, update, and remove, plus find, use, and init, as shown by the CLI help.
 tags: [agents, npx-skills]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-09-29T00:00:00Z }
-stale_after: 2027-03-29T00:00:00Z
+stale_after: 2027-03-29
 sources:
   - id: vercel-skills
     resource: https://github.com/vercel-labs/skills

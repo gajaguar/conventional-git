@@ -4,7 +4,6 @@ title: opencode MCP server
 description: Configure opencode to load the conventional-git MCP server via uvx, with copy-ready config snippets.
 tags: [agents, opencode, mcp]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-09-29T00:00:00Z }
 sources:
   - id: opencode-mcp
     resource: https://opencode.ai/docs/mcp-servers/

@@ -4,8 +4,7 @@ title: Updating and uninstalling Claude Code plugins
 description: Auto-update is off by default for third-party marketplaces, so update by hand and reload; uninstall the plugin and remove the marketplace when you are done.
 tags: [agents, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-09-29T00:00:00Z }
-stale_after: 2027-03-29T00:00:00Z
+stale_after: 2027-03-29
 sources:
   - id: claude-discover-plugins
     resource: https://code.claude.com/docs/en/discover-plugins

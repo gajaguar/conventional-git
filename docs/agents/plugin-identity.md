@@ -5,7 +5,6 @@ description: The marketplace, plugin, and skill names for this project, plus the
 resource: https://github.com/gajaguar/conventional-git
 tags: [agents]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-09-29T00:00:00Z }
 sources:
   - id: claude-discover-plugins
     resource: https://code.claude.com/docs/en/discover-plugins

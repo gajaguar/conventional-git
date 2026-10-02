@@ -53,7 +53,8 @@ Once a pull request is open, the agent MUST:
   place rather than copied into this repository so it cannot drift from other
   projects that follow the same guide.
 - Add a new `docs/` note to its directory's `index.md` and, by file name, to
-  [`docs/log.md`](docs/log.md).
+  [`docs/log.md`](docs/log.md); `make docs-lint` fails on a missing field or a
+  broken link.
 - Cover exactly one concept per note.
 - Write a note only when it explains something a reader cannot already get
   from `make help`, a linter's own message, or the configuration it comes
