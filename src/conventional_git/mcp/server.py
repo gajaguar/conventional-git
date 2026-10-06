@@ -22,6 +22,7 @@ def validate_commit_message(message: str) -> dict[str, object]:
         message,
         allowed_types=policy.types,
         attribution_patterns=policy.extra_attribution_patterns,
+        include_default_attribution=policy.include_default_attribution,
     )
     return report.to_dict()
 

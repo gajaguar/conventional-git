@@ -202,6 +202,7 @@ def validate_message(
     *,
     allowed_types: frozenset[str] | None = None,
     attribution_patterns: tuple[str, ...] | None = None,
+    include_default_attribution: bool = True,
 ) -> Report:
     if not message or not message.strip():
         return Report.from_violations(
@@ -215,7 +216,8 @@ def validate_message(
 
     policy = _RulePolicy(
         types=allowed_types if allowed_types is not None else vocabulary.default_types(),
-        attribution_patterns=vocabulary.default_attribution_patterns() + (attribution_patterns or ()),
+        attribution_patterns=(vocabulary.default_attribution_patterns() if include_default_attribution else ())
+        + (attribution_patterns or ()),
     )
     parsed = ParsedMessage(message=message, header=_parse_header(message))
     violations = [violation for check in _CHECKS for violation in check(parsed, policy)]

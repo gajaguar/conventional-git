@@ -135,3 +135,21 @@ def test_extra_attribution_pattern_is_rejected() -> None:
     # Assert
     assert not report.valid
     assert any(v.code == "commit.attribution" for v in report.violations)
+
+
+def test_default_attribution_can_be_disabled() -> None:
+    # Arrange
+    message = "feat: add login\n\n- bullet one\nCo-Authored-By: Jane <jane@example.com>"
+    # Act
+    report = validate_message(message, include_default_attribution=False)
+    # Assert
+    assert report.valid
+
+
+def test_extra_attribution_pattern_still_applies_when_default_is_disabled() -> None:
+    # Arrange
+    message = "feat: add login\n\n- bullet one\nSigned-off-by: bot@example.com"
+    # Act
+    report = validate_message(message, attribution_patterns=("Signed-off-by",), include_default_attribution=False)
+    # Assert
+    assert any(v.code == "commit.attribution" for v in report.violations)

@@ -60,3 +60,23 @@ def test_load_reads_attribution_patterns(tmp_path: Path) -> None:
     config = Config.load(config_path)
     # Assert
     assert config.extra_attribution_patterns == ("Signed-off-by",)
+
+
+def test_load_reads_disable_default_attribution_patterns(tmp_path: Path) -> None:
+    # Arrange
+    config_path = tmp_path / ".conventional-git.toml"
+    config_path.write_text("[commit]\ndisable_default_attribution_patterns = true\n", encoding="utf-8")
+    # Act
+    config = Config.load(config_path)
+    # Assert
+    assert config.disable_default_attribution_patterns is True
+
+
+def test_load_defaults_to_keeping_default_attribution_patterns(tmp_path: Path) -> None:
+    # Arrange
+    config_path = tmp_path / ".conventional-git.toml"
+    config_path.write_text("[commit]\n", encoding="utf-8")
+    # Act
+    config = Config.load(config_path)
+    # Assert
+    assert config.disable_default_attribution_patterns is False

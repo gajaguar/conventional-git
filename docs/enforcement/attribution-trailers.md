@@ -13,5 +13,6 @@ with …` lines, and 🤖 markers as `commit.attribution` errors.
 `[commit] attribution_patterns` in `.conventional-git.toml` extends the
 defaults with case-insensitive regular expressions matched against each body
 line. Every front-end that calls `validate_message` enforces this by
-default; the default patterns cannot currently be disabled — see the
-README's Open items.
+default. A repository that allows or requires such trailers sets
+`[commit] disable_default_attribution_patterns = true` to skip the built-in
+list; `attribution_patterns` still applies.

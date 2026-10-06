@@ -20,6 +20,9 @@ DEFAULT_ATTRIBUTION_PATTERN: Final[re.Pattern[str]] = re.compile(
 
 
 def _compile(config: Config) -> re.Pattern[str]:
+    if config.disable_default_attribution_patterns:
+        parts = [*_GENERATOR_ONLY_PATTERNS, *config.extra_attribution_patterns]
+        return re.compile("|".join(parts), re.IGNORECASE)
     if not config.extra_attribution_patterns:
         return DEFAULT_ATTRIBUTION_PATTERN
     parts = [DEFAULT_ATTRIBUTION_PATTERN.pattern, *config.extra_attribution_patterns]

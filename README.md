@@ -264,13 +264,14 @@ Use `conventional-git <command> --help` for the full option descriptions.
 
 Create `.conventional-git.toml` in the current repository:
 
-| Key                                | Default       | Purpose                    |
-| :--------------------------------- | ------------- | -------------------------- |
-| `[commit] attribution_patterns`    | built-in list | Extra attribution regexes  |
-| `[commit] type_overrides`          | `[]`          | Extra commit types         |
-| `[branch] type_overrides`          | `[]`          | Extra branch types         |
-| `[branch] trunk_overrides`         | `[]`          | Extra trunk branch names   |
-| `[branch] exempt_prefix_overrides` | `[]`          | Extra exempt name prefixes |
+| Key                                             | Default       | Purpose                            |
+| :---------------------------------------------- | ------------- | ---------------------------------- |
+| `[commit] attribution_patterns`                 | built-in list | Extra attribution regexes          |
+| `[commit] disable_default_attribution_patterns` | `false`       | Skip the built-in attribution list |
+| `[commit] type_overrides`                       | `[]`          | Extra commit types                 |
+| `[branch] type_overrides`                       | `[]`          | Extra branch types                 |
+| `[branch] trunk_overrides`                      | `[]`          | Extra trunk branch names           |
+| `[branch] exempt_prefix_overrides`              | `[]`          | Extra exempt name prefixes         |
 
 Relative CSV paths in `type_overrides` / `trunk_overrides` /
 `exempt_prefix_overrides` are resolved
@@ -278,7 +279,8 @@ against the directory containing `.conventional-git.toml`, not the process's
 current directory. Every consumer that loads the file — the CLI, the MCP
 server, and the gitlint adapter — honors it. See
 [`docs/enforcement/attribution-trailers.md`](docs/enforcement/attribution-trailers.md)
-for what `attribution_patterns` extends.
+for what `attribution_patterns` extends and how
+`disable_default_attribution_patterns` turns the built-in list off.
 
 The `--types-csv` option extends the default vocabulary; it does not replace
 it. Vocabulary files live in `data/{commit,branch}-types.csv`.

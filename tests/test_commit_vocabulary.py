@@ -59,3 +59,18 @@ def test_resolve_policy_layers_extra_types_csv_on_top_of_config_overrides(tmp_pa
     # Assert
     assert "fromconfig" in policy.types
     assert "fromflag" in policy.types
+
+
+def test_resolve_policy_maps_disabled_default_attribution() -> None:
+    # Arrange
+    config = Config(
+        extra_attribution_patterns=(),
+        commit_type_overrides=(),
+        branch_type_overrides=(),
+        branch_trunk_overrides=(),
+        disable_default_attribution_patterns=True,
+    )
+    # Act
+    policy = vocabulary.resolve_policy(config)
+    # Assert
+    assert policy.include_default_attribution is False

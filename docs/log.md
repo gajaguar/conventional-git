@@ -1,5 +1,10 @@
 # Directory Update Log
 
+## 2026-10-05
+
+* **Change**: `enforcement/attribution-trailers.md` documents
+  `disable_default_attribution_patterns`, which skips the built-in list.
+
 ## 2026-10-02
 
 * **Change**: `conventions/tag-vocabulary.md` has no `git` tag, since every note
