@@ -71,3 +71,19 @@ def test_violation_dataclass_round_trip() -> None:
         "fix_hint": "h",
         "severity": "warning",
     }
+
+
+def test_strip_attribution_keeps_co_authored_by_when_defaults_are_disabled() -> None:
+    # Arrange
+    raw = "- bullet one\nCo-Authored-By: Jane <jane@example.com>"
+    config = Config(
+        extra_attribution_patterns=(),
+        commit_type_overrides=(),
+        branch_type_overrides=(),
+        branch_trunk_overrides=(),
+        disable_default_attribution_patterns=True,
+    )
+    # Act
+    cleaned = strip_attribution(raw, config=config)
+    # Assert
+    assert cleaned == ["- bullet one", "Co-Authored-By: Jane <jane@example.com>"]

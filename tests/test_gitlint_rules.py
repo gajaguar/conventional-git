@@ -137,6 +137,25 @@ def test_attribution_patterns_from_repository_config_are_honored(
     assert [v.rule_id for v in violations] == ["conventional-git/commit.attribution"]
 
 
+def test_default_attribution_can_be_disabled_from_repository_config(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Arrange
+    (tmp_path / ".conventional-git.toml").write_text(
+        "[commit]\ndisable_default_attribution_patterns = true\n",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    # Act
+    violations = _lint(
+        "feat: add login\n\nCo-Authored-By: Jane <jane@example.com>",
+        ignore=gitlint_rules.RECOMMENDED_IGNORE,
+    )
+    # Assert
+    assert violations == []
+
+
 def test_recommended_ignore_leaves_a_valid_message_clean() -> None:
     # Arrange
     messages = ("feat: add login", "feat: add login\n\n- a proper bullet body line")

@@ -30,11 +30,11 @@ def _repo_root(commit: GitCommit) -> Path:
     return Path(repository_path) if repository_path else Path.cwd()
 
 
-def _config(commit: GitCommit) -> tuple[frozenset[str], tuple[str, ...]]:
+def _config(commit: GitCommit) -> tuple[frozenset[str], tuple[str, ...], bool]:
     root = _repo_root(commit)
     config = Config.load(root / ".conventional-git.toml")
     policy = commit_vocab.resolve_policy(config)
-    return policy.types, policy.extra_attribution_patterns
+    return policy.types, policy.extra_attribution_patterns, policy.include_default_attribution
 
 
 def _to_gitlint(
@@ -42,12 +42,14 @@ def _to_gitlint(
     *,
     allowed_types: frozenset[str] | None = None,
     attribution_patterns: tuple[str, ...] = (),
+    include_default_attribution: bool = True,
     include_warnings: bool = False,
 ) -> list[RuleViolation]:
     report = commit_rules.validate_message(
         message,
         allowed_types=allowed_types,
         attribution_patterns=attribution_patterns,
+        include_default_attribution=include_default_attribution,
     )
     violations: list[RuleViolation] = []
     for violation in report.violations:
@@ -73,11 +75,12 @@ class ConventionalCommitHeaderRule(CommitRule):  # type: ignore[misc]
     ]
 
     def validate(self, commit: GitCommit) -> list[RuleViolation]:
-        allowed_types, attribution_patterns = _config(commit)
+        allowed_types, attribution_patterns, include_default_attribution = _config(commit)
         return _to_gitlint(
             commit.message.original,
             allowed_types=allowed_types,
             attribution_patterns=attribution_patterns,
+            include_default_attribution=include_default_attribution,
             include_warnings=bool(self.options["warnings"].value),
         )
 

@@ -16,6 +16,7 @@ class Config:
     branch_type_overrides: tuple[Path, ...]
     branch_trunk_overrides: tuple[Path, ...]
     branch_exempt_prefix_overrides: tuple[Path, ...] = ()
+    disable_default_attribution_patterns: bool = False
 
     @classmethod
     def load(cls, path: Path | None = None) -> Config:
@@ -42,6 +43,7 @@ class Config:
             branch_type_overrides=_resolve_paths(base, branch.get("type_overrides", ()) or ()),
             branch_trunk_overrides=_resolve_paths(base, branch.get("trunk_overrides", ()) or ()),
             branch_exempt_prefix_overrides=_resolve_paths(base, branch.get("exempt_prefix_overrides", ()) or ()),
+            disable_default_attribution_patterns=bool(commit.get("disable_default_attribution_patterns", False)),
         )
 
 

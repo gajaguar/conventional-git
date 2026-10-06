@@ -69,6 +69,7 @@ def check_commit(
         text,
         allowed_types=policy.types,
         attribution_patterns=policy.extra_attribution_patterns,
+        include_default_attribution=policy.include_default_attribution,
     )
     _print_report("commit", report)
     _report_to_exit_code(valid=report.valid)

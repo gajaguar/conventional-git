@@ -80,6 +80,7 @@ def merge_criteria(overrides: tuple[Path, ...]) -> dict[str, str]:
 class CommitPolicy:
     types: frozenset[str]
     extra_attribution_patterns: tuple[str, ...]
+    include_default_attribution: bool = True
 
 
 def resolve_policy(config: Config, *, extra_types_csv: Path | None = None) -> CommitPolicy:
@@ -91,4 +92,5 @@ def resolve_policy(config: Config, *, extra_types_csv: Path | None = None) -> Co
     return CommitPolicy(
         types=merge_vocabularies(overrides),
         extra_attribution_patterns=config.extra_attribution_patterns,
+        include_default_attribution=not config.disable_default_attribution_patterns,
     )
