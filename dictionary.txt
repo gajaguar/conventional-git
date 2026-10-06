@@ -13,6 +13,7 @@ gitlint
 gitmoji
 hatchling
 jev
+katex
 keyring
 klass
 kwonlyargs
