@@ -39,7 +39,7 @@ conventional-git-mcp = "conventional_git.mcp.server:run"
 dev = [
   "conventional-git[gitlint,llm,mcp]",
   "mypy>=2.3.1",
-  "pylint-gajaguar>=2.0.1",
+  "pylint-gajaguar>=2.0.2",
   "pylint>=4.0.9",
   "pyright>=1.1.414",
   "pytest-cov>=7.1",
