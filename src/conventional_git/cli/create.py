@@ -42,10 +42,6 @@ def create_commit(
         Path | None,
         typer.Option("--types-csv", help="Optional CSV overriding the default commit type vocabulary"),
     ] = None,
-    dry_run: Annotated[
-        bool,
-        typer.Option("--dry-run/--no-dry-run", help="Print the message and exit without acting"),
-    ] = False,
 ) -> None:
     config = Config.load()
     policy = commit_vocab.resolve_policy(config, extra_types_csv=types_csv)
@@ -58,8 +54,6 @@ def create_commit(
         types=policy.types,
         config=config,
     )
-    if dry_run:
-        raise typer.Exit(0)
 
 
 def _render_commit(
@@ -90,10 +84,6 @@ def create_branch(
         Path | None,
         typer.Option("--types-csv", help="Optional CSV overriding the default branch type vocabulary"),
     ] = None,
-    dry_run: Annotated[
-        bool,
-        typer.Option("--dry-run/--no-dry-run", help="Print the branch name and exit"),
-    ] = False,
 ) -> None:
     config = Config.load()
     policy = branch_vocab.resolve_policy(config, extra_types_csv=types_csv)
@@ -105,8 +95,6 @@ def create_branch(
         raise typer.Exit(1)
     name = branch_rules.build_branch_name(branch_type, branch_rules.normalize_description(description))
     typer.echo(name)
-    if dry_run:
-        raise typer.Exit(0)
 
 
 @app.command("suggest")

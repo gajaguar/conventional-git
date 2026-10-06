@@ -68,9 +68,7 @@ continuing.
    ```
 
 4. If and only if the arguments contain `--ask`, MUST render the branch name
-   by running the command with `--dry-run` (an alias for the default
-   printing behavior kept for forward compatibility, in case the command
-   later gains side effects), present it with `AskUserQuestion`, and create
+   by running the command, present it with `AskUserQuestion`, and create
    it only on approval. Otherwise, MUST create it directly — creating
    without confirmation is the default behavior.
 5. MUST print the result of `git switch -c <name>` (the branch name). If either

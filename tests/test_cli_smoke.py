@@ -310,7 +310,6 @@ def test_create_branch_outputs_normalized_name() -> None:
             "feature",
             "--description",
             "Add OAuth Login",
-            "--dry-run",
         ],
         capture_output=True,
         text=True,
@@ -340,7 +339,6 @@ def test_create_branch_honors_config_type_overrides(tmp_path: Path) -> None:
             "spike",
             "--description",
             "try a new approach",
-            "--dry-run",
         ],
         capture_output=True,
         text=True,
@@ -352,7 +350,31 @@ def test_create_branch_honors_config_type_overrides(tmp_path: Path) -> None:
     assert completed.stdout.strip() == "spike/try-a-new-approach"
 
 
-def test_create_commit_dry_run_prints_message_only() -> None:
+def test_create_commit_prints_message_only() -> None:
+    # Arrange
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "commit",
+            "--type",
+            "feat",
+            "--description",
+            "add oauth login",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert completed.stdout.strip() == "feat: add oauth login"
+
+
+def test_create_commit_rejects_removed_dry_run_option() -> None:
     # Arrange
     # Act
     completed = subprocess.run(
@@ -373,8 +395,8 @@ def test_create_commit_dry_run_prints_message_only() -> None:
         check=False,
     )
     # Assert
-    assert completed.returncode == 0
-    assert completed.stdout.strip() == "feat: add oauth login"
+    assert completed.returncode != 0
+    assert "No such option" in completed.stderr
 
 
 def test_create_suggest_falls_back_to_heuristic_without_credentials(tmp_path: Path) -> None:

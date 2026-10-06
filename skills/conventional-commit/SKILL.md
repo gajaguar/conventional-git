@@ -102,15 +102,13 @@ text (the agent doesn't support this injection), run
    ```
 
    Omit `--scope` entirely when there is no scope. The CLI never invokes
-   `git commit` itself, whether or not `--dry-run` is passed — it only prints
-   the rendered message; the skill MUST always shell out to `git commit`
-   itself: `git commit --amend --file=-` if and only if the arguments request
-   amending or rewording the last commit, otherwise `git commit --file=-`.
+   `git commit` itself — it only prints the rendered message; the skill MUST
+   always shell out to `git commit` itself: `git commit --amend --file=-` if
+   and only if the arguments request amending or rewording the last commit,
+   otherwise `git commit --file=-`.
 
 8. If and only if the arguments contain `--ask`, MUST render the message by
-   running the command with `--dry-run` (an alias for the default printing
-   behavior kept for forward compatibility, in case the command later gains
-   side effects), present it with `AskUserQuestion`, and commit only on
+   running the command, present it with `AskUserQuestion`, and commit only on
    approval. Otherwise, MUST commit directly — committing without
    confirmation is the default behavior.
 9. You MUST print the result of `git commit`. If either the CLI or `git commit`
