@@ -125,9 +125,6 @@ conventional-git create branch --type feature --description "add login"
 # feature/add-login
 ```
 
-Use `--dry-run` when you need the generated value without taking further
-action. The current implementation prints the value in either mode.
-
 ### Enforce
 
 Install `commit-msg`, `pre-commit`, and `pre-push` hooks in a repository:
@@ -250,8 +247,8 @@ return `1`.
 | :------------- | ---------------------------------------------------------------------------------------- | ------------: |
 | check commit   | `-m, --message`; `-f, --file`; `--types-csv`                                             |        0 or 1 |
 | check branch   | `-n, --name`; `--types-csv`                                                              |        0 or 1 |
-| create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`; `--dry-run` |        0 or 1 |
-| create branch  | `--type`; `--description`; `--types-csv`; `--dry-run`                                    |        0 or 1 |
+| create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`              |        0 or 1 |
+| create branch  | `--type`; `--description`; `--types-csv`                                                 |        0 or 1 |
 | create suggest | `--diff-file`; `--provider`; `--apply`                                                   |        0 or 1 |
 | hook install   | `--target`; `--force`                                                                    |        0 or 1 |
 | hook uninstall | `--target`                                                                               |             0 |
