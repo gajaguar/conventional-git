@@ -68,7 +68,7 @@ continuing.
    ```
 
    It reads `git diff --cached`. For a diff saved to a file, pass
-   `--diff-file <path>`; MUST NOT pass `-`, which is not read as stdin.
+   `--diff-file <path>`, or `--diff-file -` to read it from stdin.
 5. Read `type`, `scope`, `description`, `breaking` and `confidence`. If stderr
    reports a fallback because credentials are missing, offer the
    `conventional-auth` skill.
