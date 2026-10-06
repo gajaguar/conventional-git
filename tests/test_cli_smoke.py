@@ -425,6 +425,33 @@ def test_create_suggest_falls_back_to_heuristic_without_credentials(tmp_path: Pa
     assert "type: chore" in completed.stdout
 
 
+def test_create_suggest_reads_diff_from_stdin_with_dash() -> None:
+    # Arrange
+    stdin_diff = _SAMPLE_DIFF
+    # Act
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "conventional_git.cli.app",
+            "create",
+            "suggest",
+            "--diff-file",
+            "-",
+            "--provider",
+            "heuristic",
+        ],
+        input=stdin_diff,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_llm_credentials(),
+    )
+    # Assert
+    assert completed.returncode == 0
+    assert "type: chore" in completed.stdout
+
+
 def test_create_suggest_with_explicit_jev_provider_fails_without_credentials(tmp_path: Path) -> None:
     # Arrange
     diff_file = tmp_path / "sample.diff"

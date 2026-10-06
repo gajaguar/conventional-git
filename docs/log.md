@@ -4,6 +4,8 @@
 
 * **Change**: `enforcement/attribution-trailers.md` documents
   `disable_default_attribution_patterns`, which skips the built-in list.
+* **Change**: `create suggest --diff-file -` reads the diff from stdin; the
+  README and the `conventional-suggest` skill document it again.
 
 ## 2026-10-02
 

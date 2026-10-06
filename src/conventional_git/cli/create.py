@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess  # ruff: ignore[suspicious-subprocess-import] — fixed argv, no shell, no user-controlled input
+import sys
 from pathlib import Path  # ruff: ignore[typing-only-standard-library-import] — Typer resolves at runtime
 from typing import Annotated
 
@@ -101,7 +102,9 @@ def create_branch(
 def suggest_commit(
     diff_file: Annotated[
         Path | None,
-        typer.Option("--diff-file", help="Read the diff from this file instead of 'git diff --cached'"),
+        typer.Option(
+            "--diff-file", help="Read the diff from this file ('-' for stdin) instead of 'git diff --cached'"
+        ),
     ] = None,
     provider_name: Annotated[
         str | None,
@@ -112,7 +115,7 @@ def suggest_commit(
         typer.Option("--apply/--no-apply", help="Render and validate the suggested commit instead of printing it"),
     ] = False,
 ) -> None:
-    diff = diff_file.read_text(encoding="utf-8") if diff_file is not None else _staged_diff()
+    diff = _read_diff(diff_file)
     suggestion = _suggest(diff, provider_name)
     if suggestion is None:
         typer.echo("No staged changes to suggest a commit for.", err=True)
@@ -135,6 +138,14 @@ def suggest_commit(
     typer.echo(f"description: {suggestion.description}")
     typer.echo(f"breaking: {suggestion.breaking}")
     typer.echo(f"confidence: {suggestion.confidence:.2f}")
+
+
+def _read_diff(diff_file: Path | None) -> str:
+    if diff_file is None:
+        return _staged_diff()
+    if str(diff_file) == "-":
+        return sys.stdin.read()
+    return diff_file.read_text(encoding="utf-8")
 
 
 def _staged_diff() -> str:

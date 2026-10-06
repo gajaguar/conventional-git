@@ -148,6 +148,7 @@ provider and prints a notice; it never fails the command:
 ```bash
 conventional-git create suggest
 conventional-git create suggest --diff-file changes.diff --apply
+git diff main... | conventional-git create suggest --diff-file -
 ```
 
 With the `llm` extra installed and a credential available, `create suggest`
