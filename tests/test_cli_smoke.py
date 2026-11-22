@@ -607,14 +607,26 @@ def test_help_payload_is_json_shape() -> None:
     assert "feat" in payload["commit"]["types"]
 
 
-def _check_command(stdin: str) -> subprocess.CompletedProcess[str]:
+def _check_command(stdin: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, "-m", "conventional_git.cli.app", "check", "command"],
         input=stdin,
         capture_output=True,
         text=True,
         check=False,
+        cwd=cwd,
     )
+
+
+_PATTERN_CONFIG: Final[str] = "[commit]\nattribution_patterns = ['internal-ticket-url']\n"
+
+
+def _repo_with_pattern(root: Path) -> Path:
+    repo = root / "repo"
+    (repo / ".git").mkdir(parents=True)
+    (repo / "sub").mkdir()
+    (repo / ".conventional-git.toml").write_text(_PATTERN_CONFIG, encoding="utf-8")
+    return repo
 
 
 def test_check_command_blocks_attribution_in_pr_body() -> None:
@@ -672,5 +684,65 @@ def test_check_command_ignores_non_pr_command() -> None:
     command = "git commit -m 'Generated with Acme Tool'"
     # Act
     completed = _check_command(command)
+    # Assert
+    assert completed.returncode == 0
+
+
+def test_check_command_uses_config_of_cd_target(tmp_path: Path) -> None:
+    # Arrange
+    repo = _repo_with_pattern(tmp_path)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    command = f'cd {repo} && gh pr create --body "- a\ninternal-ticket-url"'
+    # Act
+    completed = _check_command(command, cwd=elsewhere)
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_resolves_relative_cd_against_payload_cwd(tmp_path: Path) -> None:
+    # Arrange
+    repo = _repo_with_pattern(tmp_path)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    command = 'cd repo && gh pr create --body "- a\ninternal-ticket-url"'
+    payload = json.dumps({"cwd": str(tmp_path), "tool_input": {"command": command}})
+    # Act
+    completed = _check_command(payload, cwd=elsewhere)
+    # Assert
+    assert repo.is_dir()
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_searches_config_upward_from_subdirectory(tmp_path: Path) -> None:
+    # Arrange
+    repo = _repo_with_pattern(tmp_path)
+    command = 'gh pr create --body "- a\ninternal-ticket-url"'
+    # Act
+    completed = _check_command(command, cwd=repo / "sub")
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_uses_defaults_without_any_config(tmp_path: Path) -> None:
+    # Arrange
+    clean = 'gh pr create --body "- a\ninternal-ticket-url"'
+    attributed = 'gh pr create --body "- a\nGenerated with Acme Tool"'
+    # Act
+    clean_run = _check_command(clean, cwd=tmp_path)
+    attributed_run = _check_command(attributed, cwd=tmp_path)
+    # Assert
+    assert clean_run.returncode == 0
+    assert attributed_run.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_ignores_config_above_the_repository_root(tmp_path: Path) -> None:
+    # Arrange
+    (tmp_path / ".conventional-git.toml").write_text(_PATTERN_CONFIG, encoding="utf-8")
+    repo = tmp_path / "repo"
+    (repo / ".git").mkdir(parents=True)
+    command = 'gh pr create --body "- a\ninternal-ticket-url"'
+    # Act
+    completed = _check_command(command, cwd=repo)
     # Assert
     assert completed.returncode == 0

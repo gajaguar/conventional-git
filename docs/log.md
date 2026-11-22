@@ -2,6 +2,9 @@
 
 ## 2026-11-22
 
+* **Fix**: `enforcement/attribution-trailers.md` states that
+  `conventional-git check command` reads `.conventional-git.toml` from the
+  directory the command targets, not from the hook's working directory.
 * **Change**: `enforcement/attribution-trailers.md` documents
   `conventional-git check command` and the plugin hook that reject attribution
   lines in pull request descriptions.

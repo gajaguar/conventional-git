@@ -133,11 +133,14 @@ def check_branch(
 
 @app.command("command")
 def check_command() -> None:
-    config = Config.load()
+    raw = sys.stdin.read()
+    command = pr_command.command_from_payload(raw)
+    workdir = pr_command.pr_workdir(command, Path(pr_command.payload_cwd(raw) or Path.cwd()))
+    config = Config.load(pr_command.find_config(workdir) or workdir / pr_command.CONFIG_NAME)
     policy = commit_vocab.resolve_policy(config)
     violations = [
         violation
-        for text in pr_command.pr_texts(pr_command.command_from_payload(sys.stdin.read()))
+        for text in pr_command.pr_texts(command)
         for violation in commit_rules.validate_attribution(
             text,
             attribution_patterns=policy.extra_attribution_patterns,
