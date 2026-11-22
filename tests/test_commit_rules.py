@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from conventional_git.commit.rules import validate_attribution
 from conventional_git.commit.rules import validate_message
 from conventional_git.violations import Severity
 
@@ -153,3 +154,21 @@ def test_extra_attribution_pattern_still_applies_when_default_is_disabled() -> N
     report = validate_message(message, attribution_patterns=("Signed-off-by",), include_default_attribution=False)
     # Assert
     assert any(v.code == "commit.attribution" for v in report.violations)
+
+
+def test_validate_attribution_checks_the_first_line() -> None:
+    # Arrange
+    text = "Generated with Acme Tool\n\n- change one"
+    # Act
+    report = validate_attribution(text)
+    # Assert
+    assert [(v.code, v.field) for v in report.violations] == [("commit.attribution", "line[0]")]
+
+
+def test_validate_attribution_honors_extra_patterns_and_disabled_default() -> None:
+    # Arrange
+    text = "Generated with Acme Tool\nSession: acme-123"
+    # Act
+    report = validate_attribution(text, attribution_patterns=("^session:",), include_default_attribution=False)
+    # Assert
+    assert [v.field for v in report.violations] == ["line[1]"]

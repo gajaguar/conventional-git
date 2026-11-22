@@ -9,6 +9,7 @@ import typer
 
 from conventional_git.branch import rules as branch_rules
 from conventional_git.branch import vocabulary as branch_vocab
+from conventional_git.cli import pr_command
 from conventional_git.commit import rules as commit_rules
 from conventional_git.commit import vocabulary as commit_vocab
 from conventional_git.config import Config
@@ -128,6 +129,25 @@ def check_branch(
     )
     _print_report("branch", report)
     _report_to_exit_code(valid=report.valid)
+
+
+@app.command("command")
+def check_command() -> None:
+    config = Config.load()
+    policy = commit_vocab.resolve_policy(config)
+    violations = [
+        violation
+        for text in pr_command.pr_texts(pr_command.command_from_payload(sys.stdin.read()))
+        for violation in commit_rules.validate_attribution(
+            text,
+            attribution_patterns=policy.extra_attribution_patterns,
+            include_default_attribution=policy.include_default_attribution,
+        ).violations
+    ]
+    if violations:
+        _print_report("pr", Report.from_violations(*violations))
+        # hook hosts block a tool call only on exit 2; exit 1 is non-blocking
+        raise typer.Exit(2)
 
 
 def _resolve_message(message: str | None, message_file: Path | None) -> str:

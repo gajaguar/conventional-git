@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
 
+_BLOCKING_EXIT: Final[int] = 2
 _SAMPLE_DIFF: Final[str] = (
     "diff --git a/src/conventional_git/cli/create.py b/src/conventional_git/cli/create.py\n"
     "--- a/src/conventional_git/cli/create.py\n"
@@ -604,3 +605,72 @@ def test_help_payload_is_json_shape() -> None:
     assert "commit" in payload
     assert "branch" in payload
     assert "feat" in payload["commit"]["types"]
+
+
+def _check_command(stdin: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, "-m", "conventional_git.cli.app", "check", "command"],
+        input=stdin,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def test_check_command_blocks_attribution_in_pr_body() -> None:
+    # Arrange
+    command = 'gh pr create --title "feat: x" --body "- a\nGenerated with Acme Tool"'
+    # Act
+    completed = _check_command(command)
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+    assert "pr:line[1]" in completed.stderr
+    assert "commit.attribution" in completed.stderr
+
+
+def test_check_command_reads_json_payload_and_env_prefix_and_title() -> None:
+    # Arrange
+    command = "FOO=1 git status && gh pr edit 3 -t 'Generated with Acme Tool'"
+    payload = json.dumps({"tool_input": {"command": command}})
+    # Act
+    completed = _check_command(payload)
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_blocks_attribution_in_body_file(tmp_path: Path) -> None:
+    # Arrange
+    body = tmp_path / "body.md"
+    body.write_text("- a\nGenerated with Acme Tool\n", encoding="utf-8")
+    # Act
+    completed = _check_command(f"bitbucket pr create --body-file {body}")
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_blocks_attribution_in_heredoc_body() -> None:
+    # Arrange
+    command = "gh pr create --title t --body \"$(cat <<'EOF'\n- it's a change\nGenerated with Acme Tool\nEOF\n)\""
+    # Act
+    completed = _check_command(command)
+    # Assert
+    assert completed.returncode == _BLOCKING_EXIT
+
+
+def test_check_command_accepts_clean_pr_command() -> None:
+    # Arrange
+    command = "gh pr create --title 'feat: x' --body '- a'"
+    # Act
+    completed = _check_command(command)
+    # Assert
+    assert completed.returncode == 0
+    assert not completed.stderr
+
+
+def test_check_command_ignores_non_pr_command() -> None:
+    # Arrange
+    command = "git commit -m 'Generated with Acme Tool'"
+    # Act
+    completed = _check_command(command)
+    # Assert
+    assert completed.returncode == 0
