@@ -57,3 +57,22 @@ def test_mcp_json_tracks_latest_pypi_release() -> None:
             },
         },
     }, ".mcp.json must resolve conventional-git from PyPI at @latest"
+
+
+def test_hooks_json_runs_check_command_per_pr_family() -> None:
+    # Arrange
+    manifest = json.loads((_REPO_ROOT / "hooks" / "hooks.json").read_text(encoding="utf-8"))
+    command = "uvx --from conventional-git@latest conventional-git check command"
+    families = ("gh pr create*", "gh pr edit*", "bitbucket pr create*", "bitbucket pr update*")
+    # Act
+    # Assert
+    assert manifest == {
+        "hooks": {
+            "PreToolUse": [
+                {
+                    "matcher": "Bash",
+                    "hooks": [{"type": "command", "command": command, "if": f"Bash({family})"} for family in families],
+                }
+            ]
+        }
+    }

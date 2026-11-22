@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-11-22
+
+* **Change**: `enforcement/attribution-trailers.md` documents
+  `conventional-git check command` and the plugin hook that reject attribution
+  lines in pull request descriptions.
+
 ## 2026-11-04
 
 * **Change**: `pylint` is replaced by `ferrolint` and `pylint-gajaguar` moves

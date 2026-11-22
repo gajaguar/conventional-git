@@ -170,21 +170,37 @@ def _check_breaking_footer(parsed: ParsedMessage, policy: _RulePolicy) -> Iterab
         )
 
 
-def _check_attribution(parsed: ParsedMessage, policy: _RulePolicy) -> Iterable[Violation]:
-    if not policy.attribution_patterns:
+def _attribution_violations(text: str, patterns: tuple[str, ...], field_prefix: str) -> Iterable[Violation]:
+    if not patterns:
         return
-    combined = re.compile("|".join(policy.attribution_patterns), re.IGNORECASE)
-    message = parsed.message
-    body_lines = message.split("\n", 1)[1].splitlines() if "\n" in message else []
-    for index, line in enumerate(body_lines):
+    combined = re.compile("|".join(patterns), re.IGNORECASE)
+    for index, line in enumerate(text.splitlines()):
         stripped = line.strip()
         if stripped and combined.search(stripped):
             yield _violation(
                 ViolationCode.COMMIT_ATTRIBUTION,
-                f"footer[{index}]",
+                f"{field_prefix}[{index}]",
                 f"Attribution line is not allowed: {stripped}",
                 "Remove the attribution trailer",
             )
+
+
+def _check_attribution(parsed: ParsedMessage, policy: _RulePolicy) -> Iterable[Violation]:
+    message = parsed.message
+    body = message.split("\n", 1)[1] if "\n" in message else ""
+    return _attribution_violations(body, policy.attribution_patterns, "footer")
+
+
+def validate_attribution(
+    text: str,
+    *,
+    attribution_patterns: tuple[str, ...] | None = None,
+    include_default_attribution: bool = True,
+) -> Report:
+    patterns = (vocabulary.default_attribution_patterns() if include_default_attribution else ()) + (
+        attribution_patterns or ()
+    )
+    return Report.from_violations(*_attribution_violations(text, patterns, "line"))
 
 
 _CHECKS: Final[tuple[Callable[[ParsedMessage, _RulePolicy], Iterable[Violation]], ...]] = (

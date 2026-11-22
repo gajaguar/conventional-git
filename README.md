@@ -108,6 +108,11 @@ conventional-git check branch -n feat/add-login
 conventional-git check branch
 ```
 
+`conventional-git check command` applies the same attribution rule to pull
+request descriptions (`gh pr create|edit`, `bitbucket pr create|update`): it
+reads the command from stdin and exits `2` on a violation. The plugin's hook
+runs it before those commands.
+
 The branch command uses the same exit codes. Trunk branches listed in
 `data/branch-trunks.csv` (`main`, `master`, `develop`) are always valid and
 skip the `<type>/` requirement. So are branches that start with a prefix in
@@ -248,6 +253,7 @@ return `1`.
 | :------------- | ---------------------------------------------------------------------------------------- | ------------: |
 | check commit   | `-m, --message`; `-f, --file`; `--types-csv`                                             |        0 or 1 |
 | check branch   | `-n, --name`; `--types-csv`                                                              |        0 or 1 |
+| check command  | No options; reads a shell command or hook JSON from stdin                                |        0 or 2 |
 | create commit  | `--type`; `--description`; `--scope`; `--body`; `--breaking`; `--types-csv`              |        0 or 1 |
 | create branch  | `--type`; `--description`; `--types-csv`                                                 |        0 or 1 |
 | create suggest | `--diff-file`; `--provider`; `--apply`                                                   |        0 or 1 |
