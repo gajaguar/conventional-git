@@ -28,4 +28,7 @@ tool-call hook needs to block the call. The plugin's `hooks/hooks.json`
 registers it as a `PreToolUse` hook on `Bash`, filtered per command family so
 it does not start on every call. A line that is specific to one tool, such as a
 session URL, is matched per repository by adding a regular expression to
-`[commit] attribution_patterns`.
+`[commit] attribution_patterns`. `check command` reads that config from the
+directory the command targets (the last `cd` or `pushd` before the pull
+request command, else the payload `cwd`, else the process directory),
+searching upward to the repository root.
